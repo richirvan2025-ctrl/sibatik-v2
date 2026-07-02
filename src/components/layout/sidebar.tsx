@@ -11,7 +11,6 @@ import {
   Settings,
   BarChart3,
   Shield,
-  LogOut,
   BookOpen,
   Building2,
   MessageCircle,
@@ -19,8 +18,6 @@ import {
 } from "lucide-react";
 import Image from "next/image";
 import { cn } from "@/lib/utils";
-import { Button } from "@/components/ui/button";
-import { signOut } from "next-auth/react";
 
 const navigation = {
   ADMIN: [
@@ -75,39 +72,34 @@ export function Sidebar({ onClose }: { onClose?: () => void }) {
   return (
     <div className="flex h-full flex-col border-r border-[#E2E8F0] bg-white">
       {/* Logo */}
-      <div className="flex h-16 items-center gap-3 border-b border-[#E2E8F0] px-5">
-        <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-white shadow-sm border border-[#E2E8F0] overflow-hidden">
+      <div className="flex h-14 items-center gap-3 border-b border-[#E2E8F0] px-5 shrink-0">
+        <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-white shadow-sm border border-[#E2E8F0] overflow-hidden">
           <Image
             src="/logo.png"
             alt="IDB Bali Logo"
-            width={28}
-            height={28}
-            className="h-7 w-7 object-contain"
+            width={24}
+            height={24}
+            className="h-6 w-6 object-contain"
             priority
           />
         </div>
         <div>
-          <h1 className="text-[15px] font-bold leading-tight text-[#1E293B] tracking-tight">
-            IDB Bali
-          </h1>
-          <p className="text-[10px] font-semibold uppercase tracking-wider text-[#F97316]">
-            Helpdesk
-          </p>
+          <h1 className="text-[14px] font-bold leading-tight text-[#1E293B]">IDB Bali</h1>
+          <p className="text-[9px] font-semibold uppercase tracking-wider text-[#F97316]">Support Ticket System</p>
         </div>
       </div>
 
-      {/* Navigation */}
-      <nav className="flex-1 space-y-1 px-3 py-4">
+      {/* Navigation - scrollable */}
+      <nav className="flex-1 overflow-y-auto space-y-0.5 px-3 py-3">
         {items.map((item) => {
-          const isActive =
-            pathname === item.href || pathname.startsWith(`${item.href}/`);
+          const isActive = pathname === item.href || pathname.startsWith(`${item.href}/`);
           return (
             <Link
               key={item.name}
               href={item.href}
               onClick={onClose}
               className={cn(
-                "group flex items-center gap-3 rounded-xl px-3 py-2.5 text-[13px] font-medium transition-all duration-200",
+                "group flex items-center gap-2.5 rounded-lg px-3 py-2 text-[13px] font-medium transition-all duration-200",
                 isActive
                   ? "bg-[#EFF6FF] text-[#2563EB]"
                   : "text-[#64748B] hover:bg-[#F8FAFC] hover:text-[#1E293B]"
@@ -115,13 +107,13 @@ export function Sidebar({ onClose }: { onClose?: () => void }) {
             >
               <div
                 className={cn(
-                  "flex h-8 w-8 items-center justify-center rounded-lg transition-all duration-200",
+                  "flex h-7 w-7 items-center justify-center rounded-md transition-all duration-200",
                   isActive
                     ? "bg-[#2563EB] text-white shadow-sm shadow-blue-200"
                     : "bg-[#F1F5F9] text-[#94A3B8] group-hover:bg-white group-hover:text-[#64748B] group-hover:shadow-sm"
                 )}
               >
-                <item.icon className="h-4 w-4" />
+                <item.icon className="h-3.5 w-3.5" />
               </div>
               <span className="flex items-start gap-1">
                 {item.name}
@@ -134,44 +126,21 @@ export function Sidebar({ onClose }: { onClose?: () => void }) {
         })}
       </nav>
 
-      {/* User Info */}
-      <div className="border-t border-[#E2E8F0] p-4">
-        <div className="mb-3 rounded-xl bg-[#F8FAFC] p-3.5 border border-[#E2E8F0]">
-          <p className="text-[13px] font-semibold text-[#1E293B]">
-            {session?.user?.name}
-          </p>
-          <p className="text-[11px] text-[#64748B] mt-0.5 truncate">
-            {session?.user?.email}
-          </p>
-          <span className="inline-flex mt-2 items-center rounded-full bg-[#EFF6FF] px-2.5 py-0.5 text-[10px] font-bold uppercase tracking-wide text-[#2563EB]">
-            {role === "EXECUTIVE" ? (
-              <span className="flex items-center gap-1 text-purple-700 bg-purple-50 px-2.5 py-0.5 rounded-full">
-                <Crown className="h-3 w-3" />
-                Eksekutif
-              </span>
-            ) : role === "SUPERVISOR" ? (
-              <span className="flex items-center gap-1 text-purple-700 bg-purple-50 px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wide">
-                <Building2 className="h-3 w-3" />
-                Supervisor
-              </span>
-            ) : role === "AGENT" ? (
-              <span className="flex items-center gap-1 text-orange-700 bg-orange-50 px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wide">
-                <Shield className="h-3 w-3" />
-                Agent
-              </span>
-            ) : (
-              <span>{role}</span>
-            )}
-          </span>
+      {/* User Info - compact */}
+      <div className="border-t border-[#E2E8F0] p-3 shrink-0">
+        <div className="flex items-center gap-2.5">
+          <div className="flex h-8 w-8 items-center justify-center rounded-full bg-[#EFF6FF] text-[#2563EB] text-[11px] font-bold shrink-0">
+            {session?.user?.name?.charAt(0)?.toUpperCase() || "U"}
+          </div>
+          <div className="min-w-0 flex-1">
+            <p className="text-[12px] font-semibold text-[#1E293B] truncate">
+              {session?.user?.name}
+            </p>
+            <p className="text-[10px] text-[#94A3B8] truncate">
+              {role}
+            </p>
+          </div>
         </div>
-        <Button
-          variant="outline"
-          className="w-full justify-start h-9 text-[13px] border-[#E2E8F0] text-[#64748B] hover:bg-red-50 hover:text-red-600 hover:border-red-200 transition-all duration-200"
-          onClick={() => signOut({ callbackUrl: "/login" })}
-        >
-          <LogOut className="mr-2 h-4 w-4" />
-          Logout
-        </Button>
       </div>
     </div>
   );

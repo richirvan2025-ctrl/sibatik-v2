@@ -25,7 +25,7 @@ export default function RootLayout({
       className={`${plusJakarta.variable} h-full antialiased`}
     >
       <body className="min-h-full flex flex-col font-sans">
-        <SessionProvider>{children}</SessionProvider>
+        <SessionProvider basePath="/api/auth">{children}</SessionProvider>
       </body>
     </html>
   );

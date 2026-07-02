@@ -1,41 +1,61 @@
-import { auth } from "@/lib/auth";
-import { NextResponse } from "next/server";
+import { NextResponse } from 'next/server'
+import type { NextRequest } from 'next/server'
+import { jwtVerify } from 'jose'
 
-export default auth((req) => {
-  const token = req.auth;
-  const pathname = req.nextUrl.pathname;
+export async function proxy(req: NextRequest) {
+  const { nextUrl } = req
 
-  // If not authenticated, redirect to login
-  if (!token) {
-    return NextResponse.redirect(new URL("/login", req.url));
+  const isAuthPage = nextUrl.pathname === '/login'
+  const isSSOCallback = nextUrl.pathname.startsWith('/sso')
+  const isApiAuth = nextUrl.pathname.startsWith('/api/auth')
+  const isApiDebug = nextUrl.pathname.startsWith('/api/debug')
+  const isStaticFile = nextUrl.pathname.startsWith('/_next/static') ||
+                       nextUrl.pathname === '/favicon.ico' ||
+                       nextUrl.pathname.startsWith('/images') ||
+                       nextUrl.pathname === '/logo.png'
+  const hasToken = nextUrl.searchParams.has('token') && nextUrl.searchParams.has('sig')
+
+  // Handle SSO token at root - redirect to SSO handler
+  if (hasToken && nextUrl.pathname === '/') {
+    const token = nextUrl.searchParams.get('token')
+    const sig = nextUrl.searchParams.get('sig')
+    return NextResponse.redirect(new URL(`/api/auth/sso?token=${token}&sig=${sig}`, 'https://sibatik.idbbali.ac.id'))
   }
 
-  // Protect admin routes
-  if (pathname.startsWith("/admin") && token.user?.role !== "ADMIN") {
-    return NextResponse.redirect(new URL("/dashboard", req.url));
+  // Allow public paths
+  if (isSSOCallback || isApiAuth || isApiDebug || isStaticFile) {
+    return NextResponse.next()
   }
 
-  // Protect agent routes (technician)
-  if (
-    pathname.startsWith("/technician") &&
-    token.user?.role !== "AGENT" &&
-    token.user?.role !== "ADMIN"
-  ) {
-    return NextResponse.redirect(new URL("/dashboard", req.url));
+  // Check session
+  const sessionCookie = req.cookies.get('helpdesk-session')
+  let isLoggedIn = false
+
+  if (sessionCookie) {
+    try {
+      const secret = new TextEncoder().encode(process.env.NEXTAUTH_SECRET || 'helpdesk-idb-bali-secret-2024-final')
+      await jwtVerify(sessionCookie.value, secret)
+      isLoggedIn = true
+    } catch {}
   }
 
-  // Protect supervisor/department routes
-  if (
-    pathname.startsWith("/department") &&
-    token.user?.role !== "SUPERVISOR" &&
-    token.user?.role !== "ADMIN"
-  ) {
-    return NextResponse.redirect(new URL("/dashboard", req.url));
+  // Also check next-auth session cookie
+  const nextAuthCookie = req.cookies.get('authjs.session-token') || req.cookies.get('__Secure-authjs.session-token')
+  if (nextAuthCookie) {
+    isLoggedIn = true
   }
 
-  return NextResponse.next();
-});
+  if (!isLoggedIn && !isAuthPage) {
+    return NextResponse.redirect(new URL('/login', 'https://sibatik.idbbali.ac.id'))
+  }
+
+  if (isLoggedIn && isAuthPage) {
+    return NextResponse.redirect(new URL('/dashboard', 'https://sibatik.idbbali.ac.id'))
+  }
+
+  return NextResponse.next()
+}
 
 export const config = {
-  matcher: ["/dashboard/:path*", "/admin/:path*", "/technician/:path*", "/tickets/:path*", "/department/:path*"],
-};
+  matcher: ['/((?!_next/static|_next/image|favicon.ico|images|logo\\.png).*)'],
+}

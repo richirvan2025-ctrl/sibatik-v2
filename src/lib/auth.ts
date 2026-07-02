@@ -15,6 +15,19 @@ export const {
   adapter: PrismaAdapter(prisma) as any,
   session: {
     strategy: "jwt",
+    maxAge: 60 * 60 * 24, // 1 hari
+  },
+  cookies: {
+    sessionToken: {
+      name: `authjs.session-token`,
+      options: {
+        httpOnly: true,
+        sameSite: "lax",
+        path: "/",
+        secure: true,
+        maxAge: 60 * 60 * 24, // 1 hari
+      },
+    },
   },
   pages: {
     signIn: "/login",
@@ -60,6 +73,66 @@ export const {
         };
       },
     }),
+    CredentialsProvider({
+      id: "sso",
+      name: "SSO",
+      credentials: { ssoToken: { label: "SSO Token", type: "text" } },
+      async authorize(credentials) {
+        if (!credentials?.ssoToken) return null;
+        const { default: axios } = await import("axios");
+        const { default: https } = await import("https");
+        const baseUrl = process.env.SSO_INTERNAL_URL || process.env.SSO_BASE_URL || "";
+        try {
+          const res = await axios.get(`${baseUrl}/class/checkToken.php`, {
+            params: { token: credentials.ssoToken },
+            headers: { Host: "sinergy.idbbali.ac.id" },
+            httpsAgent: new https.Agent({ rejectUnauthorized: false }),
+          });
+          if (res.data?.code !== 200) return null;
+          const ssoId = String(res.data.idsso);
+          let user = await prisma.user.findFirst({ where: { ssoId } });
+          if (!user) {
+            // Fetch email from SSO database
+            const { fetchSSOUserFromDB } = await import("./sso");
+            const ssoDbUser = await fetchSSOUserFromDB(ssoId);
+            const email = ssoDbUser?.email || null;
+
+            // Check if user already exists by email (link existing account)
+            if (email) {
+              user = await prisma.user.findUnique({ where: { email } });
+              if (user) {
+                // Link ssoId to existing user and update name to nama_lengkap
+                user = await prisma.user.update({
+                  where: { id: user.id },
+                  data: {
+                    ssoId,
+                    ...(ssoDbUser?.nama_lengkap ? { name: ssoDbUser.nama_lengkap } : {}),
+                  },
+                });
+              }
+            }
+
+            // Create new user if not found
+            if (!user) {
+              user = await prisma.user.create({
+                data: {
+                  name: ssoDbUser?.nama_lengkap || res.data.pengguna,
+                  username: res.data.pengguna,
+                  email,
+                  ssoId,
+                  password: "",
+                  role: "USER",
+                  provider: "sso",
+                  isActive: true,
+                },
+              });
+            }
+          }
+          return { id: user.id, email: user.email, name: user.name, role: user.role };
+        } catch { return null; }
+      },
+    }),
+
     MicrosoftEntraID({
       clientId: process.env.MICROSOFT_CLIENT_ID!,
       clientSecret: process.env.MICROSOFT_CLIENT_SECRET!,

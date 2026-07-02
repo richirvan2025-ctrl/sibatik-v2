@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { Sidebar } from "./sidebar";
 import { NotificationBell } from "./notification-bell";
-import { Menu } from "lucide-react";
+import { Menu, ExternalLink } from "lucide-react";
 import Image from "next/image";
 
 export function DashboardShell({ children }: { children: React.ReactNode }) {
@@ -11,7 +11,6 @@ export function DashboardShell({ children }: { children: React.ReactNode }) {
 
   return (
     <div className="flex h-screen bg-[#F8FAFC]">
-      {/* Mobile backdrop */}
       {sidebarOpen && (
         <div
           className="fixed inset-0 z-20 bg-black/50 md:hidden"
@@ -19,7 +18,6 @@ export function DashboardShell({ children }: { children: React.ReactNode }) {
         />
       )}
 
-      {/* Sidebar */}
       <aside
         className={`fixed inset-y-0 left-0 z-30 w-64 transition-transform duration-300 ease-in-out md:static md:translate-x-0 ${
           sidebarOpen ? "translate-x-0" : "-translate-x-full"
@@ -28,11 +26,8 @@ export function DashboardShell({ children }: { children: React.ReactNode }) {
         <Sidebar onClose={() => setSidebarOpen(false)} />
       </aside>
 
-      {/* Main area */}
       <div className="flex flex-1 flex-col min-w-0">
-        {/* Top bar — mobile (hamburger) + desktop (notification bell) */}
         <header className="flex h-14 shrink-0 items-center justify-between border-b border-[#E2E8F0] bg-white px-4">
-          {/* Left: hamburger (mobile only) + logo */}
           <div className="flex items-center gap-3">
             <button
               onClick={() => setSidebarOpen(true)}
@@ -58,13 +53,18 @@ export function DashboardShell({ children }: { children: React.ReactNode }) {
             </div>
           </div>
 
-          {/* Right: notification bell */}
-          <div className="ml-auto">
+          <div className="ml-auto flex items-center gap-2">
             <NotificationBell />
+            <a
+              href="https://sinergy.idbbali.ac.id/dashboard.php"
+              className="flex items-center gap-1.5 rounded-lg border border-[#E2E8F0] px-3 py-1.5 text-[12px] font-medium text-[#64748B] hover:bg-[#F1F5F9] hover:text-[#1E293B] transition-colors"
+            >
+              <ExternalLink className="h-3.5 w-3.5" />
+              <span className="hidden sm:inline">Back to SINERGY</span>
+            </a>
           </div>
         </header>
 
-        {/* Page content */}
         <main className="flex-1 overflow-y-auto">
           <div className="p-4 md:p-6 min-h-screen">{children}</div>
         </main>

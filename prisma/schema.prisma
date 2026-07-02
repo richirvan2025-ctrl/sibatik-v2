@@ -10,7 +10,9 @@ datasource db {
 model User {
   id            String    @id @default(cuid())
   name          String
-  email         String    @unique
+  email         String?   @unique
+  username      String?   @unique
+  ssoId         String?   @unique
   password      String?   // hashed with bcrypt (nullable untuk user OAuth)
   role          Role      @default(USER)
   department    String?

@@ -135,6 +135,19 @@ export async function PATCH(
         deptUser.department === (ticket as any).category?.department;
     }
 
+    // Agent/Supervisor tidak boleh memberi rating pada tiket yang di-assign ke dirinya
+    const isAssignedToCurrentUser = ticket.assignedToId === userId;
+    if (
+      validated.rating !== undefined &&
+      isAssignedToCurrentUser &&
+      (role === "AGENT" || role === "SUPERVISOR")
+    ) {
+      return NextResponse.json(
+        { error: "Agent tidak dapat memberi rating pada tiket yang ditangani" },
+        { status: 403 }
+      );
+    }
+
     // Pembuat tiket boleh submit rating (menutup tiket)
     const isRatingOnly =
       validated.rating !== undefined &&
