@@ -106,23 +106,7 @@ npm run dev
 
 Buka [http://localhost:3000](http://localhost:3000).
 
-### Akun Default (setelah seed)
 
-| Email | Password | Role |
-|-------|----------|------|
-| admin@idbbali.ac.id | admin123 | ADMIN |
-| tech1@idbbali.ac.id | tech123 | AGENT |
-| tech2@idbbali.ac.id | tech123 | AGENT |
-| kabag.keuangan@idbbali.ac.id | depthead123 | SUPERVISOR |
-| kabag.hrd@idbbali.ac.id | depthead123 | SUPERVISOR |
-| kabag.baa@idbbali.ac.id | depthead123 | SUPERVISOR |
-| kabag.kemahasiswaan@idbbali.ac.id | depthead123 | SUPERVISOR |
-| kemahasiswaan1@idbbali.ac.id | tech123 | AGENT |
-| kabag.perpustakaan@idbbali.ac.id | depthead123 | SUPERVISOR |
-| perpustakaan1@idbbali.ac.id | tech123 | AGENT |
-| dosen1@idbbali.ac.id | user123 | USER |
-
-> Ganti semua password default sebelum go-live.
 
 ## Struktur Direktori
 
