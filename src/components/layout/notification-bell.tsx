@@ -88,7 +88,8 @@ export function NotificationBell() {
       <button
         type="button"
         onClick={() => setOpen((o) => !o)}
-        className="relative flex h-9 w-9 items-center justify-center rounded-xl border border-[#E2E8F0] bg-white text-[#64748B] hover:bg-[#F8FAFC] hover:text-[#1E293B] transition-all duration-200 shadow-[0_1px_3px_rgba(0,0,0,0.05)]"
+        className="relative flex h-10 w-10 items-center justify-center rounded-xl border border-[#DCE4EF] bg-white text-[#637089] shadow-[0_1px_2px_rgba(16,24,40,0.05)] transition-all duration-200 hover:border-[#C9BCF8] hover:bg-[#F5F2FF] hover:text-[#7047EB] focus-visible:outline-none focus-visible:ring-3 focus-visible:ring-[#7047EB]/20"
+        aria-label="Buka notifikasi"
       >
         <Bell className="h-4 w-4" />
         {unreadCount > 0 && (
@@ -100,11 +101,11 @@ export function NotificationBell() {
 
       {/* Dropdown */}
       {open && (
-        <div className="absolute right-0 top-11 z-50 w-[360px] rounded-xl border border-[#E2E8F0] bg-white shadow-[0_8px_30px_rgba(0,0,0,0.12)] overflow-hidden">
+        <div className="absolute right-0 top-12 z-50 w-[min(360px,calc(100vw-2rem))] overflow-hidden rounded-[14px] border border-[#DCE4EF] bg-white shadow-[0_18px_50px_rgba(11,29,58,0.18)]">
           {/* Header */}
           <div className="flex items-center justify-between border-b border-[#E2E8F0] px-4 py-3">
             <div className="flex items-center gap-2">
-              <Bell className="h-4 w-4 text-[#2563EB]" />
+              <Bell className="h-4 w-4 text-[#7047EB]" />
               <span className="text-sm font-semibold text-[#1E293B]">Notifikasi</span>
               {unreadCount > 0 && (
                 <span className="flex h-5 min-w-[20px] items-center justify-center rounded-full bg-red-500 px-1.5 text-[10px] font-bold text-white">
@@ -116,7 +117,7 @@ export function NotificationBell() {
               {unreadCount > 0 && (
                 <button
                   onClick={markAllRead}
-                  className="flex items-center gap-1 rounded-lg px-2 py-1 text-[11px] font-medium text-[#2563EB] hover:bg-blue-50 transition-colors"
+                  className="flex items-center gap-1 rounded-lg px-2 py-1 text-[11px] font-semibold text-[#7047EB] transition-colors hover:bg-[#F0EDFF]"
                 >
                   <CheckCheck className="h-3.5 w-3.5" />
                   Tandai semua
@@ -124,7 +125,8 @@ export function NotificationBell() {
               )}
               <button
                 onClick={() => setOpen(false)}
-                className="flex h-6 w-6 items-center justify-center rounded-lg text-[#94A3B8] hover:bg-[#F1F5F9] transition-colors"
+                className="flex h-7 w-7 items-center justify-center rounded-lg text-[#8A96AB] transition-colors hover:bg-[#F1F3F8] hover:text-[#26334D]"
+                aria-label="Tutup notifikasi"
               >
                 <X className="h-3.5 w-3.5" />
               </button>

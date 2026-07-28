@@ -1,4 +1,4 @@
-# Panduan Deployment — Helpdesk IDB Bali
+# Panduan Deployment — SIBATIK IDB Bali
 
 ## Prasyarat
 
@@ -36,7 +36,7 @@ Jalankan dari direktori project:
 ```bash
 git remote add origin https://github.com/USERNAME/helpdesk-idb.git
 git add .
-git commit -m "Initial project: Helpdesk IDB Bali"
+git commit -m "Initial project: SIBATIK IDB Bali"
 git push -u origin master
 ```
 

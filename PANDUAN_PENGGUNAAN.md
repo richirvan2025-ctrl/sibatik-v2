@@ -1,6 +1,6 @@
-# Panduan Penggunaan Helpdesk IDB Bali
+# Panduan Penggunaan SIBATIK IDB Bali
 
-Panduan ini menjelaskan cara menggunakan sistem helpdesk untuk seluruh civitas akademika Institut Desain dan Bisnis Bali.
+Panduan ini menjelaskan cara menggunakan SIBATIK untuk seluruh civitas akademika Institut Desain dan Bisnis Bali.
 
 > Untuk panduan instalasi dan deployment, lihat [README.md](./README.md) dan [DEPLOYMENT.md](./DEPLOYMENT.md).
 
@@ -24,7 +24,7 @@ Panduan ini menjelaskan cara menggunakan sistem helpdesk untuk seluruh civitas a
 
 ## 1. Pendahuluan
 
-**Helpdesk IDB Bali** adalah sistem tiket dukungan internal yang membantu civitas akademika menyampaikan masalah terkait layanan kampus (IT, akademik, keuangan, fasilitas, dll) dan mendapat tindak lanjut resmi dari divisi terkait.
+**SIBATIK IDB Bali** adalah sistem tiket dukungan internal yang membantu civitas akademika menyampaikan masalah terkait layanan kampus (IT, akademik, keuangan, fasilitas, dll) dan mendapat tindak lanjut resmi dari divisi terkait.
 
 ### Fitur Utama
 - 🎫 **Tiket Support** — Ajukan dan lacak tiket dukungan
@@ -38,7 +38,7 @@ Panduan ini menjelaskan cara menggunakan sistem helpdesk untuk seluruh civitas a
 ## 2. Login & Akses
 
 ### 2.1 Alamat Aplikasi
-Akses Helpdesk IDB Bali melalui browser di: `https://helpdesk.idbbali.ac.id` (atau alamat internal kampus).
+Akses SIBATIK IDB Bali melalui browser di: `https://helpdesk.idbbali.ac.id` (atau alamat internal kampus).
 
 ### 2.2 Cara Login
 1. Buka halaman utama aplikasi
@@ -52,7 +52,7 @@ Jika akun Anda terhubung ke Microsoft 365 kampus:
 3. Sistem akan otomatis masuk
 
 ### 2.4 Lupa Password
-Hubungi admin helpdesk untuk reset password — saat ini belum ada fitur self-service reset.
+Hubungi admin SIBATIK untuk reset password — saat ini belum ada fitur self-service reset.
 
 ### 2.5 Logout
 Klik avatar/foto Anda di pojok kanan atas → **Logout**.
@@ -313,7 +313,7 @@ Laporan eksekutif untuk monitoring dan pengambilan keputusan.
 
 ## 9. AI Asisten Vira
 
-Vira adalah AI Assistant berbasis RAG (Retrieval-Augmented Generation) yang menjawab pertanyaan berdasarkan konteks helpdesk kampus.
+Vira adalah AI Assistant berbasis RAG (Retrieval-Augmented Generation) yang menjawab pertanyaan berdasarkan konteks layanan SIBATIK kampus.
 
 ### 9.1 Cara Mengakses
 1. Klik **Asisten** di sidebar (ada label **Beta**)
@@ -329,7 +329,7 @@ Vira adalah AI Assistant berbasis RAG (Retrieval-Augmented Generation) yang menj
 - Membuat tiket langsung dari chat
 
 ❌ Tidak bisa menjawab:
-- Pertanyaan di luar konteks helpdesk kampus
+- Pertanyaan di luar konteks layanan SIBATIK kampus
 - Informasi yang tidak ada di Knowledge Base / dokumen internal
 
 ### 9.3 Tips Bertanya ke Vira
@@ -401,7 +401,7 @@ Lihat detail tiket untuk SLA spesifik.
 - Validasi input di server-side
 
 ### T: Bisa akses dari HP?
-**J:** Bisa! Helpdesk IDB Bali responsive dan bisa diakses dari browser smartphone.
+**J:** Bisa! SIBATIK IDB Bali responsive dan bisa diakses dari browser smartphone.
 
 ---
 
@@ -427,7 +427,7 @@ Lihat detail tiket untuk SLA spesifik.
 
 ## Kontak & Dukungan
 
-Jika mengalami masalah pada sistem helpdesk:
+Jika mengalami masalah pada SIBATIK:
 - **Email**: admin@idbbali.ac.id
 - **Buat tiket** langsung dari menu **Buat Tiket** di aplikasi
 - **Tanya Vira** — klik menu **Asisten** untuk bantuan cepat

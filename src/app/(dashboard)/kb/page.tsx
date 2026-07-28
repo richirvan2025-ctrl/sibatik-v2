@@ -96,46 +96,49 @@ export default function KBPage() {
   };
 
   return (
-    <div className="space-y-6">
-      {/* Header */}
-      <div>
-        <h1 className="text-2xl font-bold tracking-tight text-[#1E293B]">
-          Knowledge Base
-        </h1>
-        <p className="text-sm text-[#64748B] mt-1">
-          Cari solusi dan panduan untuk masalah umum
-        </p>
-      </div>
+    <div className="space-y-5 md:space-y-6">
+      <section className="rounded-[16px] bg-[#102B50] px-5 py-6 text-white shadow-[0_10px_28px_rgba(16,43,80,0.14)] md:px-7 md:py-7">
+        <div className="flex items-start gap-4">
+          <div className="hidden h-12 w-12 shrink-0 items-center justify-center rounded-[14px] bg-white/10 text-[#CFC3FF] sm:flex">
+            <BookOpen className="h-6 w-6" />
+          </div>
+          <div className="flex-1">
+            <h1 className="text-[28px] font-bold tracking-[-0.03em]">Knowledge Base</h1>
+            <p className="mt-1 text-sm text-[#BDCCE0]">Temukan panduan, jawaban, dan solusi mandiri untuk masalah umum.</p>
+          </div>
+        </div>
 
-      {/* Search */}
-      <div className="flex gap-3">
-        <div className="relative flex-1">
-          <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-[#94A3B8]" />
+        <div className="mt-5 flex gap-2.5">
+          <div className="relative flex-1">
+          <Search className="absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-[#7C8AA2]" />
           <Input
+            aria-label="Cari artikel"
             placeholder="Cari artikel..."
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             onKeyDown={(e) => e.key === "Enter" && handleSearch()}
-            className="pl-10 h-10 border-[#E2E8F0] bg-white rounded-xl text-sm focus:border-[#2563EB]"
+            className="h-11 border-white bg-white pl-10 text-sm text-[#17223D] shadow-none"
           />
         </div>
         <Button
           onClick={handleSearch}
-          className="h-10 bg-[#2563EB] hover:bg-[#1D4ED8] text-white rounded-xl text-sm font-semibold"
+          className="h-11 bg-[#7047EB] px-4 text-white shadow-none hover:bg-[#805DF0]"
+          aria-label="Cari artikel"
         >
           <Search className="h-4 w-4" />
         </Button>
-      </div>
+        </div>
+      </section>
 
       {/* Categories */}
-      <div className="flex flex-wrap gap-2">
+      <div className="flex flex-wrap items-center gap-2 rounded-[14px] border border-[#DCE4EF] bg-white p-3 shadow-[0_1px_2px_rgba(16,24,40,0.04)]">
         <Button
           variant={selectedCategory === "" ? "default" : "outline"}
           onClick={() => handleCategoryClick("")}
           className={`h-9 rounded-xl text-sm ${
             selectedCategory === ""
-              ? "bg-[#2563EB] text-white"
-              : "border-[#E2E8F0] text-[#64748B]"
+              ? "bg-[#7047EB] text-white"
+              : "border-[#DCE4EF] text-[#59667E]"
           }`}
         >
           Semua
@@ -147,8 +150,8 @@ export default function KBPage() {
             onClick={() => handleCategoryClick(cat.id)}
             className={`h-9 rounded-xl text-sm ${
               selectedCategory === cat.id
-                ? "bg-[#2563EB] text-white"
-                : "border-[#E2E8F0] text-[#64748B]"
+                ? "bg-[#7047EB] text-white"
+                : "border-[#DCE4EF] text-[#59667E]"
             }`}
           >
             {cat.name}
@@ -169,16 +172,16 @@ export default function KBPage() {
       {/* Articles */}
       {loading ? (
         <div className="flex h-40 items-center justify-center">
-          <div className="h-8 w-8 animate-spin rounded-full border-4 border-blue-100 border-t-[#2563EB]" />
+          <div className="h-9 w-9 animate-spin rounded-full border-4 border-[#E6E0FA] border-t-[#7047EB]" />
         </div>
       ) : (
         <div className="grid gap-4 md:grid-cols-2">
           {articles.map((article) => (
             <Link key={article.id} href={`/kb/${article.slug}`}>
-              <Card className="group border border-[#E2E8F0] bg-white rounded-xl shadow-[0_1px_3px_rgba(0,0,0,0.05),0_1px_2px_rgba(0,0,0,0.03)] hover:shadow-[0_4px_12px_rgba(0,0,0,0.08)] hover:-translate-y-0.5 transition-all duration-200 cursor-pointer h-full">
+              <Card className="group h-full cursor-pointer py-0 transition-all duration-200 hover:-translate-y-0.5 hover:border-[#CFC4F6] hover:shadow-[0_10px_26px_rgba(29,43,76,0.09)]">
                 <CardContent className="p-5 flex flex-col h-full">
                   <div className="flex items-center gap-2 mb-3">
-                    <span className="inline-flex items-center gap-1 rounded-lg bg-blue-50 px-2 py-0.5 text-xs font-semibold text-[#2563EB]">
+                    <span className="inline-flex items-center gap-1 rounded-lg bg-[#F0EDFF] px-2 py-1 text-xs font-semibold text-[#6742DE]">
                       <FolderOpen className="h-3 w-3" />
                       {article.category.name}
                     </span>
@@ -188,7 +191,7 @@ export default function KBPage() {
                     </span>
                   </div>
 
-                  <h3 className="text-base font-semibold text-[#1E293B] group-hover:text-[#2563EB] transition-colors mb-2">
+                  <h3 className="mb-2 text-base font-bold text-[#17223D] transition-colors group-hover:text-[#7047EB]">
                     {article.title}
                   </h3>
 
@@ -208,7 +211,7 @@ export default function KBPage() {
                         </span>
                       ))}
                     </div>
-                    <ArrowRight className="h-4 w-4 text-[#CBD5E1] group-hover:text-[#2563EB] group-hover:translate-x-1 transition-all" />
+                    <ArrowRight className="h-4 w-4 text-[#BBC4D2] transition-all group-hover:translate-x-1 group-hover:text-[#7047EB]" />
                   </div>
                 </CardContent>
               </Card>
@@ -218,10 +221,10 @@ export default function KBPage() {
       )}
 
       {!loading && articles.length === 0 && (
-        <Card className="border border-[#E2E8F0] bg-white rounded-xl shadow-[0_1px_3px_rgba(0,0,0,0.05),0_1px_2px_rgba(0,0,0,0.03)]">
+        <Card>
           <CardContent className="flex flex-col items-center justify-center py-16 text-center">
-            <BookOpen className="h-12 w-12 text-[#E2E8F0] mb-3" />
-            <p className="text-[#64748B] font-medium text-sm">
+            <div className="mb-4 flex h-16 w-16 items-center justify-center rounded-[18px] bg-[#F0EDFF] text-[#7047EB]"><BookOpen className="h-8 w-8" /></div>
+            <p className="text-base font-bold text-[#26334D]">
               Tidak ada artikel ditemukan
             </p>
             <p className="text-xs text-[#94A3B8] mt-1">
@@ -234,8 +237,8 @@ export default function KBPage() {
       {/* FAQ */}
       {faqs.length > 0 && <div className="pt-4">
         <div className="flex items-center gap-2 mb-4">
-          <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-blue-50">
-            <HelpCircle className="h-5 w-5 text-[#2563EB]" />
+          <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-[#F0EDFF]">
+            <HelpCircle className="h-5 w-5 text-[#7047EB]" />
           </div>
           <div>
             <h2 className="text-lg font-bold tracking-tight text-[#1E293B]">
@@ -253,7 +256,7 @@ export default function KBPage() {
             return (
               <Card
                 key={idx}
-                className="border border-[#E2E8F0] bg-white rounded-xl shadow-[0_1px_3px_rgba(0,0,0,0.05),0_1px_2px_rgba(0,0,0,0.03)] overflow-hidden"
+                className="overflow-hidden py-0"
               >
                 <button
                   type="button"

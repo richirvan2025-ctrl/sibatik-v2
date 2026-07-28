@@ -98,26 +98,26 @@ export default function TicketsPage() {
 
   if (loading) {
     return (
-      <div className="flex h-96 items-center justify-center">
-        <div className="h-8 w-8 animate-spin rounded-full border-4 border-blue-100 border-t-[#2563EB]" />
+      <div className="flex min-h-[60vh] items-center justify-center">
+        <div className="h-9 w-9 animate-spin rounded-full border-4 border-[#E6E0FA] border-t-[#7047EB]" />
       </div>
     );
   }
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-5 md:space-y-6">
       {/* Header */}
-      <div className="flex items-center justify-between">
+      <div className="flex flex-col gap-4 rounded-[16px] bg-[#102B50] px-5 py-5 text-white shadow-[0_10px_28px_rgba(16,43,80,0.14)] sm:flex-row sm:items-center sm:justify-between md:px-6">
         <div>
-          <h1 className="text-2xl font-bold tracking-tight text-[#1E293B]">
+          <h1 className="text-[27px] font-bold tracking-[-0.03em] text-white">
             {pageTitle}
           </h1>
-          <p className="text-sm text-[#64748B] mt-1">
-            Kelola dan pantau tiket support
+          <p className="mt-1 text-sm text-[#BDCCE0]">
+            Kelola, prioritaskan, dan pantau progres layanan
           </p>
         </div>
         <Link href="/tickets/new">
-          <Button className="h-10 bg-[#2563EB] hover:bg-[#1D4ED8] text-white shadow-md shadow-blue-200 transition-all duration-200 rounded-xl text-sm font-semibold">
+          <Button className="h-11 bg-white px-4 text-[#102B50] shadow-sm hover:bg-[#F0EDFF] hover:text-[#5F39DB]">
             <Plus className="mr-2 h-4 w-4" />
             Buat Tiket
           </Button>
@@ -125,35 +125,40 @@ export default function TicketsPage() {
       </div>
 
       {/* Filters */}
-      <Card className="border border-[#E2E8F0] bg-white rounded-xl shadow-[0_1px_3px_rgba(0,0,0,0.05),0_1px_2px_rgba(0,0,0,0.03)]">
-        <CardContent className="p-4">
-          <div className="flex flex-wrap items-center gap-3">
+      <Card className="py-0">
+        <CardContent className="p-4 md:p-5">
+          <div className="flex flex-col gap-3 lg:flex-row lg:items-center">
             <div className="flex flex-1 min-w-[240px] items-center gap-2">
               <div className="relative flex-1">
                 <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-[#94A3B8]" />
                 <Input
+                  aria-label="Cari tiket"
                   placeholder="Cari tiket..."
                   value={search}
                   onChange={(e) => setSearch(e.target.value)}
                   onKeyDown={(e) => e.key === "Enter" && handleSearch()}
-                  className="pl-10 h-10 border-[#E2E8F0] bg-[#F8FAFC] rounded-xl text-sm focus:bg-white focus:border-[#2563EB]"
+                  className="h-10 bg-[#F8FAFD] pl-10 text-sm focus:bg-white"
                 />
               </div>
               <Button
                 variant="outline"
                 onClick={handleSearch}
-                className="h-10 border-[#E2E8F0] rounded-xl text-sm"
+                className="h-10 px-3 text-sm"
+                aria-label="Cari tiket"
               >
                 <Search className="h-4 w-4" />
               </Button>
             </div>
-            <div className="flex items-center gap-2">
+            <div className="grid grid-cols-[auto_1fr_1fr] items-center gap-2 sm:flex">
               <Filter className="h-4 w-4 text-[#94A3B8]" />
               <Select
                 value={statusFilter}
                 onValueChange={(value) => setStatusFilter(value || "")}
               >
-                <SelectTrigger className="w-36 h-10 border-[#E2E8F0] bg-[#F8FAFC] rounded-xl text-sm">
+                <SelectTrigger
+                  aria-label="Filter status tiket"
+                  className="h-10 w-full bg-[#F8FAFD] text-sm sm:w-40"
+                >
                   <SelectValue placeholder="Status" />
                 </SelectTrigger>
                 <SelectContent>
@@ -169,7 +174,10 @@ export default function TicketsPage() {
                 value={priorityFilter}
                 onValueChange={(value) => setPriorityFilter(value || "")}
               >
-                <SelectTrigger className="w-36 h-10 border-[#E2E8F0] bg-[#F8FAFC] rounded-xl text-sm">
+                <SelectTrigger
+                  aria-label="Filter prioritas tiket"
+                  className="h-10 w-full bg-[#F8FAFD] text-sm sm:w-40"
+                >
                   <SelectValue placeholder="Priority" />
                 </SelectTrigger>
                 <SelectContent>
@@ -198,10 +206,10 @@ export default function TicketsPage() {
 
           return (
             <Link key={ticket.id} href={`/tickets/${ticket.id}`}>
-              <Card className="group border border-[#E2E8F0] bg-white rounded-xl shadow-[0_1px_3px_rgba(0,0,0,0.05),0_1px_2px_rgba(0,0,0,0.03)] hover:shadow-[0_4px_12px_rgba(0,0,0,0.08)] hover:-translate-y-0.5 transition-all duration-200 cursor-pointer overflow-hidden">
-                <div className="absolute left-0 top-0 h-full w-1 bg-[#2563EB] opacity-0 group-hover:opacity-100 transition-opacity" />
-                <CardContent className="p-5">
-                  <div className="flex items-start justify-between gap-4">
+              <Card className="group cursor-pointer overflow-hidden py-0 transition-all duration-200 hover:-translate-y-0.5 hover:border-[#CFC4F6] hover:shadow-[0_10px_26px_rgba(29,43,76,0.09)]">
+                <div className="absolute left-0 top-0 h-full w-1 bg-[#7047EB] opacity-0 transition-opacity group-hover:opacity-100" />
+                <CardContent className="p-4 md:p-5">
+                  <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
                     <div className="flex-1 min-w-0 space-y-2">
                       <div className="flex items-center gap-2 flex-wrap">
                         <span className="inline-flex items-center gap-1.5 rounded-lg bg-[#F1F5F9] px-2 py-0.5 text-xs font-mono font-semibold text-[#64748B]">
@@ -223,7 +231,7 @@ export default function TicketsPage() {
                         </span>
                       </div>
 
-                      <h3 className="text-base font-semibold text-[#1E293B] group-hover:text-[#2563EB] transition-colors truncate">
+                      <h3 className="truncate text-base font-bold text-[#17223D] transition-colors group-hover:text-[#7047EB]">
                         {ticket.title}
                       </h3>
 
@@ -246,7 +254,7 @@ export default function TicketsPage() {
                         {ticket.assignedTo && (
                           <span>
                             Technician:{" "}
-                            <span className="font-medium text-[#2563EB]">
+                            <span className="font-semibold text-[#7047EB]">
                               {ticket.assignedTo.name}
                             </span>
                           </span>
@@ -254,14 +262,14 @@ export default function TicketsPage() {
                       </div>
                     </div>
 
-                    <div className="flex items-center gap-3">
+                    <div className="flex items-center gap-3 self-end sm:self-center">
                       <div className="flex items-center gap-1.5 rounded-lg bg-[#F8FAFC] px-2.5 py-1.5 text-xs text-[#64748B] border border-[#E2E8F0]">
                         <MessageSquare className="h-3.5 w-3.5" />
                         <span className="font-medium">
                           {ticket._count.comments}
                         </span>
                       </div>
-                      <ArrowRight className="h-4 w-4 text-[#CBD5E1] group-hover:text-[#2563EB] group-hover:translate-x-1 transition-all" />
+                      <ArrowRight className="h-4 w-4 text-[#B7C0D0] transition-all group-hover:translate-x-1 group-hover:text-[#7047EB]" />
                     </div>
                   </div>
                 </CardContent>
@@ -271,17 +279,23 @@ export default function TicketsPage() {
         })}
 
         {tickets.length === 0 && (
-          <Card className="border border-[#E2E8F0] bg-white rounded-xl shadow-[0_1px_3px_rgba(0,0,0,0.05),0_1px_2px_rgba(0,0,0,0.03)]">
-            <CardContent className="flex flex-col items-center justify-center py-16 text-center">
-              <div className="flex h-16 w-16 items-center justify-center rounded-full bg-[#F1F5F9] mb-4">
-                <Ticket className="h-8 w-8 text-[#CBD5E1]" />
+          <Card>
+            <CardContent className="flex flex-col items-center justify-center px-5 py-16 text-center">
+              <div className="mb-4 flex h-16 w-16 items-center justify-center rounded-[18px] bg-[#F0EDFF] text-[#7047EB]">
+                <Ticket className="h-8 w-8" />
               </div>
-              <p className="text-[#64748B] font-medium text-sm">
+              <p className="text-base font-bold text-[#26334D]">
                 Tidak ada tiket ditemukan
               </p>
-              <p className="text-xs text-[#94A3B8] mt-1">
+              <p className="mt-1 max-w-sm text-sm text-[#71809A]">
                 Coba ubah filter atau buat tiket baru
               </p>
+              <Link href="/tickets/new" className="mt-5">
+                <Button>
+                  <Plus className="h-4 w-4" />
+                  Buat tiket pertama
+                </Button>
+              </Link>
             </CardContent>
           </Card>
         )}

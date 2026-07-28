@@ -39,7 +39,7 @@ export function ChatWidget() {
   const defaultMessages: Message[] = [
     {
       role: "assistant",
-      content: "Halo! 👋 Saya Vira, Asisten Helpdesk IDB Bali. Ada yang bisa saya bantu? Ceritakan masalahmu dan saya akan coba membantu menyelesaikannya atau membuatkan kamu tiket support.",
+      content: "Halo! 👋 Saya Vira, Asisten SIBATIK IDB Bali. Ada yang bisa saya bantu? Ceritakan masalahmu dan saya akan coba membantu menyelesaikannya atau membuatkan kamu tiket support.",
     },
   ];
 
@@ -229,7 +229,7 @@ export function ChatWidget() {
           </div>
           <div className="flex-1">
             <h1 className="text-lg font-bold text-[#1E293B]">
-              Vira — Asisten Helpdesk IDB Bali
+              Vira — Asisten SIBATIK IDB Bali
             </h1>
             <p className="text-sm text-[#64748B]">
               Siap membantu menyelesaikan masalahmu

@@ -62,7 +62,7 @@ function formatFileSize(bytes: number) {
 }
 
 function FileIcon({ mimeType }: { mimeType: string }) {
-  if (mimeType.startsWith("image/")) return <ImageIcon className="h-4 w-4 text-[#2563EB]" />;
+  if (mimeType.startsWith("image/")) return <ImageIcon className="h-4 w-4 text-[#7047EB]" />;
   if (mimeType === "application/pdf") return <FileText className="h-4 w-4 text-red-500" />;
   return <File className="h-4 w-4 text-[#64748B]" />;
 }
@@ -189,35 +189,42 @@ export default function NewTicketPage() {
   };
 
   return (
-    <div className="max-w-2xl mx-auto">
+    <div className="mx-auto max-w-4xl space-y-5">
       {/* Header */}
-      <div className="mb-6">
+      <div className="rounded-[16px] bg-[#102B50] px-5 py-5 text-white shadow-[0_10px_28px_rgba(16,43,80,0.14)] md:px-6">
         <Button
           variant="ghost"
-          className="mb-3 -ml-2 text-[#64748B] hover:text-[#1E293B] h-9 text-sm"
+          className="mb-3 -ml-2 h-9 bg-transparent text-sm text-[#C3D0E2] shadow-none hover:bg-white/10 hover:text-white"
           onClick={() => router.push("/tickets")}
         >
           <ArrowLeft className="mr-1 h-4 w-4" />
           Kembali
         </Button>
         <div className="flex items-center gap-3">
-          <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-[#2563EB] shadow-md shadow-blue-200">
+          <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-[#7047EB] shadow-[0_8px_20px_rgba(112,71,235,0.28)]">
             <Ticket className="h-5 w-5 text-white" />
           </div>
           <div>
-            <h1 className="text-xl font-bold tracking-tight text-[#1E293B]">
+            <h1 className="text-[24px] font-bold tracking-[-0.025em] text-white">
               Buat Tiket Baru
             </h1>
-            <p className="text-[#64748B] text-sm">
-              Jelaskan masalah Anda dengan detail
+            <p className="mt-0.5 text-sm text-[#BDCCE0]">
+              Berikan detail yang jelas agar tim dapat membantu lebih cepat
             </p>
           </div>
         </div>
       </div>
 
-      <Card className="border border-[#E2E8F0] bg-white rounded-xl shadow-[0_1px_3px_rgba(0,0,0,0.05),0_1px_2px_rgba(0,0,0,0.03)] overflow-hidden">
-        <div className="h-1 bg-[#2563EB]" />
-        <CardContent className="p-6 space-y-5">
+      <Card className="overflow-hidden py-0">
+        <div className="h-1 bg-[#7047EB]" />
+        <CardContent className="space-y-5 p-5 md:p-7">
+          <div className="flex flex-col gap-2 rounded-xl border border-[#DCE4EF] bg-[#F8FAFD] px-4 py-3 sm:flex-row sm:items-center sm:justify-between">
+            <div>
+              <p className="text-sm font-bold text-[#26334D]">Informasi permintaan</p>
+              <p className="mt-0.5 text-xs text-[#71809A]">Kolom bertanda wajib perlu diisi sebelum tiket dikirim.</p>
+            </div>
+            <span className="inline-flex w-fit items-center rounded-full bg-[#EAF8F2] px-2.5 py-1 text-[10px] font-bold uppercase tracking-wide text-[#168660]">Respons terpantau SLA</span>
+          </div>
           {error && (
             <Alert
               variant="destructive"
@@ -228,7 +235,7 @@ export default function NewTicketPage() {
             </Alert>
           )}
 
-          <form onSubmit={handleSubmit} className="space-y-5">
+          <form onSubmit={handleSubmit} className="space-y-6">
             {canCreateOnBehalf && (
               <div className="space-y-2">
                 <Label className="flex items-center gap-2 text-sm font-medium text-[#1E293B]">
@@ -239,7 +246,7 @@ export default function NewTicketPage() {
                   value={onBehalfOfId}
                   onValueChange={(value) => setOnBehalfOfId(value || "")}
                 >
-                  <SelectTrigger className="h-10 border-[#E2E8F0] bg-[#F8FAFC] rounded-xl text-sm focus:bg-white focus:border-[#2563EB] w-full">
+                  <SelectTrigger aria-label="Dibuat untuk" className="h-10 border-[#E2E8F0] bg-[#F8FAFC] rounded-xl text-sm focus:bg-white focus:border-[#2563EB] w-full">
                     <SelectValue placeholder="Pilih user (default: diri sendiri)">
                       {users.find((u) => u.id === onBehalfOfId)?.name || (onBehalfOfId ? onBehalfOfId : "Diri Sendiri")}
                     </SelectValue>
@@ -262,6 +269,7 @@ export default function NewTicketPage() {
                 Judul
               </Label>
               <Input
+                aria-label="Judul tiket"
                 placeholder="Ringkasan masalah"
                 value={title}
                 onChange={(e) => setTitle(e.target.value)}
@@ -270,7 +278,7 @@ export default function NewTicketPage() {
               />
             </div>
 
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
               <div className="space-y-2">
                 <Label className="flex items-center gap-2 text-sm font-medium text-[#1E293B]">
                   <FolderOpen className="h-4 w-4 text-[#2563EB]" />
@@ -283,7 +291,7 @@ export default function NewTicketPage() {
                     setSubCategoryId("");
                   }}
                 >
-                  <SelectTrigger className="h-10 border-[#E2E8F0] bg-[#F8FAFC] rounded-xl text-sm focus:bg-white focus:border-[#2563EB] w-full">
+                  <SelectTrigger aria-label="Kategori tiket" className="h-10 border-[#E2E8F0] bg-[#F8FAFC] rounded-xl text-sm focus:bg-white focus:border-[#2563EB] w-full">
                     <SelectValue placeholder="Pilih kategori">
                       {categories.find((c) => c.id === parentCategoryId)?.name || (parentCategoryId ? parentCategoryId : "Pilih kategori")}
                     </SelectValue>
@@ -314,7 +322,7 @@ export default function NewTicketPage() {
                   value={priority}
                   onValueChange={(value) => setPriority(value || "MEDIUM")}
                 >
-                  <SelectTrigger className="h-10 border-[#E2E8F0] bg-[#F8FAFC] rounded-xl text-sm focus:bg-white focus:border-[#2563EB] w-full">
+                  <SelectTrigger aria-label="Prioritas tiket" className="h-10 border-[#E2E8F0] bg-[#F8FAFC] rounded-xl text-sm focus:bg-white focus:border-[#2563EB] w-full">
                     <SelectValue>
                       {priorityConfig[priority]?.label || priority}
                     </SelectValue>
@@ -347,7 +355,7 @@ export default function NewTicketPage() {
                     value={subCategoryId}
                     onValueChange={(value) => setSubCategoryId(value || "")}
                   >
-                    <SelectTrigger className="h-10 border-[#E2E8F0] bg-[#F8FAFC] rounded-xl text-sm focus:bg-white focus:border-[#2563EB] w-full">
+                    <SelectTrigger aria-label="Sub-kategori tiket" className="h-10 border-[#E2E8F0] bg-[#F8FAFC] rounded-xl text-sm focus:bg-white focus:border-[#2563EB] w-full">
                       <SelectValue placeholder="Pilih sub-kategori (opsional)">
                         {parent.children.find((c) => c.id === subCategoryId)?.name || "Pilih sub-kategori (opsional)"}
                       </SelectValue>
@@ -371,6 +379,7 @@ export default function NewTicketPage() {
                 Deskripsi
               </Label>
               <Textarea
+                aria-label="Deskripsi tiket"
                 placeholder="Jelaskan masalah secara detail..."
                 value={description}
                 onChange={(e) => setDescription(e.target.value)}
@@ -448,7 +457,7 @@ export default function NewTicketPage() {
               <Button
                 type="submit"
                 disabled={loading}
-                className="flex-1 h-10 bg-[#2563EB] hover:bg-[#1D4ED8] text-white font-semibold shadow-md shadow-blue-200 transition-all duration-200 rounded-xl text-sm"
+                className="h-11 flex-1 bg-[#7047EB] text-sm font-bold text-white shadow-[0_8px_20px_rgba(112,71,235,0.20)] hover:bg-[#5F39DB]"
               >
                 {loading ? (
                   <>
@@ -466,7 +475,7 @@ export default function NewTicketPage() {
                 type="button"
                 variant="outline"
                 onClick={() => router.push("/tickets")}
-                className="h-10 border-[#E2E8F0] text-[#64748B] rounded-xl text-sm"
+                className="h-11 text-sm text-[#59667E]"
               >
                 Batal
               </Button>

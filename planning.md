@@ -1,7 +1,7 @@
 # Aplikasi Web Support Ticket - Kampus IDB Bali
 
 ## Ringkasan
-Aplikasi helpdesk internal untuk Kampus IDB Bali yang memungkinkan staff kampus dan dosen membuat tiket support, Tim IT menangani tiket, dan administrator mengelola sistem.
+Aplikasi SIBATIK internal untuk Kampus IDB Bali yang memungkinkan staff kampus dan dosen membuat tiket support, Tim IT menangani tiket, dan administrator mengelola sistem.
 
 ## Asumsi
 - Menggunakan stack **Next.js 15 Fullstack (App Router)** untuk kesederhanaan development dan deployment

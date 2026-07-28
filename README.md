@@ -1,6 +1,6 @@
-# Helpdesk IDB Bali
+# SIBATIK IDB Bali
 
-Sistem helpdesk dan support ticket untuk civitas akademika Institut Desain dan Bisnis Bali. Memungkinkan mahasiswa, dosen, dan staf mengajukan tiket dukungan IT dan layanan kampus, serta dilengkapi AI Asisten (Vira) berbasis RAG.
+SIBATIK adalah sistem support ticket untuk civitas akademika Institut Desain dan Bisnis Bali. Sistem ini memungkinkan mahasiswa, dosen, dan staf mengajukan tiket dukungan IT dan layanan kampus, serta dilengkapi AI Asisten (Vira) berbasis RAG.
 
 ## Fitur
 
@@ -29,11 +29,11 @@ Sistem helpdesk dan support ticket untuk civitas akademika Institut Desain dan B
 - Dokumen internal (SOP, peraturan, panduan) — digunakan sebagai referensi AI
 
 ### AI Asisten Vira
-- Chatbot helpdesk berbasis LLM (NVIDIA NIM)
+- Chatbot SIBATIK berbasis LLM (NVIDIA NIM)
 - RAG (Retrieval-Augmented Generation) menggunakan dokumen internal, KB, dan FAQ
 - Embedding via NVIDIA `nvidia/nv-embedqa-e5-v5`
 - Bisa membuat tiket langsung dari percakapan
-- Hanya menjawab dalam konteks helpdesk kampus
+- Hanya menjawab dalam konteks layanan SIBATIK kampus
 
 ### Dashboard
 - Statistik tiket per role (total, open, in progress, resolved)
