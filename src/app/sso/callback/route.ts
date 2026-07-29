@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import {
+  getSibatikBaseUrl,
   getSinergyLoginUrl,
   resolveSinergyUser,
   verifySinergySignature,
@@ -37,7 +38,9 @@ export async function GET(request: NextRequest) {
       return errorResponse("Sesi Sinergy tidak valid atau pengguna nonaktif.", 401);
     }
 
-    const response = NextResponse.redirect(new URL("/dashboard", request.url));
+    const response = NextResponse.redirect(
+      new URL("/dashboard", getSibatikBaseUrl())
+    );
     response.cookies.set(
       SESSION_COOKIE_NAME,
       createSessionToken(user.id),

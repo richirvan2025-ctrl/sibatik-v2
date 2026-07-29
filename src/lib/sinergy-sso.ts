@@ -17,7 +17,7 @@ function getSinergyBaseUrl() {
   );
 }
 
-function getSibatikBaseUrl() {
+export function getSibatikBaseUrl() {
   return (
     process.env.AUTH_URL ||
     process.env.NEXTAUTH_URL ||
