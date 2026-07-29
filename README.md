@@ -60,8 +60,8 @@ SIBATIK adalah sistem support ticket untuk civitas akademika Institut Desain dan
 ### 1. Clone & Install
 
 ```bash
-git clone https://github.com/USERNAME/helpdesk-idb.git
-cd helpdesk-idb
+git clone https://github.com/USERNAME/sibatik.git
+cd sibatik
 npm install
 ```
 

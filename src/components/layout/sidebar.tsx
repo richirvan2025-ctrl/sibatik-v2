@@ -4,17 +4,17 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useSession } from "@/components/auth/session-provider";
 import {
-  LayoutDashboard,
-  Ticket,
-  PlusCircle,
-  Users,
-  Settings,
   BarChart3,
-  Shield,
   BookOpen,
   Building2,
-  MessageCircle,
   Crown,
+  LayoutDashboard,
+  MessageCircle,
+  PlusCircle,
+  Settings,
+  Shield,
+  Ticket,
+  Users,
 } from "lucide-react";
 import Image from "next/image";
 import { cn } from "@/lib/utils";
@@ -61,7 +61,12 @@ const navigation = {
   ],
 };
 
-type NavItem = { name: string; href: string; icon: React.ElementType; beta?: boolean };
+type NavItem = {
+  name: string;
+  href: string;
+  icon: React.ElementType;
+  beta?: boolean;
+};
 
 export function Sidebar({ onClose }: { onClose?: () => void }) {
   const pathname = usePathname();
@@ -71,7 +76,6 @@ export function Sidebar({ onClose }: { onClose?: () => void }) {
 
   return (
     <div className="flex h-full flex-col border-r border-[#203858] bg-[#0B1D3A] text-white shadow-[10px_0_30px_rgba(8,26,52,0.08)]">
-      {/* Logo */}
       <div className="flex h-[84px] items-center gap-3 border-b border-white/10 px-5">
         <div className="flex h-12 w-12 items-center justify-center overflow-hidden rounded-[14px] bg-white shadow-[0_8px_20px_rgba(0,0,0,0.18)]">
           <Image
@@ -93,7 +97,6 @@ export function Sidebar({ onClose }: { onClose?: () => void }) {
         </div>
       </div>
 
-      {/* Navigation */}
       <nav className="app-scrollbar flex-1 space-y-1 overflow-y-auto px-3 py-5">
         <p className="mb-2 px-3 text-[10px] font-bold uppercase tracking-[0.18em] text-[#7185A2]">
           Menu Utama
@@ -103,11 +106,13 @@ export function Sidebar({ onClose }: { onClose?: () => void }) {
             (candidate) =>
               candidate.href !== item.href &&
               candidate.href.startsWith(`${item.href}/`) &&
-              (pathname === candidate.href || pathname.startsWith(`${candidate.href}/`))
+              (pathname === candidate.href ||
+                pathname.startsWith(`${candidate.href}/`))
           );
           const isActive =
             !hasMoreSpecificActiveItem &&
             (pathname === item.href || pathname.startsWith(`${item.href}/`));
+
           return (
             <div key={item.name}>
               {role === "ADMIN" && item.name === "KB Admin" && (
@@ -128,7 +133,9 @@ export function Sidebar({ onClose }: { onClose?: () => void }) {
                 <div
                   className={cn(
                     "flex h-7 w-7 items-center justify-center rounded-lg transition-colors",
-                    isActive ? "bg-white/14 text-white" : "text-[#9DB0C9] group-hover:text-white"
+                    isActive
+                      ? "bg-white/14 text-white"
+                      : "text-[#9DB0C9] group-hover:text-white"
                   )}
                 >
                   <item.icon className="h-[17px] w-[17px]" strokeWidth={1.9} />
@@ -136,7 +143,9 @@ export function Sidebar({ onClose }: { onClose?: () => void }) {
                 <span className="flex min-w-0 flex-1 items-start gap-1.5">
                   {item.name}
                   {item.beta && (
-                    <sup className="mt-0.5 rounded-full bg-[#F6B73C] px-1.5 py-0.5 text-[8px] font-extrabold leading-none text-[#3A2500]">BETA</sup>
+                    <sup className="mt-0.5 rounded-full bg-[#F6B73C] px-1.5 py-0.5 text-[8px] font-extrabold leading-none text-[#3A2500]">
+                      BETA
+                    </sup>
                   )}
                 </span>
               </Link>
@@ -145,7 +154,6 @@ export function Sidebar({ onClose }: { onClose?: () => void }) {
         })}
       </nav>
 
-      {/* User Info */}
       <div className="border-t border-white/10 p-4">
         <div className="mb-2 rounded-[14px] border border-white/10 bg-white/[0.055] p-3.5">
           <p className="truncate text-[13px] font-bold text-white">
@@ -156,17 +164,17 @@ export function Sidebar({ onClose }: { onClose?: () => void }) {
           </p>
           <span className="mt-2 inline-flex items-center rounded-full border border-[#8E72F1]/30 bg-[#7047EB]/20 px-2.5 py-0.5 text-[10px] font-bold uppercase tracking-wide text-[#D8CEFF]">
             {role === "EXECUTIVE" ? (
-              <span className="flex items-center gap-1 text-purple-700 bg-purple-50 px-2.5 py-0.5 rounded-full">
+              <span className="flex items-center gap-1 rounded-full bg-purple-50 px-2.5 py-0.5 text-purple-700">
                 <Crown className="h-3 w-3" />
                 Eksekutif
               </span>
             ) : role === "SUPERVISOR" ? (
-              <span className="flex items-center gap-1 text-purple-700 bg-purple-50 px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wide">
+              <span className="flex items-center gap-1 rounded-full bg-purple-50 px-2.5 py-0.5 text-[10px] font-bold uppercase tracking-wide text-purple-700">
                 <Building2 className="h-3 w-3" />
                 Supervisor
               </span>
             ) : role === "AGENT" ? (
-              <span className="flex items-center gap-1 text-orange-700 bg-orange-50 px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wide">
+              <span className="flex items-center gap-1 rounded-full bg-orange-50 px-2.5 py-0.5 text-[10px] font-bold uppercase tracking-wide text-orange-700">
                 <Shield className="h-3 w-3" />
                 Agent
               </span>

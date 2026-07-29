@@ -15,7 +15,7 @@
 
 1. Login ke [github.com](https://github.com)
 2. Klik **New repository**
-3. Isi nama repository (contoh: `helpdesk-idb`)
+3. Isi nama repository (contoh: `sibatik`)
 4. Set ke **Private**
 5. Klik **Create repository**
 
@@ -23,7 +23,7 @@
 
 1. Buka: **GitHub → Settings → Developer settings → Personal access tokens → Tokens (classic)**
 2. Klik **Generate new token (classic)**
-3. Isi **Note**: `helpdesk-idb deploy`
+3. Isi **Note**: `sibatik deploy`
 4. Pilih **Expiration** sesuai kebutuhan
 5. Centang scope: **repo** (full control of private repositories)
 6. Klik **Generate token**
@@ -34,7 +34,7 @@
 Jalankan dari direktori project:
 
 ```bash
-git remote add origin https://github.com/USERNAME/helpdesk-idb.git
+git remote add origin https://github.com/USERNAME/sibatik.git
 git add .
 git commit -m "Initial project: SIBATIK IDB Bali"
 git push -u origin master
@@ -63,9 +63,9 @@ node -v && npm -v
 
 ```bash
 cd /var/www
-sudo mkdir helpdesk && sudo chown $USER:$USER helpdesk
-cd helpdesk
-git clone https://github.com/USERNAME/helpdesk-idb.git .
+sudo mkdir sibatik && sudo chown $USER:$USER sibatik
+cd sibatik
+git clone https://github.com/USERNAME/sibatik.git .
 ```
 
 ### 2.3 Install Dependencies
@@ -117,7 +117,7 @@ npm run build
 ### 2.7 Jalankan dengan PM2
 
 ```bash
-pm2 start npm --name "helpdesk-idb" -- start
+pm2 start npm --name "sibatik" -- start
 pm2 save
 pm2 startup
 ```
@@ -127,14 +127,14 @@ Jalankan perintah `sudo ...` yang muncul dari output `pm2 startup`.
 Cek status:
 ```bash
 pm2 status
-pm2 logs helpdesk-idb
+pm2 logs sibatik
 ```
 
 ### 2.8 Install dan Konfigurasi Nginx
 
 ```bash
 sudo apt install -y nginx
-sudo nano /etc/nginx/sites-available/helpdesk
+sudo nano /etc/nginx/sites-available/sibatik
 ```
 
 Isi konfigurasi:
@@ -142,7 +142,7 @@ Isi konfigurasi:
 ```nginx
 server {
     listen 80;
-    server_name helpdesk.idbbali.ac.id;
+    server_name sibatik.idbbali.ac.id;
 
     client_max_body_size 20M;
 
@@ -160,7 +160,7 @@ server {
 Aktifkan:
 
 ```bash
-sudo ln -s /etc/nginx/sites-available/helpdesk /etc/nginx/sites-enabled/
+sudo ln -s /etc/nginx/sites-available/sibatik /etc/nginx/sites-enabled/
 sudo nginx -t
 sudo systemctl restart nginx
 sudo systemctl enable nginx
@@ -199,7 +199,7 @@ Buka URL yang muncul di browser, pilih domain `idbbali.ac.id`, lalu authorize.
 ### 3.3 Buat Tunnel
 
 ```bash
-cloudflared tunnel create helpdesk-idb
+cloudflared tunnel create sibatik
 ```
 
 Catat **Tunnel ID** (format UUID) yang muncul.
@@ -218,7 +218,7 @@ tunnel: TUNNEL-ID-ANDA
 credentials-file: /home/USER/.cloudflared/TUNNEL-ID-ANDA.json
 
 ingress:
-  - hostname: helpdesk.idbbali.ac.id
+  - hostname: sibatik.idbbali.ac.id
     service: http://localhost:3000
   - service: http_status:404
 ```
@@ -228,7 +228,7 @@ Ganti `TUNNEL-ID-ANDA` dan `USER` sesuai server.
 ### 3.5 Arahkan DNS
 
 ```bash
-cloudflared tunnel route dns helpdesk-idb helpdesk.idbbali.ac.id
+cloudflared tunnel route dns sibatik sibatik.idbbali.ac.id
 ```
 
 ### 3.6 Jalankan Tunnel sebagai Service
@@ -250,13 +250,13 @@ sudo systemctl status cloudflared
 ## Bagian 4 — Update Aplikasi (setelah ada perubahan kode)
 
 ```bash
-cd /var/www/helpdesk
+cd /var/www/sibatik
 git pull origin master
 npm install
 npx prisma generate
 npx prisma migrate deploy
 npm run build
-pm2 restart helpdesk-idb
+pm2 restart sibatik
 ```
 
 > `npx prisma migrate deploy` diperlukan jika ada perubahan schema database (migration baru).
@@ -319,7 +319,7 @@ pm2 resurrect
 
 **Cek log error:**
 ```bash
-pm2 logs helpdesk-idb --lines 50
+pm2 logs sibatik --lines 50
 ```
 
 **Tunnel Cloudflare tidak konek:**
@@ -332,5 +332,5 @@ sudo journalctl -u cloudflared -n 50
 ```bash
 npx prisma db push
 npx prisma generate
-pm2 restart helpdesk-idb
+pm2 restart sibatik
 ```

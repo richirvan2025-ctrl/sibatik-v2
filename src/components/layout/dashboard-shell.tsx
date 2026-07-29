@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { Sidebar } from "./sidebar";
 import { NotificationBell } from "./notification-bell";
-import { CalendarDays, Menu } from "lucide-react";
+import { CalendarDays, ExternalLink, Menu } from "lucide-react";
 import Image from "next/image";
 
 export function DashboardShell({ children }: { children: React.ReactNode }) {
@@ -11,7 +11,6 @@ export function DashboardShell({ children }: { children: React.ReactNode }) {
 
   return (
     <div className="flex h-screen bg-[#F3F6FB] text-[#101A36]">
-      {/* Mobile backdrop */}
       {sidebarOpen && (
         <div
           className="fixed inset-0 z-20 bg-[#081A34]/70 backdrop-blur-[2px] md:hidden"
@@ -19,7 +18,6 @@ export function DashboardShell({ children }: { children: React.ReactNode }) {
         />
       )}
 
-      {/* Sidebar */}
       <aside
         className={`fixed inset-y-0 left-0 z-30 w-[276px] transition-transform duration-300 ease-in-out md:static md:translate-x-0 ${
           sidebarOpen ? "translate-x-0" : "-translate-x-full"
@@ -28,11 +26,8 @@ export function DashboardShell({ children }: { children: React.ReactNode }) {
         <Sidebar onClose={() => setSidebarOpen(false)} />
       </aside>
 
-      {/* Main area */}
-      <div className="flex flex-1 flex-col min-w-0">
-        {/* Top bar — mobile (hamburger) + desktop (notification bell) */}
+      <div className="flex min-w-0 flex-1 flex-col">
         <header className="flex h-16 shrink-0 items-center justify-between border-b border-[#DEE5EF] bg-white px-4 md:px-7">
-          {/* Left: hamburger (mobile only) + logo */}
           <div className="flex items-center gap-3">
             <button
               onClick={() => setSidebarOpen(true)}
@@ -69,13 +64,18 @@ export function DashboardShell({ children }: { children: React.ReactNode }) {
             </div>
           </div>
 
-          {/* Right: notification bell */}
-          <div className="ml-auto">
+          <div className="ml-auto flex items-center gap-2">
             <NotificationBell />
+            <a
+              href="https://sinergy.idbbali.ac.id/dashboard.php"
+              className="flex items-center gap-1.5 rounded-xl border border-[#DCE4EF] bg-white px-3 py-2 text-[12px] font-semibold text-[#526079] transition-colors hover:bg-[#F5F2FF] hover:text-[#7047EB]"
+            >
+              <ExternalLink className="h-3.5 w-3.5" />
+              <span className="hidden sm:inline">Kembali ke Sinergy</span>
+            </a>
           </div>
         </header>
 
-        {/* Page content */}
         <main className="app-scrollbar flex-1 overflow-y-auto">
           <div className="mx-auto min-h-full w-full max-w-[1680px] p-4 md:p-6 xl:p-7">{children}</div>
         </main>

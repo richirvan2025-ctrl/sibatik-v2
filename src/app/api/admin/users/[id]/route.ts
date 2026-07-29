@@ -35,6 +35,17 @@ export async function PATCH(
     if (error instanceof z.ZodError) {
       return NextResponse.json({ error: error.issues }, { status: 400 });
     }
+    // Handle Prisma unique constraint errors
+    if (error && typeof error === 'object' && 'code' in error) {
+      const prismaError = error as { code: string; meta?: { target?: string[] } };
+      if (prismaError.code === 'P2002') {
+        const field = prismaError.meta?.target?.join(', ') || 'email';
+        return NextResponse.json(
+          { error: `${field} sudah digunakan oleh user lain` },
+          { status: 409 }
+        );
+      }
+    }
     console.error("PATCH admin/users error:", error);
     return NextResponse.json({ error: "Internal server error" }, { status: 500 });
   }

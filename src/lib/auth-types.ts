@@ -9,7 +9,7 @@ export interface AppSession {
   user: {
     id: string;
     name: string;
-    email: string;
+    email: string | null;
     role: AppRole;
     department: string | null;
   };

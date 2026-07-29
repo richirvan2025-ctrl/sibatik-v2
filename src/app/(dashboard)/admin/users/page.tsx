@@ -39,7 +39,7 @@ import {
 interface User {
   id: string;
   name: string;
-  email: string;
+  email: string | null;
   role: string;
   department: string | null;
   isActive: boolean;
@@ -88,6 +88,8 @@ export default function UsersPage() {
   const [email, setEmail] = useState("");
   const [role, setRole] = useState("USER");
   const [department, setDepartment] = useState("");
+  const [formError, setFormError] = useState<string | null>(null);
+  const [formLoading, setFormLoading] = useState(false);
 
   useEffect(() => {
     fetchUsers();
@@ -112,6 +114,8 @@ export default function UsersPage() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setFormError(null);
+    setFormLoading(true);
     try {
       const body = { name, email, role, department };
 
@@ -130,9 +134,17 @@ export default function UsersPage() {
         setDialogOpen(false);
         resetForm();
         fetchUsers();
+      } else {
+        const data = await res.json().catch(() => ({}));
+        const errorMsg = data.error || `HTTP ${res.status}`;
+        console.error("Update failed:", { status: res.status, data });
+        setFormError(typeof errorMsg === 'string' ? errorMsg : JSON.stringify(errorMsg));
       }
     } catch (error) {
       console.error("Failed to save user:", error);
+      setFormError("Terjadi kesalahan jaringan");
+    } finally {
+      setFormLoading(false);
     }
   };
 
@@ -200,12 +212,14 @@ export default function UsersPage() {
     setRole("USER");
     setDepartment("");
     setEditingUser(null);
+    setFormError(null);
+    setFormLoading(false);
   };
 
   const openEdit = (user: User) => {
     setEditingUser(user);
     setName(user.name);
-    setEmail(user.email);
+    setEmail(user.email || "");
     setRole(user.role);
     setDepartment(user.department || "");
     setDialogOpen(true);
@@ -214,7 +228,7 @@ export default function UsersPage() {
   const filteredUsers = users.filter(
     (u) =>
       u.name.toLowerCase().includes(search.toLowerCase()) ||
-      u.email.toLowerCase().includes(search.toLowerCase())
+      (u.email || "").toLowerCase().includes(search.toLowerCase())
   );
 
   if (loading) {
@@ -248,6 +262,11 @@ export default function UsersPage() {
               </DialogTitle>
             </DialogHeader>
             <form onSubmit={handleSubmit} className="space-y-4">
+              {formError && (
+                <div className="rounded-xl border border-red-200 bg-red-50 p-3">
+                  <p className="text-sm text-red-700">{formError}</p>
+                </div>
+              )}
               <div className="space-y-2">
                 <Label className="text-sm font-medium text-[#1E293B]">Nama</Label>
                 <Input
@@ -318,9 +337,10 @@ export default function UsersPage() {
               </div>
               <Button
                 type="submit"
-                className="w-full h-10 bg-[#2563EB] hover:bg-[#1D4ED8] text-white shadow-md rounded-xl text-sm font-semibold"
+                disabled={formLoading}
+                className="w-full h-10 bg-[#2563EB] hover:bg-[#1D4ED8] text-white shadow-md rounded-xl text-sm font-semibold disabled:opacity-50"
               >
-                {editingUser ? "Update" : "Tambah"}
+                {formLoading ? "Menyimpan..." : editingUser ? "Update" : "Tambah"}
               </Button>
             </form>
           </DialogContent>
