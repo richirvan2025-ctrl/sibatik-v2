@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useSession } from "next-auth/react";
+import { useSession } from "@/components/auth/session-provider";
 import {
   LayoutDashboard,
   Ticket,
@@ -11,7 +11,6 @@ import {
   Settings,
   BarChart3,
   Shield,
-  LogOut,
   BookOpen,
   Building2,
   MessageCircle,
@@ -19,8 +18,6 @@ import {
 } from "lucide-react";
 import Image from "next/image";
 import { cn } from "@/lib/utils";
-import { Button } from "@/components/ui/button";
-import { signOut } from "next-auth/react";
 
 const navigation = {
   ADMIN: [
@@ -178,14 +175,6 @@ export function Sidebar({ onClose }: { onClose?: () => void }) {
             )}
           </span>
         </div>
-        <Button
-          variant="outline"
-          className="h-10 w-full justify-start border-white/10 bg-white/[0.035] text-[13px] text-[#B8C6D9] shadow-none hover:border-[#F08080]/25 hover:bg-[#E5484D]/10 hover:text-[#FFB9BC]"
-          onClick={() => signOut({ callbackUrl: "/login" })}
-        >
-          <LogOut className="mr-2 h-4 w-4" />
-          Logout
-        </Button>
       </div>
     </div>
   );

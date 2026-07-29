@@ -11,12 +11,12 @@ model User {
   id            String    @id @default(cuid())
   name          String
   email         String    @unique
-  password      String?   // hashed with bcrypt (nullable untuk user OAuth)
+  password      String?   // legacy; autentikasi dikelola oleh Sinergy
   role          Role      @default(USER)
   department    String?
   phone         String?
   isActive      Boolean   @default(true)
-  provider      String    @default("credentials") // credentials | microsoft
+  provider      String    @default("sinergy")
   createdAt     DateTime  @default(now())
   updatedAt     DateTime  @updatedAt
 

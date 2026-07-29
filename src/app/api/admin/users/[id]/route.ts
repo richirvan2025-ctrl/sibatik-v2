@@ -1,13 +1,11 @@
 import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
-import bcrypt from "bcryptjs";
 import { z } from "zod";
 
 const updateUserSchema = z.object({
   name: z.string().min(1).optional(),
   email: z.string().email().optional(),
-  password: z.string().min(6).optional(),
   role: z.enum(["ADMIN", "USER", "AGENT", "SUPERVISOR", "EXECUTIVE"]).optional(),
   department: z.string().optional(),
   isActive: z.boolean().optional(),
@@ -27,14 +25,9 @@ export async function PATCH(
     const body = await req.json();
     const validated = updateUserSchema.parse(body);
 
-    const updateData: any = { ...validated };
-    if (validated.password) {
-      updateData.password = await bcrypt.hash(validated.password, 10);
-    }
-
     const user = await prisma.user.update({
       where: { id },
-      data: updateData,
+      data: validated,
     });
 
     return NextResponse.json(user);

@@ -1,32 +1,27 @@
 import { PrismaClient } from "@prisma/client";
-import bcrypt from "bcryptjs";
 
 const prisma = new PrismaClient();
 
 async function main() {
   // Create admin user
-  const adminPassword = await bcrypt.hash("admin123", 10);
   const admin = await prisma.user.upsert({
     where: { email: "admin@idbbali.ac.id" },
     update: {},
     create: {
       name: "Administrator",
       email: "admin@idbbali.ac.id",
-      password: adminPassword,
       role: "ADMIN",
       department: "IT",
     },
   });
 
   // Create technician users
-  const techPassword = await bcrypt.hash("tech123", 10);
   const tech1 = await prisma.user.upsert({
     where: { email: "tech1@idbbali.ac.id" },
     update: {},
     create: {
       name: "Budi Santoso",
       email: "tech1@idbbali.ac.id",
-      password: techPassword,
       role: "AGENT",
       department: "Sistem Informasi & IT Support",
     },
@@ -38,21 +33,18 @@ async function main() {
     create: {
       name: "Ani Wijaya",
       email: "tech2@idbbali.ac.id",
-      password: techPassword,
       role: "AGENT",
       department: "Sistem Informasi & IT Support",
     },
   });
 
   // Create department head users
-  const deptHeadPassword = await bcrypt.hash("depthead123", 10);
   const deptHeadKeuangan = await prisma.user.upsert({
     where: { email: "kabag.keuangan@idbbali.ac.id" },
     update: {},
     create: {
       name: "Ni Made Keuangan",
       email: "kabag.keuangan@idbbali.ac.id",
-      password: deptHeadPassword,
       role: "SUPERVISOR",
       department: "Keuangan",
     },
@@ -64,7 +56,6 @@ async function main() {
     create: {
       name: "I Wayan Kepegawaian",
       email: "kabag.hrd@idbbali.ac.id",
-      password: deptHeadPassword,
       role: "SUPERVISOR",
       department: "HRD/Kepegawaian",
     },
@@ -76,7 +67,6 @@ async function main() {
     create: {
       name: "Ni Nyoman Akademik",
       email: "kabag.baa@idbbali.ac.id",
-      password: deptHeadPassword,
       role: "SUPERVISOR",
       department: "BAA/Akademik",
     },
@@ -88,7 +78,6 @@ async function main() {
     create: {
       name: "Kepala Kemahasiswaan",
       email: "kabag.kemahasiswaan@idbbali.ac.id",
-      password: deptHeadPassword,
       role: "SUPERVISOR",
       department: "Kemahasiswaan",
     },
@@ -100,7 +89,6 @@ async function main() {
     create: {
       name: "Staff Kemahasiswaan",
       email: "kemahasiswaan1@idbbali.ac.id",
-      password: techPassword,
       role: "AGENT",
       department: "Kemahasiswaan",
     },
@@ -112,7 +100,6 @@ async function main() {
     create: {
       name: "Kepala Perpustakaan",
       email: "kabag.perpustakaan@idbbali.ac.id",
-      password: deptHeadPassword,
       role: "SUPERVISOR",
       department: "Perpustakaan",
     },
@@ -124,21 +111,18 @@ async function main() {
     create: {
       name: "Staff Perpustakaan",
       email: "perpustakaan1@idbbali.ac.id",
-      password: techPassword,
       role: "AGENT",
       department: "Perpustakaan",
     },
   });
 
   // Create regular user
-  const userPassword = await bcrypt.hash("user123", 10);
   const user = await prisma.user.upsert({
     where: { email: "dosen1@idbbali.ac.id" },
     update: {},
     create: {
       name: "Dr. Siti Rahayu",
       email: "dosen1@idbbali.ac.id",
-      password: userPassword,
       role: "USER",
       department: "BAA/Akademik",
     },

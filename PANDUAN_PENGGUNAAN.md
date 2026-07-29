@@ -9,7 +9,7 @@ Panduan ini menjelaskan cara menggunakan SIBATIK untuk seluruh civitas akademika
 ## Daftar Isi
 
 1. [Pendahuluan](#1-pendahuluan)
-2. [Login & Akses](#2-login--akses)
+2. [Akses melalui Sinergy](#2-akses-melalui-sinergy)
 3. [Tipe Pengguna & Hak Akses](#3-tipe-pengguna--hak-akses)
 4. [Penggunaan untuk USER (Mahasiswa/Dosen)](#4-penggunaan-untuk-user-mahasiswadosen)
 5. [Penggunaan untuk AGENT](#5-penggunaan-untuk-agent)
@@ -35,27 +35,15 @@ Panduan ini menjelaskan cara menggunakan SIBATIK untuk seluruh civitas akademika
 
 ---
 
-## 2. Login & Akses
+## 2. Akses melalui Sinergy
 
-### 2.1 Alamat Aplikasi
-Akses SIBATIK IDB Bali melalui browser di: `https://helpdesk.idbbali.ac.id` (atau alamat internal kampus).
+### 2.1 Membuka Modul
+1. Masuk ke sistem utama **Sinergy**.
+2. Pilih modul **SIBATIK** dari navigasi Sinergy.
+3. Identitas, role, dan divisi pengguna diteruskan otomatis ke SIBATIK.
 
-### 2.2 Cara Login
-1. Buka halaman utama aplikasi
-2. Masukkan **email** dan **password** Anda
-3. Klik tombol **Masuk**
-
-### 2.3 Login dengan Microsoft (SSO)
-Jika akun Anda terhubung ke Microsoft 365 kampus:
-1. Klik tombol **Masuk dengan Microsoft**
-2. Login dengan akun `@idbbali.ac.id`
-3. Sistem akan otomatis masuk
-
-### 2.4 Lupa Password
-Hubungi admin SIBATIK untuk reset password — saat ini belum ada fitur self-service reset.
-
-### 2.5 Logout
-Klik avatar/foto Anda di pojok kanan atas → **Logout**.
+SIBATIK tidak memiliki form login, password, atau tombol logout sendiri. Proses
+autentikasi dan keluar dari akun sepenuhnya mengikuti sesi Sinergy.
 
 ---
 
@@ -205,7 +193,7 @@ Menu: **Manajemen User**
 
 #### Menambah User
 1. Klik **Tambah User**
-2. Isi: Nama, Email, Password, Role, Divisi
+2. Isi: Nama, Email, Role, Divisi
 3. Klik **Simpan**
 
 #### Mengedit User
@@ -217,7 +205,7 @@ Menu: **Manajemen User**
 #### Menonaktifkan User
 1. Cari user di daftar
 2. Klik toggle **Aktif/Nonaktif**
-3. User yang nonaktif tidak bisa login
+3. User yang nonaktif tidak bisa mengakses modul SIBATIK
 
 #### Menghapus User
 1. Klik ikon **Tong Sampah**
@@ -371,15 +359,12 @@ Knowledge Base adalah pusat informasi yang berisi:
 
 ## 11. Tips & FAQ
 
-### T: Saya tidak bisa login, apa yang harus dilakukan?
-**J:** Periksa:
-- Email dan password benar (case-sensitive)
-- Akun masih aktif (hubungi admin jika perlu aktivasi)
-- Coba clear browser cache / gunakan mode incognito
-- Jika pakai SSO Microsoft, pastikan akun Microsoft 365 kampus Anda aktif
+### T: Saya tidak bisa membuka modul SIBATIK, apa yang harus dilakukan?
+**J:** Pastikan sesi Sinergy masih aktif dan akun Anda telah memiliki akses ke
+modul SIBATIK. Jika tetap gagal, hubungi administrator Sinergy.
 
 ### T: Tiket saya tidak muncul di "Tiket Saya"?
-**J:** Pastikan Anda login dengan akun yang sama dengan yang membuat tiket. Tiket yang dibuat atas nama orang lain akan tetap di akun pembuat, bukan di akun yang "diwakilkan".
+**J:** Pastikan Anda membuka SIBATIK dengan identitas Sinergy yang sama dengan pembuat tiket. Tiket yang dibuat atas nama orang lain akan tetap di akun pembuat, bukan di akun yang "diwakilkan".
 
 ### T: Berapa lama tiket akan direspons?
 **J:** Tergantung **SLA** kategori tiket:
@@ -395,8 +380,8 @@ Lihat detail tiket untuk SLA spesifik.
 
 ### T: Apakah data saya aman?
 **J:** Ya. Sistem menggunakan:
-- Password hashing (bcrypt)
-- Session management aman (NextAuth)
+- Identitas pengguna diverifikasi oleh Sinergy
+- Role-based access control di server dan API
 - Role-based access control
 - Validasi input di server-side
 

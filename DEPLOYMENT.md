@@ -86,9 +86,8 @@ Isi dengan nilai yang sesuai:
 # Database
 DATABASE_URL="file:./prisma/prod.db"
 
-# NextAuth
-NEXTAUTH_SECRET="isi-dengan-random-string"
-NEXTAUTH_URL="https://helpdesk.idbbali.ac.id"
+# Development/staging sementara sebelum adapter SSO Sinergy terhubung
+SIBATIK_DEV_USER_EMAIL="admin@idbbali.ac.id"
 
 # NVIDIA NIM (Chatbot Vira — LLM + Embedding)
 NVIDIA_API_KEY="nvapi-xxxxxxxxxxxx"
@@ -96,17 +95,10 @@ NVIDIA_MODEL="meta/llama-3.1-8b-instruct"
 # Model embedding diset otomatis ke nvidia/nv-embedqa-e5-v5
 # Rate limit tier gratis: 40 req/menit, 1.000 req/hari
 
-# Microsoft OAuth (opsional — hapus jika tidak dipakai)
-AUTH_MICROSOFT_ENTRA_ID_ID="client-id"
-AUTH_MICROSOFT_ENTRA_ID_SECRET="client-secret"
-AUTH_MICROSOFT_ENTRA_ID_TENANT_ID="tenant-id"
 ```
 
-Generate `NEXTAUTH_SECRET`:
-
-```bash
-node -e "console.log(require('crypto').randomBytes(32).toString('hex'))"
-```
+> Production tidak boleh memakai fallback development. Hubungkan adapter
+> `src/lib/auth.ts` ke identitas terverifikasi dari Sinergy terlebih dahulu.
 
 ### 2.5 Setup Database
 
@@ -301,23 +293,20 @@ FAQ bisa dikelola di **KB Admin → FAQ** tanpa perlu mengubah kode. FAQ aktif o
 
 ---
 
-## Akun Default Setelah Seed
+## Identitas Development Setelah Seed
 
-| Email | Password | Role |
-|---|---|---|
-| admin@idbbali.ac.id | admin123 | ADMIN |
-| tech1@idbbali.ac.id | tech123 | AGENT |
-| tech2@idbbali.ac.id | tech123 | AGENT |
-| kabag.keuangan@idbbali.ac.id | depthead123 | SUPERVISOR |
-| kabag.hrd@idbbali.ac.id | depthead123 | SUPERVISOR |
-| kabag.baa@idbbali.ac.id | depthead123 | SUPERVISOR |
-| kabag.kemahasiswaan@idbbali.ac.id | depthead123 | SUPERVISOR |
-| kemahasiswaan1@idbbali.ac.id | tech123 | AGENT |
-| kabag.perpustakaan@idbbali.ac.id | depthead123 | SUPERVISOR |
-| perpustakaan1@idbbali.ac.id | tech123 | AGENT |
-| dosen1@idbbali.ac.id | user123 | USER |
+| Email | Role |
+|---|---|
+| admin@idbbali.ac.id | ADMIN |
+| tech1@idbbali.ac.id | AGENT |
+| tech2@idbbali.ac.id | AGENT |
+| kabag.keuangan@idbbali.ac.id | SUPERVISOR |
+| kabag.hrd@idbbali.ac.id | SUPERVISOR |
+| kabag.baa@idbbali.ac.id | SUPERVISOR |
+| dosen1@idbbali.ac.id | USER |
 
-> **Ganti semua password default sebelum go-live.**
+Pilih salah satu identitas tersebut melalui `SIBATIK_DEV_USER_EMAIL` saat
+menjalankan modul secara lokal. Production harus mengambil identitas dari Sinergy.
 
 ---
 

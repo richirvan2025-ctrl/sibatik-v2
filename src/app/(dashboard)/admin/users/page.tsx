@@ -86,7 +86,6 @@ export default function UsersPage() {
 
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
   const [role, setRole] = useState("USER");
   const [department, setDepartment] = useState("");
 
@@ -114,8 +113,7 @@ export default function UsersPage() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
-      const body: any = { name, email, role, department };
-      if (password) body.password = password;
+      const body = { name, email, role, department };
 
       const url = editingUser
         ? `/api/admin/users/${editingUser.id}`
@@ -199,7 +197,6 @@ export default function UsersPage() {
   const resetForm = () => {
     setName("");
     setEmail("");
-    setPassword("");
     setRole("USER");
     setDepartment("");
     setEditingUser(null);
@@ -211,7 +208,6 @@ export default function UsersPage() {
     setEmail(user.email);
     setRole(user.role);
     setDepartment(user.department || "");
-    setPassword("");
     setDialogOpen(true);
   };
 
@@ -273,18 +269,6 @@ export default function UsersPage() {
                     required
                   />
                 </div>
-              </div>
-              <div className="space-y-2">
-                <Label className="text-sm font-medium text-[#1E293B]">
-                  Password {editingUser && "(kosongkan jika tidak diubah)"}
-                </Label>
-                <Input
-                  type="password"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  className="h-10 border-[#E2E8F0] bg-[#F8FAFC] rounded-xl text-sm focus:bg-white focus:border-[#2563EB]"
-                  required={!editingUser}
-                />
               </div>
               <div className="space-y-2">
                 <Label className="text-sm font-medium text-[#1E293B]">Role</Label>

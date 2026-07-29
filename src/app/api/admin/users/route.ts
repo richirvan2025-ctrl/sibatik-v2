@@ -1,13 +1,11 @@
 import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
-import bcrypt from "bcryptjs";
 import { z } from "zod";
 
 const userSchema = z.object({
   name: z.string().min(1),
   email: z.string().email(),
-  password: z.string().min(6).optional(),
   role: z.enum(["ADMIN", "USER", "AGENT", "SUPERVISOR", "EXECUTIVE"]),
   department: z.string().optional(),
 });
@@ -40,17 +38,13 @@ export async function POST(req: NextRequest) {
     const body = await req.json();
     const validated = userSchema.parse(body);
 
-    const hashedPassword = validated.password
-      ? await bcrypt.hash(validated.password, 10)
-      : await bcrypt.hash("password123", 10);
-
     const user = await prisma.user.create({
       data: {
         name: validated.name,
         email: validated.email,
-        password: hashedPassword,
         role: validated.role,
         department: validated.department,
+        provider: "sinergy",
       },
     });
 

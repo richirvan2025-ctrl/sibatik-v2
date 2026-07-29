@@ -1,122 +1,53 @@
-import NextAuth from "next-auth";
-import { PrismaAdapter } from "@auth/prisma-adapter";
-import CredentialsProvider from "next-auth/providers/credentials";
-import MicrosoftEntraID from "next-auth/providers/microsoft-entra-id";
-import bcrypt from "bcryptjs";
+import { cache } from "react";
+import { connection } from "next/server";
 import { prisma } from "./prisma";
+import type { AppSession } from "./auth-types";
 
-export const {
-  handlers: { GET, POST },
-  auth,
-  signIn,
-  signOut,
-} = NextAuth({
-  trustHost: true,
-  adapter: PrismaAdapter(prisma) as any,
-  session: {
-    strategy: "jwt",
-  },
-  pages: {
-    signIn: "/login",
-  },
-  providers: [
-    CredentialsProvider({
-      name: "credentials",
-      credentials: {
-        email: { label: "Email", type: "email" },
-        password: { label: "Password", type: "password" },
-      },
-      async authorize(credentials) {
-        if (!credentials?.email || !credentials?.password) {
-          return null;
-        }
+/**
+ * Temporary identity adapter for the SIBATIK module.
+ *
+ * The standalone login has been removed because authentication will be owned
+ * by Sinergy. After the Sinergy flow is inspected, replace the development
+ * lookup below with a verified identity supplied by the host system. Keeping
+ * this boundary in one server-only module prevents authentication details from
+ * leaking into pages and Route Handlers.
+ */
+export const auth = cache(async (): Promise<AppSession | null> => {
+  await connection();
 
-        const user = await prisma.user.findUnique({
-          where: { email: credentials.email as string },
-        });
+  const developmentEmail = process.env.SIBATIK_DEV_USER_EMAIL?.trim();
+  const email =
+    developmentEmail ||
+    (process.env.NODE_ENV !== "production" ? "admin@idbbali.ac.id" : null);
 
-        if (!user || !user.password) {
-          return null;
-        }
+  // Production must wait for the verified Sinergy identity adapter. There is
+  // deliberately no insecure anonymous fallback outside local development.
+  if (!email) return null;
 
-        const isPasswordValid = await bcrypt.compare(
-          credentials.password as string,
-          user.password
-        );
-
-        if (!isPasswordValid) {
-          return null;
-        }
-
-        if (!user.isActive) {
-          return null;
-        }
-
-        return {
-          id: user.id,
-          email: user.email,
-          name: user.name,
-          role: user.role,
-        };
-      },
-    }),
-    MicrosoftEntraID({
-      clientId: process.env.MICROSOFT_CLIENT_ID!,
-      clientSecret: process.env.MICROSOFT_CLIENT_SECRET!,
-      issuer: `https://login.microsoftonline.com/${process.env.MICROSOFT_TENANT_ID || "common"}/v2.0`,
-      allowDangerousEmailAccountLinking: true,
-      authorization: {
-        params: {
-          scope: "openid profile email User.Read",
-        },
-      },
-    }),
-  ],
-  callbacks: {
-    async signIn({ account, profile }) {
-      if (account?.provider === "microsoft-entra-id" && profile?.email) {
-        const existingUser = await prisma.user.findUnique({
-          where: { email: profile.email },
-        });
-
-        if (!existingUser) {
-          await prisma.user.create({
-            data: {
-              email: profile.email,
-              name: profile.name || profile.email.split("@")[0],
-              role: "USER",
-              provider: "microsoft",
-              isActive: true,
-            },
-          });
-        } else if (!existingUser.isActive) {
-          return false;
-        }
-      }
-      return true;
+  const user = await prisma.user.findFirst({
+    where: {
+      email,
+      isActive: true,
     },
-    async jwt({ token, user, account }) {
-      if (user) {
-        token.role = user.role;
-        token.id = user.id;
-      }
-      if (account?.provider === "microsoft-entra-id" && token.email) {
-        const dbUser = await prisma.user.findUnique({
-          where: { email: token.email },
-        });
-        if (dbUser) {
-          token.role = dbUser.role;
-          token.id = dbUser.id;
-        }
-      }
-      return token;
+    select: {
+      id: true,
+      name: true,
+      email: true,
+      role: true,
+      department: true,
     },
-    async session({ session, token }) {
-      if (token) {
-        session.user.role = token.role as string;
-        session.user.id = token.id as string;
-      }
-      return session;
+  });
+
+  if (!user) return null;
+
+  return {
+    user: {
+      id: user.id,
+      name: user.name,
+      email: user.email,
+      role: user.role,
+      department: user.department,
     },
-  },
+    source: "development",
+  };
 });

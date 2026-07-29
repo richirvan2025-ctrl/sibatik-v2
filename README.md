@@ -45,7 +45,7 @@ SIBATIK adalah sistem support ticket untuk civitas akademika Institut Desain dan
 - **Framework**: Next.js 16 (App Router, Turbopack)
 - **UI**: React 19, Tailwind CSS v4, Shadcn/ui
 - **Database**: SQLite (via Prisma ORM)
-- **Auth**: NextAuth v5 (credentials + Microsoft OAuth)
+- **Identity**: Adapter identitas Sinergy dengan fallback khusus development
 - **AI**: NVIDIA NIM API (LLM + Embedding)
 - **File storage**: Local filesystem (`public/uploads/`)
 - **PDF parsing**: pdf-parse v1
@@ -71,24 +71,18 @@ npm install
 # Database
 DATABASE_URL="file:./dev.db"
 
-# NextAuth
-NEXTAUTH_SECRET="random-string-minimal-32-karakter"
-NEXTAUTH_URL="http://localhost:3000"
+# Pengguna lokal untuk development (harus sudah ada di database)
+SIBATIK_DEV_USER_EMAIL="admin@idbbali.ac.id"
 
 # NVIDIA NIM (LLM + Embedding untuk AI Asisten)
 NVIDIA_API_KEY="nvapi-xxxxxxxxxxxx"
 NVIDIA_MODEL="meta/llama-3.1-8b-instruct"
 
-# Microsoft OAuth (opsional)
-# AUTH_MICROSOFT_ENTRA_ID_ID="client-id"
-# AUTH_MICROSOFT_ENTRA_ID_SECRET="client-secret"
-# AUTH_MICROSOFT_ENTRA_ID_TENANT_ID="tenant-id"
 ```
 
-Generate `NEXTAUTH_SECRET`:
-```bash
-node -e "console.log(require('crypto').randomBytes(32).toString('hex'))"
-```
+SIBATIK tidak menyediakan halaman login atau logout mandiri. Pada production,
+identitas pengguna harus diberikan oleh Sinergy melalui adapter di
+`src/lib/auth.ts`. Fallback `SIBATIK_DEV_USER_EMAIL` hanya untuk development.
 
 ### 3. Setup Database
 
@@ -113,8 +107,8 @@ Buka [http://localhost:3000](http://localhost:3000).
 ```
 src/
   app/
-    (auth)/          # Login page
-    (dashboard)/     # Semua halaman setelah login
+    (auth)/          # Alias lama yang langsung menuju dashboard
+    (dashboard)/     # Modul SIBATIK setelah identitas Sinergy tersedia
       dashboard/     # Dashboard utama
       tickets/       # Daftar & detail tiket
       admin/         # Halaman admin (users, categories, KB, reports)
@@ -127,7 +121,8 @@ src/
     chat/            # Chat widget
     dashboard/       # Dashboard components (agent performance chart)
   lib/
-    auth.ts          # NextAuth config
+    auth.ts          # Adapter identitas Sinergy / development
+    auth-types.ts    # Kontrak session dan role SIBATIK
     prisma.ts        # Prisma client
     rag.ts           # RAG utilities (chunking, embedding, search)
 prisma/
