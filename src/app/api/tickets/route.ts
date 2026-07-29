@@ -15,7 +15,12 @@ const createTicketSchema = z.object({
   description: z.string().min(1),
   categoryId: z.string(),
   priority: z.enum(["LOW", "MEDIUM", "HIGH", "URGENT"]),
+  deadline: z
+    .string()
+    .optional()
+    .refine((v) => !v || !isNaN(Date.parse(v)), { message: "Format deadline tidak valid" }),
   onBehalfOfId: z.string().optional(),
+  assignedToId: z.string().optional(),
   attachments: z.array(attachmentSchema).optional(),
 });
 
@@ -132,6 +137,7 @@ export async function POST(req: NextRequest) {
         description: validated.description,
         categoryId: validated.categoryId,
         priority: validated.priority,
+        deadline: validated.deadline ? new Date(validated.deadline) : undefined,
         createdById: userId,
         onBehalfOfId: onBehalfOfId || undefined,
         status: "OPEN",
@@ -160,10 +166,49 @@ export async function POST(req: NextRequest) {
     const creatorName = ticket.createdBy.name;
     const notifMessage = `Tiket baru dari ${creatorName}: ${ticket.ticketNumber} — ${ticket.title}`;
 
-    // Auto-assign: ke SUPERVISOR yang departemennya sesuai kategori
-    // Khusus kategori IT Support: tidak auto-assign (ditangani manual oleh tim IT)
+    // Auto-assign logic dengan prioritas (gabungan HEAD + a2cbde1):
+    // 1. Assignee yang dipilih manual saat membuat tiket (harus dari divisi kategori)
+    // 2. @mention di description (SEMENTARA DINONAKTIFKAN: extractMentions belum ada)
+    // 3. SUPERVISOR dari divisi kategori — kecuali kategori IT Support (ditangani manual tim IT)
     let autoAssignedId: string | null = null;
-    if (categoryDept && categoryDept !== "Sistem Informasi & IT Support") {
+
+    // Priority 1: Assignee dipilih manual di form
+    if (validated.assignedToId) {
+      const chosenAssignee = await prisma.user.findFirst({
+        where: {
+          id: validated.assignedToId,
+          isActive: true,
+          ...(categoryDept ? { department: categoryDept } : {}),
+        },
+        select: { id: true },
+      });
+      if (chosenAssignee) {
+        autoAssignedId = chosenAssignee.id;
+      }
+    }
+
+    // Priority 2: Check @mention in description
+    // NOTE: DINONAKTIFKAN SEMENTARA — fungsi `extractMentions` tidak terdefinisi/terimport
+    // di manapun dalam codebase, akan membuat build gagal. Aktifkan kembali setelah
+    // fungsi extractMentions dibuat.
+    // const mentions = extractMentions(validated.description);
+    // if (!autoAssignedId && mentions.length > 0 && categoryDept) {
+    //   const mentionedUser = await prisma.user.findFirst({
+    //     where: {
+    //       username: mentions[0],
+    //       isActive: true,
+    //       department: categoryDept, // HARUS dari divisi yang sama
+    //     },
+    //     select: { id: true },
+    //   });
+    //   if (mentionedUser) {
+    //     autoAssignedId = mentionedUser.id;
+    //   }
+    // }
+
+    // Priority 3: Fallback ke auto-assign SUPERVISOR by department
+    // Khusus kategori IT Support: tidak auto-assign (ditangani manual oleh tim IT)
+    if (!autoAssignedId && categoryDept && categoryDept !== "Sistem Informasi & IT Support") {
       const supervisor = await prisma.user.findFirst({
         where: {
           role: "SUPERVISOR",
@@ -174,11 +219,15 @@ export async function POST(req: NextRequest) {
       });
       if (supervisor) {
         autoAssignedId = supervisor.id;
-        await prisma.ticket.update({
-          where: { id: ticket.id },
-          data: { assignedToId: supervisor.id },
-        });
       }
+    }
+
+    // Update ticket dengan assignedToId jika ada
+    if (autoAssignedId) {
+      await prisma.ticket.update({
+        where: { id: ticket.id },
+        data: { assignedToId: autoAssignedId },
+      });
     }
 
     const recipients = await prisma.user.findMany({
@@ -191,8 +240,9 @@ export async function POST(req: NextRequest) {
           ...(categoryDept === "Sistem Informasi & IT Support"
             ? [{ role: "AGENT" as const }]
             : []),
+          // Semua anggota divisi tujuan (supervisor, agent, staf) menerima notifikasi
           ...(categoryDept
-            ? [{ role: "SUPERVISOR" as const, department: categoryDept }]
+            ? [{ department: categoryDept, role: { not: "MAHASISWA" as const } }]
             : []),
         ],
       },

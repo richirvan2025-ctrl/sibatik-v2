@@ -83,7 +83,7 @@ export function AgentPerformanceChart({ data }: Props) {
             />
             <Tooltip content={<CustomTooltip />} />
             <Legend wrapperStyle={{ fontSize: 12, paddingTop: 8 }} iconType="circle" iconSize={8} />
-            <Bar dataKey="Tiket Masuk" fill="#2563EB" radius={[4, 4, 0, 0]} maxBarSize={40} />
+            <Bar dataKey="Tiket Masuk" fill="#7C3AED" radius={[4, 4, 0, 0]} maxBarSize={40} />
             <Bar dataKey="Tiket Selesai" fill="#10B981" radius={[4, 4, 0, 0]} maxBarSize={40} />
           </BarChart>
         </ResponsiveContainer>

@@ -99,7 +99,7 @@ export default function TicketsPage() {
   if (loading) {
     return (
       <div className="flex h-96 items-center justify-center">
-        <div className="h-8 w-8 animate-spin rounded-full border-4 border-blue-100 border-t-[#2563EB]" />
+        <div className="h-8 w-8 animate-spin rounded-full border-4 border-violet-100 border-t-[#7C3AED]" />
       </div>
     );
   }
@@ -117,7 +117,7 @@ export default function TicketsPage() {
           </p>
         </div>
         <Link href="/tickets/new">
-          <Button className="h-10 bg-[#2563EB] hover:bg-[#1D4ED8] text-white shadow-md shadow-blue-200 transition-all duration-200 rounded-xl text-sm font-semibold">
+          <Button className="h-10 bg-[#7C3AED] hover:bg-[#6D28D9] text-white shadow-md shadow-[#7C3AED]/25 transition-all duration-200 rounded-xl text-sm font-semibold">
             <Plus className="mr-2 h-4 w-4" />
             Buat Tiket
           </Button>
@@ -136,7 +136,7 @@ export default function TicketsPage() {
                   value={search}
                   onChange={(e) => setSearch(e.target.value)}
                   onKeyDown={(e) => e.key === "Enter" && handleSearch()}
-                  className="pl-10 h-10 border-[#E2E8F0] bg-[#F8FAFC] rounded-xl text-sm focus:bg-white focus:border-[#2563EB]"
+                  className="pl-10 h-10 border-[#E2E8F0] bg-[#F8FAFC] rounded-xl text-sm focus:bg-white focus:border-[#7C3AED]"
                 />
               </div>
               <Button
@@ -199,7 +199,7 @@ export default function TicketsPage() {
           return (
             <Link key={ticket.id} href={`/tickets/${ticket.id}`}>
               <Card className="group border border-[#E2E8F0] bg-white rounded-xl shadow-[0_1px_3px_rgba(0,0,0,0.05),0_1px_2px_rgba(0,0,0,0.03)] hover:shadow-[0_4px_12px_rgba(0,0,0,0.08)] hover:-translate-y-0.5 transition-all duration-200 cursor-pointer overflow-hidden">
-                <div className="absolute left-0 top-0 h-full w-1 bg-[#2563EB] opacity-0 group-hover:opacity-100 transition-opacity" />
+                <div className="absolute left-0 top-0 h-full w-1 bg-[#7C3AED] opacity-0 group-hover:opacity-100 transition-opacity" />
                 <CardContent className="p-5">
                   <div className="flex items-start justify-between gap-4">
                     <div className="flex-1 min-w-0 space-y-2">
@@ -223,7 +223,7 @@ export default function TicketsPage() {
                         </span>
                       </div>
 
-                      <h3 className="text-base font-semibold text-[#1E293B] group-hover:text-[#2563EB] transition-colors truncate">
+                      <h3 className="text-base font-semibold text-[#1E293B] group-hover:text-[#7C3AED] transition-colors truncate">
                         {ticket.title}
                       </h3>
 
@@ -261,7 +261,7 @@ export default function TicketsPage() {
                           {ticket._count.comments}
                         </span>
                       </div>
-                      <ArrowRight className="h-4 w-4 text-[#CBD5E1] group-hover:text-[#2563EB] group-hover:translate-x-1 transition-all" />
+                      <ArrowRight className="h-4 w-4 text-[#CBD5E1] group-hover:text-[#7C3AED] group-hover:translate-x-1 transition-all" />
                     </div>
                   </div>
                 </CardContent>

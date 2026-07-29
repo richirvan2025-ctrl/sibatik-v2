@@ -45,7 +45,7 @@ function SSOCompleteContent() {
 
 export default function SSOCompletePage() {
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 to-indigo-100">
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-violet-50 to-indigo-100">
       <Suspense fallback={<p>Loading...</p>}>
         <SSOCompleteContent />
       </Suspense>

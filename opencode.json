@@ -1,0 +1,42 @@
+{
+  "$schema": "https://opencode.ai/config.json",
+  "provider": {
+    "myprovider": {
+      "npm": "@ai-sdk/openai-compatible",
+      "name": "weize",
+      "options": {
+        "baseURL": "http://192.168.1.125:20128/v1",
+        "apiKey": "sk-ecd2fde06a585e76-8ejxfu-7ace1fc2"
+      },
+      "models": {
+        "qd/ultimate": {
+          "name": "qd/ultimate"
+        },
+        "qd/qmodel_latest": {
+          "name": "qd/qmodel_latest"
+        },
+        "wz/kimi-k3": {
+          "name": "wz/kimi-k3"
+        },
+        "wz/kimi-k2.7-code": {
+          "name": "wz/kimi-k2.7-code"
+        },
+        "wz/deepseek-v4-pro-max": {
+          "name": "wz/deepseek-v4-pro-max"
+        },
+	"wz/deepseek-v4-pro-max": {
+          "name": "wz/deepseek-v4-pro"
+        },
+        "wz/claude-fable-5": {
+          "name": "wz/claude-fable-5"
+        },
+        "wz/mimo-v2.5-pro": {
+          "name": "wz/mimo-v2.5-pro"
+        },
+        "wz/gpt-5.5": {
+          "name": "wz/gpt-5.5"
+        }
+      }
+    }
+  }
+}

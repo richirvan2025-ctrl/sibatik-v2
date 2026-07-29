@@ -238,7 +238,7 @@ export default function UsersPage() {
   if (loading) {
     return (
       <div className="flex h-96 items-center justify-center">
-        <div className="h-8 w-8 animate-spin rounded-full border-4 border-blue-100 border-t-[#2563EB]" />
+        <div className="h-8 w-8 animate-spin rounded-full border-4 border-violet-100 border-t-[#7C3AED]" />
       </div>
     );
   }
@@ -254,12 +254,12 @@ export default function UsersPage() {
           <p className="text-sm text-[#64748B] mt-1">Kelola pengguna sistem</p>
         </div>
         <Dialog open={dialogOpen} onOpenChange={(open) => { setDialogOpen(open); if (!open) resetForm(); }}>
-          <DialogTrigger render={<Button className="h-10 bg-[#2563EB] hover:bg-[#1D4ED8] text-white shadow-md shadow-blue-200 transition-all duration-200 rounded-xl text-sm font-semibold" />}>
+          <DialogTrigger render={<Button className="h-10 bg-[#7C3AED] hover:bg-[#6D28D9] text-white shadow-md shadow-[#7C3AED]/25 transition-all duration-200 rounded-xl text-sm font-semibold" />}>
             <Plus className="mr-2 h-4 w-4" />
             Tambah User
           </DialogTrigger>
           <DialogContent className="border border-[#E2E8F0] shadow-xl rounded-xl">
-            <div className="h-1 bg-[#2563EB] rounded-t-lg -mt-6 mx-6" />
+            <div className="h-1 bg-[#7C3AED] rounded-t-lg -mt-6 mx-6" />
             <DialogHeader className="pt-2">
               <DialogTitle className="text-lg font-bold text-[#1E293B]">
                 {editingUser ? "Edit User" : "Tambah User Baru"}
@@ -276,7 +276,7 @@ export default function UsersPage() {
                 <Input
                   value={name}
                   onChange={(e) => setName(e.target.value)}
-                  className="h-10 border-[#E2E8F0] bg-[#F8FAFC] rounded-xl text-sm focus:bg-white focus:border-[#2563EB]"
+                  className="h-10 border-[#E2E8F0] bg-[#F8FAFC] rounded-xl text-sm focus:bg-white focus:border-[#7C3AED]"
                   required
                 />
               </div>
@@ -288,7 +288,7 @@ export default function UsersPage() {
                     type="email"
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
-                    className="pl-10 h-10 border-[#E2E8F0] bg-[#F8FAFC] rounded-xl text-sm focus:bg-white focus:border-[#2563EB]"
+                    className="pl-10 h-10 border-[#E2E8F0] bg-[#F8FAFC] rounded-xl text-sm focus:bg-white focus:border-[#7C3AED]"
                     required={!editingUser}
                   />
                 </div>
@@ -301,14 +301,14 @@ export default function UsersPage() {
                   type="password"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  className="h-10 border-[#E2E8F0] bg-[#F8FAFC] rounded-xl text-sm focus:bg-white focus:border-[#2563EB]"
+                  className="h-10 border-[#E2E8F0] bg-[#F8FAFC] rounded-xl text-sm focus:bg-white focus:border-[#7C3AED]"
                   required={!editingUser}
                 />
               </div>
               <div className="space-y-2">
                 <Label className="text-sm font-medium text-[#1E293B]">Role</Label>
                 <Select value={role} onValueChange={(value) => setRole(value || "USER")}>
-                  <SelectTrigger className="h-10 border-[#E2E8F0] bg-[#F8FAFC] rounded-xl text-sm focus:bg-white focus:border-[#2563EB]">
+                  <SelectTrigger className="h-10 border-[#E2E8F0] bg-[#F8FAFC] rounded-xl text-sm focus:bg-white focus:border-[#7C3AED]">
                     <SelectValue>
                       {roleConfig[role as keyof typeof roleConfig]?.label || role}
                     </SelectValue>
@@ -325,7 +325,7 @@ export default function UsersPage() {
               <div className="space-y-2">
                 <Label className="text-sm font-medium text-[#1E293B]">Divisi</Label>
                 <Select value={department} onValueChange={(value) => setDepartment(value || "")}>
-                  <SelectTrigger className="h-10 border-[#E2E8F0] bg-[#F8FAFC] rounded-xl text-sm focus:bg-white focus:border-[#2563EB]">
+                  <SelectTrigger className="h-10 border-[#E2E8F0] bg-[#F8FAFC] rounded-xl text-sm focus:bg-white focus:border-[#7C3AED]">
                     <SelectValue placeholder="Pilih divisi" />
                   </SelectTrigger>
                   <SelectContent className="max-h-72 min-w-[280px]">
@@ -354,7 +354,7 @@ export default function UsersPage() {
               <Button
                 type="submit"
                 disabled={formLoading}
-                className="w-full h-10 bg-[#2563EB] hover:bg-[#1D4ED8] text-white shadow-md rounded-xl text-sm font-semibold disabled:opacity-50"
+                className="w-full h-10 bg-[#7C3AED] hover:bg-[#6D28D9] text-white shadow-md rounded-xl text-sm font-semibold disabled:opacity-50"
               >
                 {formLoading ? "Menyimpan..." : editingUser ? "Update" : "Tambah"}
               </Button>
@@ -370,13 +370,13 @@ export default function UsersPage() {
           placeholder="Cari user..."
           value={search}
           onChange={(e) => setSearch(e.target.value)}
-          className="pl-10 h-10 border-[#E2E8F0] bg-white rounded-xl text-sm focus:border-[#2563EB]"
+          className="pl-10 h-10 border-[#E2E8F0] bg-white rounded-xl text-sm focus:border-[#7C3AED]"
         />
       </div>
 
       {/* Users Table */}
       <Card className="border border-[#E2E8F0] bg-white rounded-xl shadow-[0_1px_3px_rgba(0,0,0,0.05),0_1px_2px_rgba(0,0,0,0.03)] overflow-hidden">
-        <div className="h-1 bg-[#2563EB]" />
+        <div className="h-1 bg-[#7C3AED]" />
         <div className="overflow-x-auto">
           <table className="w-full text-sm">
             <thead>
@@ -481,7 +481,7 @@ export default function UsersPage() {
                           variant="ghost"
                           size="sm"
                           onClick={() => openEdit(user)}
-                          className="h-8 w-8 p-0 text-[#64748B] hover:text-[#2563EB]"
+                          className="h-8 w-8 p-0 text-[#64748B] hover:text-[#7C3AED]"
                           title="Edit"
                         >
                           <Pencil className="h-4 w-4" />

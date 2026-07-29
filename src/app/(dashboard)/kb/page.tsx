@@ -116,12 +116,12 @@ export default function KBPage() {
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             onKeyDown={(e) => e.key === "Enter" && handleSearch()}
-            className="pl-10 h-10 border-[#E2E8F0] bg-white rounded-xl text-sm focus:border-[#2563EB]"
+            className="pl-10 h-10 border-[#E2E8F0] bg-white rounded-xl text-sm focus:border-[#7C3AED]"
           />
         </div>
         <Button
           onClick={handleSearch}
-          className="h-10 bg-[#2563EB] hover:bg-[#1D4ED8] text-white rounded-xl text-sm font-semibold"
+          className="h-10 bg-[#7C3AED] hover:bg-[#6D28D9] text-white rounded-xl text-sm font-semibold"
         >
           <Search className="h-4 w-4" />
         </Button>
@@ -134,7 +134,7 @@ export default function KBPage() {
           onClick={() => handleCategoryClick("")}
           className={`h-9 rounded-xl text-sm ${
             selectedCategory === ""
-              ? "bg-[#2563EB] text-white"
+              ? "bg-[#7C3AED] text-white"
               : "border-[#E2E8F0] text-[#64748B]"
           }`}
         >
@@ -147,7 +147,7 @@ export default function KBPage() {
             onClick={() => handleCategoryClick(cat.id)}
             className={`h-9 rounded-xl text-sm ${
               selectedCategory === cat.id
-                ? "bg-[#2563EB] text-white"
+                ? "bg-[#7C3AED] text-white"
                 : "border-[#E2E8F0] text-[#64748B]"
             }`}
           >
@@ -169,7 +169,7 @@ export default function KBPage() {
       {/* Articles */}
       {loading ? (
         <div className="flex h-40 items-center justify-center">
-          <div className="h-8 w-8 animate-spin rounded-full border-4 border-blue-100 border-t-[#2563EB]" />
+          <div className="h-8 w-8 animate-spin rounded-full border-4 border-violet-100 border-t-[#7C3AED]" />
         </div>
       ) : (
         <div className="grid gap-4 md:grid-cols-2">
@@ -178,7 +178,7 @@ export default function KBPage() {
               <Card className="group border border-[#E2E8F0] bg-white rounded-xl shadow-[0_1px_3px_rgba(0,0,0,0.05),0_1px_2px_rgba(0,0,0,0.03)] hover:shadow-[0_4px_12px_rgba(0,0,0,0.08)] hover:-translate-y-0.5 transition-all duration-200 cursor-pointer h-full">
                 <CardContent className="p-5 flex flex-col h-full">
                   <div className="flex items-center gap-2 mb-3">
-                    <span className="inline-flex items-center gap-1 rounded-lg bg-blue-50 px-2 py-0.5 text-xs font-semibold text-[#2563EB]">
+                    <span className="inline-flex items-center gap-1 rounded-lg bg-blue-50 px-2 py-0.5 text-xs font-semibold text-[#7C3AED]">
                       <FolderOpen className="h-3 w-3" />
                       {article.category.name}
                     </span>
@@ -188,7 +188,7 @@ export default function KBPage() {
                     </span>
                   </div>
 
-                  <h3 className="text-base font-semibold text-[#1E293B] group-hover:text-[#2563EB] transition-colors mb-2">
+                  <h3 className="text-base font-semibold text-[#1E293B] group-hover:text-[#7C3AED] transition-colors mb-2">
                     {article.title}
                   </h3>
 
@@ -208,7 +208,7 @@ export default function KBPage() {
                         </span>
                       ))}
                     </div>
-                    <ArrowRight className="h-4 w-4 text-[#CBD5E1] group-hover:text-[#2563EB] group-hover:translate-x-1 transition-all" />
+                    <ArrowRight className="h-4 w-4 text-[#CBD5E1] group-hover:text-[#7C3AED] group-hover:translate-x-1 transition-all" />
                   </div>
                 </CardContent>
               </Card>
@@ -235,7 +235,7 @@ export default function KBPage() {
       {faqs.length > 0 && <div className="pt-4">
         <div className="flex items-center gap-2 mb-4">
           <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-blue-50">
-            <HelpCircle className="h-5 w-5 text-[#2563EB]" />
+            <HelpCircle className="h-5 w-5 text-[#7C3AED]" />
           </div>
           <div>
             <h2 className="text-lg font-bold tracking-tight text-[#1E293B]">

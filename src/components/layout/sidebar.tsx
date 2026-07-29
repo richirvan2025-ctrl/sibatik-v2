@@ -8,6 +8,7 @@ import {
   Ticket,
   PlusCircle,
   Users,
+  UsersRound,
   Settings,
   BarChart3,
   Shield,
@@ -28,6 +29,7 @@ const navigation = {
     { name: "Knowledge Base", href: "/kb", icon: BookOpen },
     { name: "KB Admin", href: "/admin/kb", icon: BookOpen },
     { name: "Manajemen User", href: "/admin/users", icon: Users },
+    { name: "Group User", href: "/admin/groups", icon: UsersRound },
     { name: "Kategori", href: "/admin/categories", icon: Settings },
     { name: "Laporan", href: "/admin/reports", icon: BarChart3 },
   ],
@@ -85,7 +87,7 @@ export function Sidebar({ onClose }: { onClose?: () => void }) {
         </div>
         <div>
           <h1 className="text-[14px] font-bold leading-tight text-[#1E293B]">IDB Bali</h1>
-          <p className="text-[9px] font-semibold uppercase tracking-wider text-[#F97316]">Support Ticket System</p>
+          <p className="text-[9px] font-semibold uppercase tracking-wider text-[#0EA5E9]">Support Ticket System</p>
         </div>
       </div>
 
@@ -101,7 +103,7 @@ export function Sidebar({ onClose }: { onClose?: () => void }) {
               className={cn(
                 "group flex items-center gap-2.5 rounded-lg px-3 py-2 text-[13px] font-medium transition-all duration-200",
                 isActive
-                  ? "bg-[#EFF6FF] text-[#2563EB]"
+                  ? "bg-[#EFF6FF] text-[#7C3AED]"
                   : "text-[#64748B] hover:bg-[#F8FAFC] hover:text-[#1E293B]"
               )}
             >
@@ -109,7 +111,7 @@ export function Sidebar({ onClose }: { onClose?: () => void }) {
                 className={cn(
                   "flex h-7 w-7 items-center justify-center rounded-md transition-all duration-200",
                   isActive
-                    ? "bg-[#2563EB] text-white shadow-sm shadow-blue-200"
+                    ? "bg-[#7C3AED] text-white shadow-sm shadow-[#7C3AED]/25"
                     : "bg-[#F1F5F9] text-[#94A3B8] group-hover:bg-white group-hover:text-[#64748B] group-hover:shadow-sm"
                 )}
               >
@@ -129,7 +131,7 @@ export function Sidebar({ onClose }: { onClose?: () => void }) {
       {/* User Info - compact */}
       <div className="border-t border-[#E2E8F0] p-3 shrink-0">
         <div className="flex items-center gap-2.5">
-          <div className="flex h-8 w-8 items-center justify-center rounded-full bg-[#EFF6FF] text-[#2563EB] text-[11px] font-bold shrink-0">
+          <div className="flex h-8 w-8 items-center justify-center rounded-full bg-[#EFF6FF] text-[#7C3AED] text-[11px] font-bold shrink-0">
             {session?.user?.name?.charAt(0)?.toUpperCase() || "U"}
           </div>
           <div className="min-w-0 flex-1">

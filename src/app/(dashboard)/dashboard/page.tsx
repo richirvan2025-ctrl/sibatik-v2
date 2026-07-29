@@ -33,7 +33,7 @@ const statCards = [
     key: "total" as const,
     label: "Total Tiket",
     icon: Ticket,
-    color: "#2563EB",
+    color: "#7C3AED",
     bgLight: "bg-blue-50",
     textColor: "text-blue-600",
     href: "/tickets",
@@ -42,7 +42,7 @@ const statCards = [
     key: "open" as const,
     label: "Open",
     icon: AlertCircle,
-    color: "#F97316",
+    color: "#0EA5E9",
     bgLight: "bg-orange-50",
     textColor: "text-orange-600",
     href: "/tickets?status=OPEN",
@@ -103,7 +103,7 @@ export default function DashboardPage() {
   if (loading) {
     return (
       <div className="flex h-96 items-center justify-center">
-        <div className="h-8 w-8 animate-spin rounded-full border-4 border-blue-100 border-t-[#2563EB]" />
+        <div className="h-8 w-8 animate-spin rounded-full border-4 border-violet-100 border-t-[#7C3AED]" />
       </div>
     );
   }
@@ -129,14 +129,14 @@ export default function DashboardPage() {
           </h1>
           <p className="mt-1 text-sm text-[#64748B]">
             Selamat datang kembali,{" "}
-            <span className="font-semibold text-[#2563EB]">
+            <span className="font-semibold text-[#7C3AED]">
               {session?.user?.name}
             </span>
           </p>
         </div>
         <Badge
           variant="outline"
-          className="bg-blue-50 text-[#2563EB] border-blue-200 font-semibold px-3 py-1 text-xs"
+          className="bg-blue-50 text-[#7C3AED] border-blue-200 font-semibold px-3 py-1 text-xs"
         >
           <Zap className="mr-1.5 h-3.5 w-3.5" />
           {role}
@@ -211,7 +211,7 @@ export default function DashboardPage() {
           </Card>
 
           <Card className="border border-[#E2E8F0] bg-white rounded-xl shadow-[0_1px_3px_rgba(0,0,0,0.05),0_1px_2px_rgba(0,0,0,0.03)] overflow-hidden">
-            <div className="h-1 bg-[#2563EB]" />
+            <div className="h-1 bg-[#7C3AED]" />
             <CardHeader className="flex flex-row items-center justify-between pb-2 pt-5 px-5">
               <CardTitle className="text-xs font-semibold text-[#64748B] uppercase tracking-wider">
                 Avg Resolution Time
@@ -238,7 +238,7 @@ export default function DashboardPage() {
       {/* Agent Performance - Supervisor only */}
       {role === "SUPERVISOR" && (
         <Card className="border border-[#E2E8F0] bg-white rounded-xl shadow-[0_1px_3px_rgba(0,0,0,0.05),0_1px_2px_rgba(0,0,0,0.03)] overflow-hidden">
-          <div className="h-1 bg-[#2563EB]" />
+          <div className="h-1 bg-[#7C3AED]" />
           <CardHeader className="flex flex-row items-center justify-between pb-2 pt-5 px-5">
             <CardTitle className="text-sm font-semibold text-[#1E293B] flex items-center gap-2">
               <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-blue-50">
@@ -263,7 +263,7 @@ export default function DashboardPage() {
       )}
 
       {/* Quick Info */}
-      <Card className="border-0 bg-gradient-to-r from-[#2563EB] to-[#1D4ED8] text-white rounded-xl shadow-lg shadow-blue-200">
+      <Card className="border-0 bg-gradient-to-r from-[#7C3AED] to-[#6D28D9] text-white rounded-xl shadow-lg shadow-[#7C3AED]/25">
         <CardContent className="flex items-center gap-4 py-5 px-5">
           <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-white/20 backdrop-blur-sm">
             <BarChart3 className="h-5 w-5 text-white" />

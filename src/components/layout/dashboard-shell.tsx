@@ -48,7 +48,7 @@ export function DashboardShell({ children }: { children: React.ReactNode }) {
               </div>
               <div>
                 <p className="text-[14px] font-bold leading-tight text-[#1E293B]">IDB Bali</p>
-                <p className="text-[9px] font-semibold uppercase tracking-wider text-[#F97316]">Helpdesk</p>
+                <p className="text-[9px] font-semibold uppercase tracking-wider text-[#0EA5E9]">Helpdesk</p>
               </div>
             </div>
           </div>

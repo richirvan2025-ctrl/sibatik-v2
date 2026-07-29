@@ -58,7 +58,7 @@ export default function KBArticlePage() {
   if (loading) {
     return (
       <div className="flex h-96 items-center justify-center">
-        <div className="h-8 w-8 animate-spin rounded-full border-4 border-blue-100 border-t-[#2563EB]" />
+        <div className="h-8 w-8 animate-spin rounded-full border-4 border-violet-100 border-t-[#7C3AED]" />
       </div>
     );
   }
@@ -85,7 +85,7 @@ export default function KBArticlePage() {
 
       {/* Article */}
       <Card className="border border-[#E2E8F0] bg-white rounded-xl shadow-[0_1px_3px_rgba(0,0,0,0.05),0_1px_2px_rgba(0,0,0,0.03)] overflow-hidden">
-        <div className="h-1 bg-[#2563EB]" />
+        <div className="h-1 bg-[#7C3AED]" />
         <CardContent className="p-6 md:p-8">
           {/* Meta */}
           <div className="flex flex-wrap items-center gap-2 mb-4">

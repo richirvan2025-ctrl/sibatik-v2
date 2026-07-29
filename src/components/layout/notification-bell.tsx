@@ -116,7 +116,7 @@ export function NotificationBell() {
               {unreadCount > 0 && (
                 <button
                   onClick={markAllRead}
-                  className="flex items-center gap-1 rounded-lg px-2 py-1 text-[11px] font-medium text-[#2563EB] hover:bg-blue-50 transition-colors"
+                  className="flex items-center gap-1 rounded-lg px-2 py-1 text-[11px] font-medium text-[#7C3AED] hover:bg-violet-50 transition-colors"
                 >
                   <CheckCheck className="h-3.5 w-3.5" />
                   Tandai semua
@@ -146,7 +146,11 @@ export function NotificationBell() {
                 <button
                   key={n.id}
                   type="button"
-                  onClick={() => !n.isRead && markAsRead(n.id)}
+                  onClick={() => {
+                    if (!n.isRead) markAsRead(n.id);
+                    setOpen(false);
+                    window.location.href = `/tickets/${n.ticket.ticketNumber}`;
+                  }}
                   className={`w-full text-left px-4 py-3 hover:bg-[#F8FAFC] transition-colors ${
                     !n.isRead ? "bg-blue-50/60" : ""
                   }`}

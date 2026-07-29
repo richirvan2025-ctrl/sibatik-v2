@@ -24,6 +24,12 @@ export default function RootLayout({
       lang="id"
       className={`${plusJakarta.variable} h-full antialiased`}
     >
+      <head>
+        <link rel="manifest" href="/manifest.json" />
+        <meta name="theme-color" content="#7C3AED" />
+        <link rel="icon" href="/logo.png" />
+        <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
+      </head>
       <body className="min-h-full flex flex-col font-sans">
         <SessionProvider basePath="/api/auth">{children}</SessionProvider>
       </body>

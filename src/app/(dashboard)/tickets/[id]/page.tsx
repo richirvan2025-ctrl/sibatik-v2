@@ -34,6 +34,9 @@ import {
   Paperclip,
   ImageIcon,
   Download,
+  RotateCcw,
+  Link as LinkIcon,
+  ExternalLink,
 } from "lucide-react";
 
 interface Comment {
@@ -54,6 +57,7 @@ interface Attachment {
   fileUrl: string;
   fileSize: number;
   mimeType: string;
+  type?: 'file' | 'link';
 }
 
 interface Ticket {
@@ -65,6 +69,7 @@ interface Ticket {
   priority: string;
   createdAt: string;
   resolvedAt: string | null;
+  deadline: string | null;
   rating: number | null;
   feedback: string | null;
   firstResponseAt: string | null;
@@ -212,7 +217,7 @@ export default function TicketDetailPage() {
   if (loading) {
     return (
       <div className="flex h-96 items-center justify-center">
-        <div className="h-8 w-8 animate-spin rounded-full border-4 border-blue-100 border-t-[#2563EB]" />
+        <div className="h-8 w-8 animate-spin rounded-full border-4 border-violet-100 border-t-[#7C3AED]" />
       </div>
     );
   }
@@ -278,10 +283,10 @@ export default function TicketDetailPage() {
         <div className="lg:col-span-2 space-y-6">
           {/* Description */}
           <Card className="border border-[#E2E8F0] bg-white rounded-xl shadow-[0_1px_3px_rgba(0,0,0,0.05),0_1px_2px_rgba(0,0,0,0.03)] overflow-hidden">
-            <div className="h-1 bg-[#2563EB]" />
+            <div className="h-1 bg-[#7C3AED]" />
             <CardHeader className="pb-3 pt-5 px-5">
               <CardTitle className="flex items-center gap-2 text-sm font-semibold text-[#1E293B]">
-                <FileText className="h-4 w-4 text-[#2563EB]" />
+                <FileText className="h-4 w-4 text-[#7C3AED]" />
                 Deskripsi
               </CardTitle>
             </CardHeader>
@@ -298,7 +303,27 @@ export default function TicketDetailPage() {
                   </p>
                   <div className="space-y-2">
                     {ticket.attachments.map((att) => {
-                      const isImage = att.mimeType.startsWith("image/");
+                      // Check if this is a link attachment
+                      if (att.type === 'link') {
+                        return (
+                          <a
+                            key={att.id}
+                            href={att.fileUrl}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="flex items-center gap-2.5 rounded-xl border border-[#E2E8F0] bg-[#F8FAFC] px-3 py-2 text-sm text-[#1E293B] hover:bg-[#F1F5F9] transition-colors group"
+                          >
+                            <LinkIcon className="h-4 w-4 text-blue-500 shrink-0" />
+                            <span className="flex-1 truncate text-xs font-medium">{att.fileName}</span>
+                            <ExternalLink className="h-3.5 w-3.5 text-[#94A3B8] group-hover:text-[#7C3AED] shrink-0" />
+                          </a>
+                        );
+                      }
+
+                      // Detect image from mimeType OR file extension (fallback for camera uploads)
+                      const ext = att.fileName.split(".").pop()?.toLowerCase() || "";
+                      const imageExts = ["jpg", "jpeg", "png", "gif", "webp", "heic", "heif"];
+                      const isImage = att.mimeType?.startsWith("image/") || imageExts.includes(ext);
                       return (
                         <div key={att.id}>
                           {isImage && (
@@ -326,7 +351,7 @@ export default function TicketDetailPage() {
                             <span className="text-[10px] text-[#94A3B8] shrink-0">
                               {(att.fileSize / 1024).toFixed(0)} KB
                             </span>
-                            <Download className="h-3.5 w-3.5 text-[#94A3B8] group-hover:text-[#2563EB] shrink-0" />
+                            <Download className="h-3.5 w-3.5 text-[#94A3B8] group-hover:text-[#7C3AED] shrink-0" />
                           </a>
                         </div>
                       );
@@ -339,10 +364,10 @@ export default function TicketDetailPage() {
 
           {/* Comments */}
           <Card className="border border-[#E2E8F0] bg-white rounded-xl shadow-[0_1px_3px_rgba(0,0,0,0.05),0_1px_2px_rgba(0,0,0,0.03)] overflow-hidden">
-            <div className="h-1 bg-[#F97316]" />
+            <div className="h-1 bg-[#0EA5E9]" />
             <CardHeader className="pb-3 pt-5 px-5">
               <CardTitle className="flex items-center gap-2 text-sm font-semibold text-[#1E293B]">
-                <MessageSquare className="h-4 w-4 text-[#F97316]" />
+                <MessageSquare className="h-4 w-4 text-[#0EA5E9]" />
                 Komentar
                 <span className="ml-1 rounded-full bg-[#F1F5F9] px-2 py-0.5 text-xs text-[#64748B]">
                   {ticket.comments.length}
@@ -417,7 +442,7 @@ export default function TicketDetailPage() {
               <form onSubmit={handleSubmitComment} className="space-y-3">
                 <div className="space-y-2">
                   <Label className="flex items-center gap-2 text-sm font-medium text-[#1E293B]">
-                    <Send className="h-4 w-4 text-[#2563EB]" />
+                    <Send className="h-4 w-4 text-[#7C3AED]" />
                     Tambah Komentar
                   </Label>
                   <Textarea
@@ -425,7 +450,7 @@ export default function TicketDetailPage() {
                     value={comment}
                     onChange={(e) => setComment(e.target.value)}
                     rows={3}
-                    className="border-[#E2E8F0] bg-[#F8FAFC] rounded-xl text-sm focus:bg-white focus:border-[#2563EB] resize-none"
+                    className="border-[#E2E8F0] bg-[#F8FAFC] rounded-xl text-sm focus:bg-white focus:border-[#7C3AED] resize-none"
                   />
                 </div>
                 {canManage && (
@@ -435,7 +460,7 @@ export default function TicketDetailPage() {
                       id="internal"
                       checked={isInternal}
                       onChange={(e) => setIsInternal(e.target.checked)}
-                      className="rounded border-[#E2E8F0] text-[#2563EB] focus:ring-[#2563EB]"
+                      className="rounded border-[#E2E8F0] text-[#7C3AED] focus:ring-[#7C3AED]"
                     />
                     <Label
                       htmlFor="internal"
@@ -448,7 +473,7 @@ export default function TicketDetailPage() {
                 <Button
                   type="submit"
                   disabled={submitting}
-                  className="h-9 bg-[#2563EB] hover:bg-[#1D4ED8] text-white shadow-md shadow-blue-200 rounded-xl text-sm"
+                  className="h-9 bg-[#7C3AED] hover:bg-[#6D28D9] text-white shadow-md shadow-[#7C3AED]/25 rounded-xl text-sm"
                 >
                   {submitting && (
                     <Loader2 className="mr-2 h-4 w-4 animate-spin" />
@@ -464,10 +489,10 @@ export default function TicketDetailPage() {
             !ticket.rating &&
             ticket.createdBy.id === userId && (
               <Card className="border border-[#E2E8F0] bg-gradient-to-br from-orange-50 to-amber-50 rounded-xl shadow-[0_1px_3px_rgba(0,0,0,0.05),0_1px_2px_rgba(0,0,0,0.03)] overflow-hidden">
-                <div className="h-1 bg-[#F97316]" />
+                <div className="h-1 bg-[#0EA5E9]" />
                 <CardHeader className="pb-3 pt-5 px-5">
                   <CardTitle className="flex items-center gap-2 text-sm font-semibold text-[#1E293B]">
-                    <Star className="h-4 w-4 text-[#F97316]" />
+                    <Star className="h-4 w-4 text-[#0EA5E9]" />
                     Rating
                   </CardTitle>
                 </CardHeader>
@@ -498,7 +523,7 @@ export default function TicketDetailPage() {
         <div className="space-y-5">
           {/* Ticket Info */}
           <Card className="border border-[#E2E8F0] bg-white rounded-xl shadow-[0_1px_3px_rgba(0,0,0,0.05),0_1px_2px_rgba(0,0,0,0.03)] overflow-hidden">
-            <div className="h-1 bg-[#2563EB]" />
+            <div className="h-1 bg-[#7C3AED]" />
             <CardHeader className="pb-3 pt-5 px-5">
               <CardTitle className="text-sm font-semibold text-[#1E293B]">
                 Informasi Tiket
@@ -523,7 +548,7 @@ export default function TicketDetailPage() {
                 icon={<Shield className="h-4 w-4" />}
                 label="Assigned To"
                 value={ticket.assignedTo?.name || "Belum di-assign"}
-                valueClass={ticket.assignedTo ? "text-[#2563EB] font-medium" : ""}
+                valueClass={ticket.assignedTo ? "text-[#7C3AED] font-medium" : ""}
               />
               <InfoRow
                 icon={<Calendar className="h-4 w-4" />}
@@ -536,6 +561,25 @@ export default function TicketDetailPage() {
                   minute: "2-digit",
                 })}
               />
+              {ticket.deadline && (
+                <InfoRow
+                  icon={<Clock className="h-4 w-4" />}
+                  label="Deadline"
+                  value={new Date(ticket.deadline).toLocaleString("id-ID", {
+                    day: "numeric",
+                    month: "short",
+                    year: "numeric",
+                    hour: "2-digit",
+                    minute: "2-digit",
+                  })}
+                  valueClass={
+                    new Date(ticket.deadline) < new Date() &&
+                    !["RESOLVED", "CLOSED"].includes(ticket.status)
+                      ? "text-red-600 font-medium"
+                      : "text-orange-600 font-medium"
+                  }
+                />
+              )}
               {ticket.resolvedAt && (
                 <InfoRow
                   icon={<CheckCircle className="h-4 w-4" />}
@@ -573,33 +617,80 @@ export default function TicketDetailPage() {
           {/* Actions */}
           {canManage && (
             <Card className="border border-[#E2E8F0] bg-white rounded-xl shadow-[0_1px_3px_rgba(0,0,0,0.05),0_1px_2px_rgba(0,0,0,0.03)] overflow-hidden">
-              <div className="h-1 bg-[#F97316]" />
+              <div className="h-1 bg-[#0EA5E9]" />
               <CardHeader className="pb-3 pt-5 px-5">
                 <CardTitle className="text-sm font-semibold text-[#1E293B]">
                   Aksi
                 </CardTitle>
               </CardHeader>
               <CardContent className="px-5 pb-5 space-y-4">
-                <div className="space-y-2">
-                  <Label className="text-[11px] font-semibold text-[#64748B] uppercase tracking-wider">
-                    Update Status
-                  </Label>
-                  <Select
-                    value={ticket.status}
-                    onValueChange={(value) => handleStatusChange(value || "")}
-                  >
-                    <SelectTrigger className="h-10 border-[#E2E8F0] bg-[#F8FAFC] rounded-xl text-sm focus:bg-white focus:border-[#2563EB] w-full">
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent className="min-w-[var(--radix-select-trigger-width)] !w-auto">
-                      <SelectItem value="OPEN">Open</SelectItem>
-                      <SelectItem value="IN_PROGRESS">In Progress</SelectItem>
-                      <SelectItem value="RESOLVED">Resolved</SelectItem>
-                      <SelectItem value="CLOSED">Closed</SelectItem>
-                      <SelectItem value="ESCALATED">Escalated</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
+                {ticket.status === "CLOSED" ? (
+                  // Locked state - show reopen button
+                  <div className="space-y-3">
+                    <div className="flex items-center gap-2 rounded-lg bg-slate-50 border border-slate-200 px-3 py-2">
+                      <Lock className="h-4 w-4 text-slate-500" />
+                      <span className="text-sm text-slate-600">Tiket telah ditutup</span>
+                    </div>
+                    {(isAdmin || ticket.createdBy.id === userId || ticket.onBehalfOf?.id === userId) && (ticket as any).reopenCount < 1 ? (
+                      <Button
+                        onClick={async () => {
+                          if (!confirm("Apakah Anda yakin ingin membuka kembali tiket ini?")) return;
+                          try {
+                            const res = await fetch(`/api/tickets/${params.id}`, {
+                              method: "PATCH",
+                              headers: { "Content-Type": "application/json" },
+                              body: JSON.stringify({ status: "REOPENED" }),
+                            });
+                            if (res.ok) {
+                              await fetchTicket();
+                            } else {
+                              const err = await res.json();
+                              alert(err.error || "Gagal membuka kembali tiket");
+                            }
+                          } catch {
+                            alert("Terjadi kesalahan");
+                          }
+                        }}
+                        variant="outline"
+                        className="w-full h-10 border-purple-200 text-purple-700 hover:bg-purple-50"
+                      >
+                        <RotateCcw className="h-4 w-4 mr-2" />
+                        Buka Kembali Tiket
+                      </Button>
+                    ) : (
+                      <div className="flex items-center gap-2 rounded-lg bg-amber-50 border border-amber-200 px-3 py-2">
+                        <AlertCircle className="h-4 w-4 text-amber-500" />
+                        <span className="text-sm text-amber-700">Tiket ini tidak dapat dibuka kembali</span>
+                      </div>
+                    )}
+                  </div>
+                ) : (
+                  // Normal state - show status dropdown
+                  <div className="space-y-2">
+                    <Label className="text-[11px] font-semibold text-[#64748B] uppercase tracking-wider">
+                      Update Status
+                    </Label>
+                    <Select
+                      value={ticket.status}
+                      onValueChange={(value) => handleStatusChange(value || "")}
+                    >
+                      <SelectTrigger className="h-10 border-[#E2E8F0] bg-[#F8FAFC] rounded-xl text-sm focus:bg-white focus:border-[#2563EB] w-full">
+                        <SelectValue>
+                          {statusConfig[ticket.status]?.label || ticket.status}
+                        </SelectValue>
+                      </SelectTrigger>
+                      <SelectContent className="min-w-[var(--radix-select-trigger-width)] !w-auto">
+                        <SelectItem value="OPEN">Open</SelectItem>
+                        <SelectItem value="IN_PROGRESS">In Progress</SelectItem>
+                        <SelectItem value="RESOLVED">Resolved</SelectItem>
+                        {(isAdmin || ticket.createdBy.id === userId || ticket.onBehalfOf?.id === userId) && (
+                          <SelectItem value="CLOSED">Closed</SelectItem>
+                        )}
+                        <SelectItem value="ESCALATED">Escalated</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                )}
 
                 {(isAdmin || isAgent || isSupervisor) && (
                   <div className="space-y-2">
@@ -688,7 +779,7 @@ function AssigneeSelect({
       value={currentId || ""}
       onValueChange={(value) => onAssign(value || "")}
     >
-      <SelectTrigger className="h-10 border-[#E2E8F0] bg-[#F8FAFC] rounded-xl text-sm focus:bg-white focus:border-[#2563EB] w-full">
+      <SelectTrigger className="h-10 border-[#E2E8F0] bg-[#F8FAFC] rounded-xl text-sm focus:bg-white focus:border-[#7C3AED] w-full">
         <SelectValue placeholder="Pilih assignee">
           {selectedName || (currentId ? currentId : "Pilih assignee")}
         </SelectValue>
