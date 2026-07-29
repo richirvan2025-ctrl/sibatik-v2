@@ -62,6 +62,7 @@ const roleConfig: Record<
   USER: { bg: "bg-slate-100", text: "text-slate-600", icon: Users, label: "User" },
   SUPERVISOR: { bg: "bg-purple-50", text: "text-purple-700", icon: Building, label: "Supervisor" },
   EXECUTIVE: { bg: "bg-indigo-50", text: "text-indigo-700", icon: Building2, label: "Eksekutif" },
+  MAHASISWA: { bg: "bg-cyan-50", text: "text-cyan-700", icon: Users, label: "Mahasiswa" },
 };
 
 interface DeleteBlockDetails {
@@ -315,6 +316,7 @@ export default function UsersPage() {
                     <SelectItem value="SUPERVISOR">Supervisor</SelectItem>
                     <SelectItem value="AGENT">Agent</SelectItem>
                     <SelectItem value="USER">User</SelectItem>
+                    <SelectItem value="MAHASISWA">Mahasiswa</SelectItem>
                   </SelectContent>
                 </Select>
               </div>

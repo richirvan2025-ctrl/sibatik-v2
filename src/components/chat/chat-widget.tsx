@@ -213,7 +213,7 @@ export function ChatWidget() {
       {/* Header */}
       <div className="border-b border-[#E2E8F0] bg-white px-6 py-4 shadow-sm">
         <div className="flex items-center gap-3">
-          <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-[#2563EB] overflow-hidden">
+          <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-[#7C3AED] overflow-hidden">
             <Image
               src="/images/vira.png"
               alt="Vira"
@@ -259,7 +259,7 @@ export function ChatWidget() {
               <div
                 className={`max-w-xs rounded-2xl px-4 py-3 text-sm ${
                   msg.role === "user"
-                    ? "bg-[#2563EB] text-white"
+                    ? "bg-[#7C3AED] text-white"
                     : "bg-white border border-[#E2E8F0] text-[#1E293B] shadow-sm"
                 }`}
               >
@@ -276,7 +276,7 @@ export function ChatWidget() {
                   <Card className="border border-[#E2E8F0] bg-white p-4 hover:shadow-md transition-shadow cursor-pointer">
                     <div className="flex items-start gap-3">
                       <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-blue-50">
-                        <BookOpen className="h-5 w-5 text-[#2563EB]" />
+                        <BookOpen className="h-5 w-5 text-[#7C3AED]" />
                       </div>
                       <div className="flex-1 min-w-0">
                         <p className="font-semibold text-[#1E293B] text-sm line-clamp-2">
@@ -297,7 +297,7 @@ export function ChatWidget() {
                 <Card className="border border-[#E2E8F0] bg-white p-4 w-full max-w-xs shadow-sm">
                   <div className="space-y-3">
                     <div className="flex items-center gap-2">
-                      <AlertCircle className="h-5 w-5 text-[#F97316]" />
+                      <AlertCircle className="h-5 w-5 text-[#0EA5E9]" />
                       <p className="font-semibold text-[#1E293B] text-sm">
                         Buat Tiket Support
                       </p>
@@ -325,7 +325,7 @@ export function ChatWidget() {
                         onClick={() =>
                           setPendingTicket(msg.action?.data as PendingTicket)
                         }
-                        className="flex-1 h-9 bg-[#2563EB] hover:bg-[#1D4ED8] text-white text-xs font-semibold rounded-lg"
+                        className="flex-1 h-9 bg-[#7C3AED] hover:bg-[#6D28D9] text-white text-xs font-semibold rounded-lg"
                       >
                         Buat Tiket
                       </Button>
@@ -360,7 +360,7 @@ export function ChatWidget() {
         {isLoading && (
           <div className="flex justify-start">
             <div className="flex items-center gap-2 bg-white border border-[#E2E8F0] rounded-2xl px-4 py-3 shadow-sm">
-              <Loader className="h-4 w-4 animate-spin text-[#2563EB]" />
+              <Loader className="h-4 w-4 animate-spin text-[#7C3AED]" />
               <p className="text-sm text-[#64748B]">Sedang berpikir...</p>
             </div>
           </div>
@@ -371,7 +371,7 @@ export function ChatWidget() {
             <Card className="border border-[#E2E8F0] bg-white p-4 w-full max-w-xs shadow-sm">
               <div className="space-y-3">
                 <div className="flex items-center gap-2">
-                  <AlertCircle className="h-5 w-5 text-[#2563EB]" />
+                  <AlertCircle className="h-5 w-5 text-[#7C3AED]" />
                   <p className="font-semibold text-[#1E293B] text-sm">
                     Konfirmasi Tiket
                   </p>
@@ -410,7 +410,7 @@ export function ChatWidget() {
                   <Button
                     onClick={handleConfirmTicket}
                     disabled={ticketCreating}
-                    className="flex-1 h-9 bg-[#2563EB] hover:bg-[#1D4ED8] text-white text-xs font-semibold rounded-lg disabled:opacity-50"
+                    className="flex-1 h-9 bg-[#7C3AED] hover:bg-[#6D28D9] text-white text-xs font-semibold rounded-lg disabled:opacity-50"
                   >
                     {ticketCreating ? (
                       <>
@@ -446,12 +446,12 @@ export function ChatWidget() {
             onChange={(e) => setInputValue(e.target.value)}
             placeholder="Ketik pesan..."
             disabled={isLoading}
-            className="h-10 flex-1 border-[#E2E8F0] bg-[#F8FAFC] rounded-xl text-sm focus:bg-white focus:border-[#2563EB] disabled:opacity-50"
+            className="h-10 flex-1 border-[#E2E8F0] bg-[#F8FAFC] rounded-xl text-sm focus:bg-white focus:border-[#7C3AED] disabled:opacity-50"
           />
           <Button
             type="submit"
             disabled={!inputValue.trim() || isLoading}
-            className="h-10 w-10 p-0 bg-[#2563EB] hover:bg-[#1D4ED8] text-white rounded-xl disabled:opacity-50 transition-all"
+            className="h-10 w-10 p-0 bg-[#7C3AED] hover:bg-[#6D28D9] text-white rounded-xl disabled:opacity-50 transition-all"
           >
             <Send className="h-4 w-4" />
           </Button>

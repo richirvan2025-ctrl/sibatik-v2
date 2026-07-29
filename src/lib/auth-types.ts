@@ -3,7 +3,8 @@ export type AppRole =
   | "USER"
   | "AGENT"
   | "SUPERVISOR"
-  | "EXECUTIVE";
+  | "EXECUTIVE"
+  | "MAHASISWA";
 
 export interface AppSession {
   user: {

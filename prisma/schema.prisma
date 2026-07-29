@@ -8,28 +8,50 @@ datasource db {
 }
 
 model User {
-  id            String    @id @default(cuid())
-  name          String
-  email         String?   @unique
-  username      String?   @unique
-  ssoId         String?   @unique
-  password      String?   // legacy; autentikasi dikelola oleh Sinergy
-  role          Role      @default(USER)
-  department    String?
-  phone         String?
-  isActive      Boolean   @default(true)
-  provider      String    @default("sinergy")
-  createdAt     DateTime  @default(now())
-  updatedAt     DateTime  @updatedAt
+  id                String              @id @default(cuid())
+  name              String
+  email             String?             @unique
+  username          String?             @unique
+  ssoId             String?             @unique
+  password          String? // legacy; autentikasi dikelola oleh Sinergy
+  role              Role                @default(USER)
+  department        String?
+  phone             String?
+  isActive          Boolean             @default(true)
+  provider          String              @default("sinergy")
+  createdAt         DateTime            @default(now())
+  updatedAt         DateTime            @updatedAt
+  accounts          Account[]
+  ChatConversation  ChatConversation[]
+  CommentAttachment CommentAttachment[]
+  kbArticles        KBArticle[]
+  notifications     Notification[]
+  assignedTickets   Ticket[]            @relation("AssignedTickets")
+  ownedTickets      Ticket[]            @relation("TicketOwner")
+  createdTickets    Ticket[]            @relation("CreatedTickets")
+  attachments       TicketAttachment[]
+  comments          TicketComment[]
+  groupMemberships  UserGroupMember[]
+}
 
-  createdTickets Ticket[] @relation("CreatedTickets")
-  assignedTickets Ticket[] @relation("AssignedTickets")
-  comments       TicketComment[]
-  attachments    TicketAttachment[]
-  ownedTickets   Ticket[] @relation("TicketOwner")
-  accounts       Account[]
-  kbArticles     KBArticle[]
-  notifications  Notification[]
+model UserGroup {
+  id          String            @id @default(cuid())
+  name        String            @unique
+  description String?
+  createdAt   DateTime          @default(now())
+  updatedAt   DateTime          @updatedAt
+  members     UserGroupMember[]
+}
+
+model UserGroupMember {
+  id      String    @id @default(cuid())
+  groupId String
+  userId  String
+  user    User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  group   UserGroup @relation(fields: [groupId], references: [id], onDelete: Cascade)
+
+  @@unique([groupId, userId])
+  @@index([userId])
 }
 
 model Account {
@@ -45,82 +67,80 @@ model Account {
   scope             String?
   id_token          String?
   session_state     String?
-
-  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user              User    @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@unique([provider, providerAccountId])
 }
 
 model Ticket {
-  id                  String        @id @default(cuid())
-  ticketNumber        String        @unique // format: TKT-2026-00001
+  id                  String              @id @default(cuid())
+  ticketNumber        String              @unique
   title               String
   description         String
-  status              TicketStatus  @default(OPEN)
-  priority            Priority      @default(MEDIUM)
+  status              TicketStatus        @default(OPEN)
+  priority            Priority            @default(MEDIUM)
   categoryId          String
   createdById         String
-  onBehalfOfId        String?       // ID user yang sebenarnya punya masalah (jika dibuatkan oleh technician/admin)
+  onBehalfOfId        String?
   assignedToId        String?
-  createdAt           DateTime      @default(now())
-  updatedAt           DateTime      @updatedAt
+  createdAt           DateTime            @default(now())
+  updatedAt           DateTime            @updatedAt
   resolvedAt          DateTime?
   closedAt            DateTime?
   rating              Int?
   feedback            String?
-  firstResponseAt     DateTime?     // waktu technician pertama kali merespon (komentar/status update)
-  slaBreached         Boolean       @default(false)  // true jika melewati SLA resolve time
-  responseSlaBreached Boolean       @default(false)  // true jika melewati SLA response time
-
-  category      Category      @relation(fields: [categoryId], references: [id])
-  createdBy     User          @relation("CreatedTickets", fields: [createdById], references: [id])
-  onBehalfOf    User?         @relation("TicketOwner", fields: [onBehalfOfId], references: [id])
-  assignedTo    User?         @relation("AssignedTickets", fields: [assignedToId], references: [id])
-  comments      TicketComment[]
-  attachments   TicketAttachment[]
-  notifications Notification[]
+  firstResponseAt     DateTime?
+  slaBreached         Boolean             @default(false)
+  responseSlaBreached Boolean             @default(false)
+  reopenCount         Int                 @default(0)
+  deadline            DateTime?
+  notifications       Notification[]
+  assignedTo          User?               @relation("AssignedTickets", fields: [assignedToId], references: [id])
+  onBehalfOf          User?               @relation("TicketOwner", fields: [onBehalfOfId], references: [id])
+  createdBy           User                @relation("CreatedTickets", fields: [createdById], references: [id])
+  category            Category            @relation(fields: [categoryId], references: [id])
+  attachments         TicketAttachment[]
+  comments            TicketComment[]
+  TicketCustomField   TicketCustomField[]
 }
 
 model TicketComment {
-  id          String   @id @default(cuid())
-  ticketId    String
-  userId      String
-  message     String
-  isInternal  Boolean  @default(false) // hanya visible untuk technician & admin
-  createdAt   DateTime @default(now())
-
-  ticket      Ticket   @relation(fields: [ticketId], references: [id], onDelete: Cascade)
-  user        User     @relation(fields: [userId], references: [id])
+  id                String              @id @default(cuid())
+  ticketId          String
+  userId            String
+  message           String
+  isInternal        Boolean             @default(false)
+  createdAt         DateTime            @default(now())
+  CommentAttachment CommentAttachment[]
+  user              User                @relation(fields: [userId], references: [id])
+  ticket            Ticket              @relation(fields: [ticketId], references: [id], onDelete: Cascade)
 }
 
 model TicketAttachment {
-  id          String   @id @default(cuid())
-  ticketId    String
-  fileName    String
-  fileUrl     String
-  fileSize    Int
-  mimeType    String
+  id           String   @id @default(cuid())
+  ticketId     String
+  fileName     String
+  fileUrl      String
+  fileSize     Int
+  mimeType     String
   uploadedById String
-  createdAt   DateTime @default(now())
-
-  ticket      Ticket   @relation(fields: [ticketId], references: [id], onDelete: Cascade)
-  uploadedBy  User     @relation(fields: [uploadedById], references: [id])
+  createdAt    DateTime @default(now())
+  uploadedBy   User     @relation(fields: [uploadedById], references: [id])
+  ticket       Ticket   @relation(fields: [ticketId], references: [id], onDelete: Cascade)
 }
 
 model Category {
   id                String     @id @default(cuid())
   name              String
   description       String?
-  department        String?    // divisi yang menangani kategori ini, e.g. "Keuangan", "HRD/Kepegawaian"
-  responseTimeHours Int        @default(24)  // SLA: waktu response dalam jam
-  resolveTimeHours  Int        @default(72)  // SLA: waktu resolve dalam jam
+  department        String?
+  responseTimeHours Int        @default(24)
+  resolveTimeHours  Int        @default(72)
   isActive          Boolean    @default(true)
   createdAt         DateTime   @default(now())
-
   parentId          String?
   parent            Category?  @relation("CategoryChildren", fields: [parentId], references: [id])
   children          Category[] @relation("CategoryChildren")
-
   tickets           Ticket[]
 
   @@unique([name, parentId])
@@ -130,84 +150,78 @@ model Notification {
   id        String   @id @default(cuid())
   userId    String
   ticketId  String
-  type      String   // "NEW_TICKET" | "STATUS_CHANGED" | "COMMENT_ADDED"
+  type      String
   message   String
   isRead    Boolean  @default(false)
   createdAt DateTime @default(now())
-
-  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
-  ticket Ticket @relation(fields: [ticketId], references: [id], onDelete: Cascade)
+  ticket    Ticket   @relation(fields: [ticketId], references: [id], onDelete: Cascade)
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
 
 model KBCategory {
-  id          String     @id @default(cuid())
-  name        String     @unique
+  id          String      @id @default(cuid())
+  name        String      @unique
   description String?
-  icon        String?    // lucide icon name
-  isActive    Boolean    @default(true)
-  createdAt   DateTime   @default(now())
-
+  icon        String?
+  isActive    Boolean     @default(true)
+  createdAt   DateTime    @default(now())
   articles    KBArticle[]
 }
 
 model KBTag {
-  id       String        @id @default(cuid())
-  name     String        @unique
-  slug     String        @unique
-
+  id       String         @id @default(cuid())
+  name     String         @unique
+  slug     String         @unique
   articles KBArticleTag[]
 }
 
 model KBArticle {
-  id          String     @id @default(cuid())
+  id          String         @id @default(cuid())
   title       String
-  slug        String     @unique
+  slug        String         @unique
   content     String
   excerpt     String?
-  isPublished Boolean    @default(false)
-  viewCount   Int        @default(0)
+  isPublished Boolean        @default(false)
+  viewCount   Int            @default(0)
   categoryId  String
   createdById String
-  createdAt   DateTime   @default(now())
-  updatedAt   DateTime   @updatedAt
-
-  category    KBCategory @relation(fields: [categoryId], references: [id])
-  createdBy   User       @relation(fields: [createdById], references: [id])
+  createdAt   DateTime       @default(now())
+  updatedAt   DateTime       @updatedAt
+  createdBy   User           @relation(fields: [createdById], references: [id])
+  category    KBCategory     @relation(fields: [categoryId], references: [id])
   tags        KBArticleTag[]
 }
 
 model KBArticleTag {
   articleId String
   tagId     String
-
-  article   KBArticle @relation(fields: [articleId], references: [id], onDelete: Cascade)
   tag       KBTag     @relation(fields: [tagId], references: [id], onDelete: Cascade)
+  article   KBArticle @relation(fields: [articleId], references: [id], onDelete: Cascade)
 
   @@id([articleId, tagId])
 }
 
 model InternalDoc {
-  id          String   @id @default(cuid())
-  title       String
-  category    String
-  fileName    String
-  fileUrl     String
-  content     String
-  isActive    Boolean  @default(true)
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
-
-  chunks      DocChunk[]
+  id        String     @id @default(cuid())
+  title     String
+  category  String
+  fileName  String
+  fileUrl   String
+  content   String
+  isActive  Boolean    @default(true)
+  createdAt DateTime   @default(now())
+  updatedAt DateTime   @updatedAt
+  chunks    DocChunk[]
 }
 
 model DocChunk {
-  id          String      @id @default(cuid())
-  docId       String
-  doc         InternalDoc @relation(fields: [docId], references: [id], onDelete: Cascade)
-  chunkIndex  Int
-  content     String
-  embedding   String
-  createdAt   DateTime    @default(now())
+  id         String      @id @default(cuid())
+  docId      String
+  chunkIndex Int
+  content    String
+  embedding  String
+  createdAt  DateTime    @default(now())
+  doc        InternalDoc @relation(fields: [docId], references: [id], onDelete: Cascade)
 }
 
 model FAQ {
@@ -220,12 +234,59 @@ model FAQ {
   updatedAt DateTime @updatedAt
 }
 
+model ChatConversation {
+  id          String        @id
+  userId      String
+  title       String        @default("Percakapan Baru")
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime
+  User        User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  ChatMessage ChatMessage[]
+}
+
+model ChatMessage {
+  id               String           @id
+  conversationId   String
+  role             String
+  content          String
+  sources          String?
+  createdAt        DateTime         @default(now())
+  ChatConversation ChatConversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
+}
+
+model CommentAttachment {
+  id            String        @id
+  commentId     String
+  fileName      String
+  fileUrl       String
+  fileSize      Int
+  mimeType      String
+  uploadedById  String
+  createdAt     DateTime      @default(now())
+  User          User          @relation(fields: [uploadedById], references: [id])
+  TicketComment TicketComment @relation(fields: [commentId], references: [id], onDelete: Cascade)
+
+  @@index([commentId])
+}
+
+model TicketCustomField {
+  id        String   @id
+  ticketId  String
+  fieldData Json
+  createdAt DateTime @default(now())
+  updatedAt DateTime
+  Ticket    Ticket   @relation(fields: [ticketId], references: [id], onDelete: Cascade)
+
+  @@index([ticketId])
+}
+
 enum Role {
   ADMIN
   USER
   AGENT
   SUPERVISOR
   EXECUTIVE
+  MAHASISWA
 }
 
 enum TicketStatus {
@@ -234,6 +295,7 @@ enum TicketStatus {
   RESOLVED
   CLOSED
   ESCALATED
+  REOPENED
 }
 
 enum Priority {

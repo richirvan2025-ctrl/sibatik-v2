@@ -129,10 +129,10 @@ export default function ExecutiveTicketsPage() {
 
       {/* Table */}
       <Card className="border border-[#E2E8F0] bg-white rounded-xl shadow-[0_1px_3px_rgba(0,0,0,0.05)] overflow-hidden">
-        <div className="h-1 bg-[#2563EB]" />
+        <div className="h-1 bg-[#7C3AED]" />
         {loading ? (
           <div className="flex h-40 items-center justify-center">
-            <div className="h-8 w-8 animate-spin rounded-full border-4 border-blue-100 border-t-[#2563EB]" />
+            <div className="h-8 w-8 animate-spin rounded-full border-4 border-violet-100 border-t-[#7C3AED]" />
           </div>
         ) : (
           <div className="overflow-x-auto">
@@ -150,7 +150,7 @@ export default function ExecutiveTicketsPage() {
                   const p = priorityConfig[t.priority] || { label: t.priority, color: "" };
                   return (
                     <tr key={t.id} className="border-b border-[#F1F5F9] hover:bg-[#F8FAFC] transition-colors">
-                      <td className="py-3 px-5 font-mono text-xs text-[#2563EB] font-semibold">{t.ticketNumber}</td>
+                      <td className="py-3 px-5 font-mono text-xs text-[#7C3AED] font-semibold">{t.ticketNumber}</td>
                       <td className="py-3 px-3 max-w-[180px]">
                         <p className="font-medium text-[#1E293B] truncate">{t.title}</p>
                       </td>
@@ -168,7 +168,7 @@ export default function ExecutiveTicketsPage() {
                       </td>
                       <td className="py-3 px-5">
                         <Link href={`/tickets/${t.id}`}>
-                          <Button variant="ghost" size="sm" className="h-8 w-8 p-0 text-[#64748B] hover:text-[#2563EB]">
+                          <Button variant="ghost" size="sm" className="h-8 w-8 p-0 text-[#64748B] hover:text-[#7C3AED]">
                             <Eye className="h-4 w-4" />
                           </Button>
                         </Link>

@@ -180,7 +180,7 @@ export default function CategoriesPage() {
   if (loading) {
     return (
       <div className="flex h-96 items-center justify-center">
-        <div className="h-8 w-8 animate-spin rounded-full border-4 border-blue-100 border-t-[#2563EB]" />
+        <div className="h-8 w-8 animate-spin rounded-full border-4 border-violet-100 border-t-[#7C3AED]" />
       </div>
     );
   }
@@ -198,12 +198,12 @@ export default function CategoriesPage() {
           </p>
         </div>
         <Dialog open={dialogOpen} onOpenChange={(open) => { setDialogOpen(open); if (!open) resetForm(); }}>
-          <DialogTrigger render={<Button className="h-10 bg-[#2563EB] hover:bg-[#1D4ED8] text-white shadow-md shadow-blue-200 transition-all duration-200 rounded-xl text-sm font-semibold" />}>
+          <DialogTrigger render={<Button className="h-10 bg-[#7C3AED] hover:bg-[#6D28D9] text-white shadow-md shadow-[#7C3AED]/25 transition-all duration-200 rounded-xl text-sm font-semibold" />}>
             <Plus className="mr-2 h-4 w-4" />
             Tambah Kategori
           </DialogTrigger>
           <DialogContent className="border border-[#E2E8F0] shadow-xl rounded-xl">
-            <div className="h-1 bg-[#2563EB] rounded-t-lg -mt-6 mx-6" />
+            <div className="h-1 bg-[#7C3AED] rounded-t-lg -mt-6 mx-6" />
             <DialogHeader className="pt-2">
               <DialogTitle className="text-lg font-bold text-[#1E293B]">
                 {editingCategory
@@ -217,7 +217,7 @@ export default function CategoriesPage() {
               {!editingIsParent && (
                 <div className="space-y-2">
                   <Label className="flex items-center gap-2 text-sm font-medium text-[#1E293B]">
-                    <FolderOpen className="h-4 w-4 text-[#2563EB]" />
+                    <FolderOpen className="h-4 w-4 text-[#7C3AED]" />
                     Kategori Induk
                     <span className="text-xs font-normal text-[#94A3B8]">(kosongkan untuk kategori utama)</span>
                   </Label>
@@ -231,7 +231,7 @@ export default function CategoriesPage() {
                       }
                     }}
                   >
-                    <SelectTrigger className="h-10 border-[#E2E8F0] bg-[#F8FAFC] rounded-xl text-sm focus:bg-white focus:border-[#2563EB]">
+                    <SelectTrigger className="h-10 border-[#E2E8F0] bg-[#F8FAFC] rounded-xl text-sm focus:bg-white focus:border-[#7C3AED]">
                       <SelectValue placeholder="Tidak ada (kategori utama)">
                         {selectedParent ? selectedParent.name : "Tidak ada (kategori utama)"}
                       </SelectValue>
@@ -258,31 +258,31 @@ export default function CategoriesPage() {
 
               <div className="space-y-2">
                 <Label className="flex items-center gap-2 text-sm font-medium text-[#1E293B]">
-                  <Settings className="h-4 w-4 text-[#2563EB]" />
+                  <Settings className="h-4 w-4 text-[#7C3AED]" />
                   Nama {parentId ? "Subkategori" : "Kategori"}
                 </Label>
                 <Input
                   value={name}
                   onChange={(e) => setName(e.target.value)}
-                  className="h-10 border-[#E2E8F0] bg-[#F8FAFC] rounded-xl text-sm focus:bg-white focus:border-[#2563EB]"
+                  className="h-10 border-[#E2E8F0] bg-[#F8FAFC] rounded-xl text-sm focus:bg-white focus:border-[#7C3AED]"
                   required
                 />
               </div>
               <div className="space-y-2">
                 <Label className="flex items-center gap-2 text-sm font-medium text-[#1E293B]">
-                  <FileText className="h-4 w-4 text-[#2563EB]" />
+                  <FileText className="h-4 w-4 text-[#7C3AED]" />
                   Detail / Deskripsi
                 </Label>
                 <Input
                   value={description}
                   onChange={(e) => setDescription(e.target.value)}
                   placeholder="Contoh: Registrasi semester, pengambilan/perubahan mata kuliah"
-                  className="h-10 border-[#E2E8F0] bg-[#F8FAFC] rounded-xl text-sm focus:bg-white focus:border-[#2563EB]"
+                  className="h-10 border-[#E2E8F0] bg-[#F8FAFC] rounded-xl text-sm focus:bg-white focus:border-[#7C3AED]"
                 />
               </div>
               <div className="space-y-2">
                 <Label className="flex items-center gap-2 text-sm font-medium text-[#1E293B]">
-                  <Building className="h-4 w-4 text-[#2563EB]" />
+                  <Building className="h-4 w-4 text-[#7C3AED]" />
                   Divisi Penanganan
                   {parentId && <span className="text-xs font-normal text-[#94A3B8]">(dari kategori induk)</span>}
                 </Label>
@@ -290,7 +290,7 @@ export default function CategoriesPage() {
                   value={department}
                   onValueChange={(value) => setDepartment(value || "")}
                 >
-                  <SelectTrigger className="h-10 border-[#E2E8F0] bg-[#F8FAFC] rounded-xl text-sm focus:bg-white focus:border-[#2563EB]">
+                  <SelectTrigger className="h-10 border-[#E2E8F0] bg-[#F8FAFC] rounded-xl text-sm focus:bg-white focus:border-[#7C3AED]">
                     <SelectValue placeholder="Pilih divisi (opsional)" />
                   </SelectTrigger>
                   <SelectContent className="max-h-72">
@@ -306,7 +306,7 @@ export default function CategoriesPage() {
               <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-2">
                   <Label className="flex items-center gap-2 text-sm font-medium text-[#1E293B]">
-                    <Clock className="h-4 w-4 text-[#F97316]" />
+                    <Clock className="h-4 w-4 text-[#0EA5E9]" />
                     Response (jam)
                   </Label>
                   <Input
@@ -314,13 +314,13 @@ export default function CategoriesPage() {
                     min={1}
                     value={responseTimeHours}
                     onChange={(e) => setResponseTimeHours(parseInt(e.target.value))}
-                    className="h-10 border-[#E2E8F0] bg-[#F8FAFC] rounded-xl text-sm focus:bg-white focus:border-[#2563EB]"
+                    className="h-10 border-[#E2E8F0] bg-[#F8FAFC] rounded-xl text-sm focus:bg-white focus:border-[#7C3AED]"
                     required
                   />
                 </div>
                 <div className="space-y-2">
                   <Label className="flex items-center gap-2 text-sm font-medium text-[#1E293B]">
-                    <Zap className="h-4 w-4 text-[#F97316]" />
+                    <Zap className="h-4 w-4 text-[#0EA5E9]" />
                     Resolve (jam)
                   </Label>
                   <Input
@@ -328,14 +328,14 @@ export default function CategoriesPage() {
                     min={1}
                     value={resolveTimeHours}
                     onChange={(e) => setResolveTimeHours(parseInt(e.target.value))}
-                    className="h-10 border-[#E2E8F0] bg-[#F8FAFC] rounded-xl text-sm focus:bg-white focus:border-[#2563EB]"
+                    className="h-10 border-[#E2E8F0] bg-[#F8FAFC] rounded-xl text-sm focus:bg-white focus:border-[#7C3AED]"
                     required
                   />
                 </div>
               </div>
               <Button
                 type="submit"
-                className="w-full h-10 bg-[#2563EB] hover:bg-[#1D4ED8] text-white shadow-md rounded-xl text-sm font-semibold"
+                className="w-full h-10 bg-[#7C3AED] hover:bg-[#6D28D9] text-white shadow-md rounded-xl text-sm font-semibold"
               >
                 {editingCategory ? "Update" : "Tambah"}
               </Button>
@@ -346,7 +346,7 @@ export default function CategoriesPage() {
 
       {/* Categories Table */}
       <Card className="border border-[#E2E8F0] bg-white rounded-xl shadow-[0_1px_3px_rgba(0,0,0,0.05),0_1px_2px_rgba(0,0,0,0.03)] overflow-hidden">
-        <div className="h-1 bg-[#2563EB]" />
+        <div className="h-1 bg-[#7C3AED]" />
         <div className="overflow-x-auto">
           <table className="w-full text-sm border-collapse">
             <thead>
@@ -387,7 +387,7 @@ export default function CategoriesPage() {
                       <td className="py-3 px-4 align-middle">
                         <div className="flex items-center gap-2">
                           <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-blue-50">
-                            <Settings className="h-3.5 w-3.5 text-[#2563EB]" />
+                            <Settings className="h-3.5 w-3.5 text-[#7C3AED]" />
                           </div>
                           <div>
                             <p className="font-semibold text-[#1E293B] text-sm leading-tight">
@@ -415,7 +415,7 @@ export default function CategoriesPage() {
                             variant="ghost"
                             size="sm"
                             onClick={() => openAddSubcategory(category)}
-                            className="h-8 w-8 p-0 text-[#94A3B8] hover:text-[#2563EB] hover:bg-blue-50 rounded-lg"
+                            className="h-8 w-8 p-0 text-[#94A3B8] hover:text-[#7C3AED] hover:bg-violet-50 rounded-lg"
                             title="Tambah subkategori"
                           >
                             <Plus className="h-4 w-4" />
@@ -424,7 +424,7 @@ export default function CategoriesPage() {
                             variant="ghost"
                             size="sm"
                             onClick={() => openEdit(category)}
-                            className="h-8 w-8 p-0 text-[#64748B] hover:text-[#2563EB] hover:bg-blue-50 rounded-lg"
+                            className="h-8 w-8 p-0 text-[#64748B] hover:text-[#7C3AED] hover:bg-violet-50 rounded-lg"
                           >
                             <Pencil className="h-4 w-4" />
                           </Button>
@@ -456,7 +456,7 @@ export default function CategoriesPage() {
                       >
                         <div className="flex items-start gap-2 pt-0.5">
                           <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-blue-50 mt-0.5">
-                            <Settings className="h-3.5 w-3.5 text-[#2563EB]" />
+                            <Settings className="h-3.5 w-3.5 text-[#7C3AED]" />
                           </div>
                           <div className="min-w-0">
                             <p className="font-semibold text-[#1E293B] text-sm leading-tight">
@@ -470,7 +470,7 @@ export default function CategoriesPage() {
                                 variant="ghost"
                                 size="sm"
                                 onClick={() => openAddSubcategory(category)}
-                                className="h-6 px-2 text-[10px] text-[#94A3B8] hover:text-[#2563EB] hover:bg-blue-50 rounded-md font-normal"
+                                className="h-6 px-2 text-[10px] text-[#94A3B8] hover:text-[#7C3AED] hover:bg-violet-50 rounded-md font-normal"
                                 title="Tambah subkategori"
                               >
                                 <Plus className="h-3 w-3 mr-1" />
@@ -480,7 +480,7 @@ export default function CategoriesPage() {
                                 variant="ghost"
                                 size="sm"
                                 onClick={() => openEdit(category)}
-                                className="h-6 px-2 text-[10px] text-[#94A3B8] hover:text-[#2563EB] hover:bg-blue-50 rounded-md font-normal"
+                                className="h-6 px-2 text-[10px] text-[#94A3B8] hover:text-[#7C3AED] hover:bg-violet-50 rounded-md font-normal"
                               >
                                 <Pencil className="h-3 w-3 mr-1" />
                                 Edit
@@ -509,7 +509,7 @@ export default function CategoriesPage() {
                         variant="ghost"
                         size="sm"
                         onClick={() => openEdit(sub as unknown as Category)}
-                        className="h-8 w-8 p-0 text-[#64748B] hover:text-[#2563EB] hover:bg-blue-50 rounded-lg"
+                        className="h-8 w-8 p-0 text-[#64748B] hover:text-[#7C3AED] hover:bg-violet-50 rounded-lg"
                       >
                         <Pencil className="h-4 w-4" />
                       </Button>

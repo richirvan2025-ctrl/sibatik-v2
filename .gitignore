@@ -49,3 +49,8 @@ coverage/
 # Misc
 *.pem
 .pnp.*
+
+# Backups & build cache
+*.backup-*
+*.backup-manual-edit
+tsconfig.tsbuildinfo

@@ -421,7 +421,7 @@ export default function AdminKBPage() {
                   <Button
                     type="submit"
                     disabled={catSubmitting}
-                    className="h-10 bg-[#2563EB] hover:bg-[#1D4ED8] text-white rounded-xl text-sm"
+                    className="h-10 bg-[#7C3AED] hover:bg-[#6D28D9] text-white rounded-xl text-sm"
                   >
                     <Plus className="h-4 w-4" />
                   </Button>
@@ -474,7 +474,7 @@ export default function AdminKBPage() {
                 resetForm();
                 setDialogOpen(true);
               }}
-              className="h-10 bg-[#2563EB] hover:bg-[#1D4ED8] text-white shadow-md shadow-blue-200 transition-all duration-200 rounded-xl text-sm font-semibold inline-flex items-center px-4"
+              className="h-10 bg-[#7C3AED] hover:bg-[#6D28D9] text-white shadow-md shadow-[#7C3AED]/25 transition-all duration-200 rounded-xl text-sm font-semibold inline-flex items-center px-4"
             >
               <Plus className="mr-2 h-4 w-4" />
               Artikel Baru
@@ -590,7 +590,7 @@ export default function AdminKBPage() {
                     id="published"
                     checked={isPublished}
                     onChange={(e) => setIsPublished(e.target.checked)}
-                    className="rounded border-[#E2E8F0] text-[#2563EB] focus:ring-[#2563EB]"
+                    className="rounded border-[#E2E8F0] text-[#7C3AED] focus:ring-[#7C3AED]"
                   />
                   <Label htmlFor="published" className="text-sm font-normal text-[#64748B]">
                     Publish artikel (terlihat publik)
@@ -601,7 +601,7 @@ export default function AdminKBPage() {
                   <Button
                     type="submit"
                     disabled={submitting || categories.length === 0}
-                    className="flex-1 h-10 bg-[#2563EB] hover:bg-[#1D4ED8] text-white rounded-xl text-sm font-semibold"
+                    className="flex-1 h-10 bg-[#7C3AED] hover:bg-[#6D28D9] text-white rounded-xl text-sm font-semibold"
                   >
                     <Save className="mr-2 h-4 w-4" />
                     {submitting ? "Menyimpan..." : editingId ? "Update" : "Simpan"}
@@ -631,13 +631,13 @@ export default function AdminKBPage() {
           placeholder="Cari artikel..."
           value={search}
           onChange={(e) => setSearch(e.target.value)}
-          className="pl-10 h-10 border-[#E2E8F0] bg-white rounded-xl text-sm focus:border-[#2563EB]"
+          className="pl-10 h-10 border-[#E2E8F0] bg-white rounded-xl text-sm focus:border-[#7C3AED]"
         />
       </div>
 
       {/* Articles Table */}
       <Card className="border border-[#E2E8F0] bg-white rounded-xl shadow-[0_1px_3px_rgba(0,0,0,0.05),0_1px_2px_rgba(0,0,0,0.03)] overflow-hidden">
-        <div className="h-1 bg-[#2563EB]" />
+        <div className="h-1 bg-[#7C3AED]" />
         <CardHeader className="pb-3 pt-5 px-5">
           <CardTitle className="text-sm font-semibold text-[#1E293B]">
             Daftar Artikel ({articles.length})
@@ -646,7 +646,7 @@ export default function AdminKBPage() {
         <CardContent className="px-0 pb-0">
           {loading ? (
             <div className="flex h-40 items-center justify-center">
-              <div className="h-8 w-8 animate-spin rounded-full border-4 border-blue-100 border-t-[#2563EB]" />
+              <div className="h-8 w-8 animate-spin rounded-full border-4 border-violet-100 border-t-[#7C3AED]" />
             </div>
           ) : (
             <div className="overflow-x-auto">
@@ -714,7 +714,7 @@ export default function AdminKBPage() {
                           <Button
                             variant="ghost"
                             size="sm"
-                            className="h-8 w-8 p-0 text-[#64748B] hover:text-[#2563EB]"
+                            className="h-8 w-8 p-0 text-[#64748B] hover:text-[#7C3AED]"
                             onClick={() =>
                               router.push(`/kb/${article.slug}`)
                             }
@@ -724,7 +724,7 @@ export default function AdminKBPage() {
                           <Button
                             variant="ghost"
                             size="sm"
-                            className="h-8 w-8 p-0 text-[#64748B] hover:text-[#F97316]"
+                            className="h-8 w-8 p-0 text-[#64748B] hover:text-[#0EA5E9]"
                             onClick={() => handleEdit(article)}
                           >
                             <Pencil className="h-4 w-4" />
@@ -764,12 +764,12 @@ export default function AdminKBPage() {
         <CardHeader className="flex flex-row items-center justify-between pb-3 pt-5 px-5">
           <CardTitle className="text-base font-semibold text-[#1E293B] flex items-center gap-2">
             <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-blue-50">
-              <HelpCircle className="h-4 w-4 text-[#2563EB]" />
+              <HelpCircle className="h-4 w-4 text-[#7C3AED]" />
             </div>
             FAQ
           </CardTitle>
           <Dialog open={faqDialogOpen} onOpenChange={(open) => { setFaqDialogOpen(open); if (!open) resetFaqForm(); }}>
-            <DialogTrigger className="h-9 bg-[#2563EB] hover:bg-[#1D4ED8] text-white rounded-xl text-sm font-semibold inline-flex items-center px-4 transition-colors">
+            <DialogTrigger className="h-9 bg-[#7C3AED] hover:bg-[#6D28D9] text-white rounded-xl text-sm font-semibold inline-flex items-center px-4 transition-colors">
               <Plus className="mr-2 h-4 w-4" />
               Tambah FAQ
             </DialogTrigger>
@@ -811,7 +811,7 @@ export default function AdminKBPage() {
                 </div>
                 <div className="flex justify-end gap-2 pt-2">
                   <Button type="button" variant="outline" className="rounded-xl" onClick={() => { setFaqDialogOpen(false); resetFaqForm(); }}>Batal</Button>
-                  <Button type="submit" disabled={faqSubmitting} className="bg-[#2563EB] hover:bg-[#1D4ED8] text-white rounded-xl">
+                  <Button type="submit" disabled={faqSubmitting} className="bg-[#7C3AED] hover:bg-[#6D28D9] text-white rounded-xl">
                     <Save className="mr-2 h-4 w-4" />
                     {faqSubmitting ? "Menyimpan..." : "Simpan"}
                   </Button>
@@ -836,7 +836,7 @@ export default function AdminKBPage() {
                     <p className="text-sm text-[#64748B] mt-1 line-clamp-2">{faq.answer}</p>
                   </div>
                   <div className="flex items-center gap-1 shrink-0">
-                    <Button variant="ghost" size="sm" className="h-8 w-8 p-0 text-[#64748B] hover:text-[#F97316]" onClick={() => handleEditFaq(faq)}>
+                    <Button variant="ghost" size="sm" className="h-8 w-8 p-0 text-[#64748B] hover:text-[#0EA5E9]" onClick={() => handleEditFaq(faq)}>
                       <Pencil className="h-4 w-4" />
                     </Button>
                     <Button variant="ghost" size="sm" className="h-8 w-8 p-0 text-[#64748B] hover:text-red-600" onClick={() => handleDeleteFaq(faq.id)}>
@@ -859,7 +859,7 @@ export default function AdminKBPage() {
             Dokumen Internal
           </CardTitle>
           <Dialog open={docDialogOpen} onOpenChange={(open) => { setDocDialogOpen(open); if (!open) { setDocTitle(""); setDocCategory("SOP"); setDocFile(null); } }}>
-            <DialogTrigger className="h-9 bg-[#2563EB] hover:bg-[#1D4ED8] text-white rounded-xl text-sm font-semibold inline-flex items-center px-4 transition-colors">
+            <DialogTrigger className="h-9 bg-[#7C3AED] hover:bg-[#6D28D9] text-white rounded-xl text-sm font-semibold inline-flex items-center px-4 transition-colors">
               <Upload className="mr-2 h-4 w-4" />
               Upload Dokumen
             </DialogTrigger>
@@ -884,7 +884,7 @@ export default function AdminKBPage() {
                     id="doc-category"
                     value={docCategory}
                     onChange={(e) => setDocCategory(e.target.value)}
-                    className="w-full h-10 rounded-xl border border-[#E2E8F0] px-3 text-sm bg-white text-[#1E293B] focus:outline-none focus:ring-2 focus:ring-[#2563EB]"
+                    className="w-full h-10 rounded-xl border border-[#E2E8F0] px-3 text-sm bg-white text-[#1E293B] focus:outline-none focus:ring-2 focus:ring-[#7C3AED]"
                   >
                     <option value="SOP">SOP</option>
                     <option value="Peraturan">Peraturan</option>
@@ -899,13 +899,13 @@ export default function AdminKBPage() {
                     type="file"
                     accept=".pdf,.doc,.docx,application/pdf,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document"
                     onChange={(e) => setDocFile(e.target.files?.[0] || null)}
-                    className="w-full text-sm text-[#64748B] file:mr-3 file:py-1.5 file:px-3 file:rounded-lg file:border-0 file:text-xs file:font-semibold file:bg-blue-50 file:text-[#2563EB] hover:file:bg-blue-100"
+                    className="w-full text-sm text-[#64748B] file:mr-3 file:py-1.5 file:px-3 file:rounded-lg file:border-0 file:text-xs file:font-semibold file:bg-blue-50 file:text-[#7C3AED] hover:file:bg-blue-100"
                   />
                   {docFile && <p className="text-xs text-[#64748B]">{docFile.name} ({(docFile.size / 1024).toFixed(0)} KB)</p>}
                 </div>
                 <div className="flex justify-end gap-2 pt-2">
                   <Button type="button" variant="outline" className="rounded-xl" onClick={() => setDocDialogOpen(false)}>Batal</Button>
-                  <Button type="submit" disabled={docSubmitting} className="bg-[#2563EB] hover:bg-[#1D4ED8] text-white rounded-xl">
+                  <Button type="submit" disabled={docSubmitting} className="bg-[#7C3AED] hover:bg-[#6D28D9] text-white rounded-xl">
                     <Upload className="mr-2 h-4 w-4" />
                     {docSubmitting ? "Mengupload..." : "Upload"}
                   </Button>

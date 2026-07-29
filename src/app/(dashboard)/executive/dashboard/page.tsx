@@ -94,7 +94,7 @@ export default function ExecutiveDashboardPage() {
   if (loading) {
     return (
       <div className="flex h-96 items-center justify-center">
-        <div className="h-8 w-8 animate-spin rounded-full border-4 border-blue-100 border-t-[#2563EB]" />
+        <div className="h-8 w-8 animate-spin rounded-full border-4 border-violet-100 border-t-[#7C3AED]" />
       </div>
     );
   }
@@ -121,7 +121,7 @@ export default function ExecutiveDashboardPage() {
           </h1>
           <p className="mt-1 text-sm text-[#64748B]">
             Selamat datang,{" "}
-            <span className="font-semibold text-[#2563EB]">{session?.user?.name}</span>
+            <span className="font-semibold text-[#7C3AED]">{session?.user?.name}</span>
           </p>
         </div>
         <Badge
@@ -170,10 +170,10 @@ export default function ExecutiveDashboardPage() {
       <div className="grid gap-6 lg:grid-cols-2">
         {/* Tiket per Divisi */}
         <Card className="border border-[#E2E8F0] bg-white rounded-xl shadow-[0_1px_3px_rgba(0,0,0,0.05)] overflow-hidden">
-          <div className="h-1 bg-[#2563EB]" />
+          <div className="h-1 bg-[#7C3AED]" />
           <CardHeader className="pb-3 pt-5 px-5">
             <CardTitle className="flex items-center gap-2 text-sm font-semibold text-[#1E293B]">
-              <Building2 className="h-4 w-4 text-[#2563EB]" />
+              <Building2 className="h-4 w-4 text-[#7C3AED]" />
               Tiket per Divisi
             </CardTitle>
           </CardHeader>
@@ -196,7 +196,7 @@ export default function ExecutiveDashboardPage() {
                 </div>
                 <div className="h-2 w-full rounded-full bg-[#F1F5F9] overflow-hidden">
                   <div
-                    className="h-full rounded-full bg-[#2563EB] transition-all duration-500"
+                    className="h-full rounded-full bg-[#7C3AED] transition-all duration-500"
                     style={{ width: `${Math.round((d.total / maxDept) * 100)}%` }}
                   />
                 </div>
@@ -228,7 +228,7 @@ export default function ExecutiveDashboardPage() {
                 return (
                   <div key={day.date} className="flex flex-1 flex-col items-center gap-1.5">
                     <div className="flex gap-0.5 items-end w-full h-28">
-                      <div className="flex-1 rounded-t-md bg-[#2563EB] min-h-[4px]" style={{ height: `${Math.max(createdH, 4)}%` }} title={`Dibuat: ${day.created}`} />
+                      <div className="flex-1 rounded-t-md bg-[#7C3AED] min-h-[4px]" style={{ height: `${Math.max(createdH, 4)}%` }} title={`Dibuat: ${day.created}`} />
                       <div className="flex-1 rounded-t-md bg-[#10B981] min-h-[4px]" style={{ height: `${Math.max(resolvedH, 4)}%` }} title={`Resolved: ${day.resolved}`} />
                     </div>
                     <span className="text-[10px] font-medium text-[#64748B] uppercase">{label}</span>
@@ -237,7 +237,7 @@ export default function ExecutiveDashboardPage() {
               })}
             </div>
             <div className="mt-3 flex items-center justify-center gap-4 text-xs text-[#64748B]">
-              <span className="flex items-center gap-1.5"><span className="h-2.5 w-2.5 rounded-sm bg-[#2563EB]" />Dibuat</span>
+              <span className="flex items-center gap-1.5"><span className="h-2.5 w-2.5 rounded-sm bg-[#7C3AED]" />Dibuat</span>
               <span className="flex items-center gap-1.5"><span className="h-2.5 w-2.5 rounded-sm bg-[#10B981]" />Resolved</span>
             </div>
           </CardContent>
@@ -272,7 +272,7 @@ export default function ExecutiveDashboardPage() {
                     const days = daysSince(t.createdAt);
                     return (
                       <tr key={t.id} className="border-b border-[#F1F5F9] hover:bg-[#F8FAFC] transition-colors">
-                        <td className="py-3 px-3 font-mono text-xs text-[#2563EB] font-semibold">{t.ticketNumber}</td>
+                        <td className="py-3 px-3 font-mono text-xs text-[#7C3AED] font-semibold">{t.ticketNumber}</td>
                         <td className="py-3 px-3 text-[#1E293B] max-w-[200px] truncate">{t.title}</td>
                         <td className="py-3 px-3 text-[#64748B] text-xs">{t.department}</td>
                         <td className="py-3 px-3">

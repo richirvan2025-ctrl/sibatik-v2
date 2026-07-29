@@ -15,6 +15,7 @@ import {
   Shield,
   Ticket,
   Users,
+  UsersRound,
 } from "lucide-react";
 import Image from "next/image";
 import { cn } from "@/lib/utils";
@@ -28,10 +29,18 @@ const navigation = {
     { name: "Knowledge Base", href: "/kb", icon: BookOpen },
     { name: "KB Admin", href: "/admin/kb", icon: BookOpen },
     { name: "Manajemen User", href: "/admin/users", icon: Users },
+    { name: "Grup Pengguna", href: "/admin/groups", icon: UsersRound },
     { name: "Kategori", href: "/admin/categories", icon: Settings },
     { name: "Laporan", href: "/admin/reports", icon: BarChart3 },
   ],
   USER: [
+    { name: "Dashboard", href: "/dashboard", icon: LayoutDashboard },
+    { name: "Asisten", href: "/chat", icon: MessageCircle, beta: true },
+    { name: "Tiket Saya", href: "/tickets", icon: Ticket },
+    { name: "Buat Tiket", href: "/tickets/new", icon: PlusCircle },
+    { name: "Knowledge Base", href: "/kb", icon: BookOpen },
+  ],
+  MAHASISWA: [
     { name: "Dashboard", href: "/dashboard", icon: LayoutDashboard },
     { name: "Asisten", href: "/chat", icon: MessageCircle, beta: true },
     { name: "Tiket Saya", href: "/tickets", icon: Ticket },

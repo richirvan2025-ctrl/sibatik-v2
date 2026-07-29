@@ -44,6 +44,7 @@ interface ReportData {
 
 const statusConfig: Record<string, { color: string; label: string }> = {
   OPEN: { color: "#2563EB", label: "Open" },
+  REOPENED: { color: "#06B6D4", label: "Reopened" },
   IN_PROGRESS: { color: "#F59E0B", label: "In Progress" },
   RESOLVED: { color: "#10B981", label: "Resolved" },
   CLOSED: { color: "#64748B", label: "Closed" },
@@ -52,8 +53,8 @@ const statusConfig: Record<string, { color: string; label: string }> = {
 
 const priorityConfig: Record<string, { color: string; bg: string; label: string }> = {
   LOW: { color: "#64748B", bg: "bg-slate-100", label: "Low" },
-  MEDIUM: { color: "#2563EB", bg: "bg-blue-50", label: "Medium" },
-  HIGH: { color: "#F97316", bg: "bg-orange-50", label: "High" },
+  MEDIUM: { color: "#7C3AED", bg: "bg-blue-50", label: "Medium" },
+  HIGH: { color: "#0EA5E9", bg: "bg-orange-50", label: "High" },
   URGENT: { color: "#EF4444", bg: "bg-red-50", label: "Urgent" },
 };
 
@@ -82,7 +83,7 @@ export default function ReportsPage() {
   if (loading) {
     return (
       <div className="flex h-96 items-center justify-center">
-        <div className="h-8 w-8 animate-spin rounded-full border-4 border-blue-100 border-t-[#2563EB]" />
+        <div className="h-8 w-8 animate-spin rounded-full border-4 border-violet-100 border-t-[#7C3AED]" />
       </div>
     );
   }
@@ -119,7 +120,7 @@ export default function ReportsPage() {
           label="Total Tiket"
           value={data.totalTickets}
           icon={Ticket}
-          color="#2563EB"
+          color="#7C3AED"
           bgLight="bg-blue-50"
           textColor="text-blue-600"
         />
@@ -152,10 +153,10 @@ export default function ReportsPage() {
       <div className="grid gap-6 lg:grid-cols-2">
         {/* Status Distribution */}
         <Card className="border border-[#E2E8F0] bg-white rounded-xl shadow-[0_1px_3px_rgba(0,0,0,0.05),0_1px_2px_rgba(0,0,0,0.03)] overflow-hidden">
-          <div className="h-1 bg-[#2563EB]" />
+          <div className="h-1 bg-[#7C3AED]" />
           <CardHeader className="pb-3 pt-5 px-5">
             <CardTitle className="flex items-center gap-2 text-sm font-semibold text-[#1E293B]">
-              <CheckCircle className="h-4 w-4 text-[#2563EB]" />
+              <CheckCircle className="h-4 w-4 text-[#7C3AED]" />
               Distribusi Status
             </CardTitle>
           </CardHeader>
@@ -209,10 +210,10 @@ export default function ReportsPage() {
 
         {/* Priority Distribution */}
         <Card className="border border-[#E2E8F0] bg-white rounded-xl shadow-[0_1px_3px_rgba(0,0,0,0.05),0_1px_2px_rgba(0,0,0,0.03)] overflow-hidden">
-          <div className="h-1 bg-[#F97316]" />
+          <div className="h-1 bg-[#0EA5E9]" />
           <CardHeader className="pb-3 pt-5 px-5">
             <CardTitle className="flex items-center gap-2 text-sm font-semibold text-[#1E293B]">
-              <AlertCircle className="h-4 w-4 text-[#F97316]" />
+              <AlertCircle className="h-4 w-4 text-[#0EA5E9]" />
               Distribusi Prioritas
             </CardTitle>
           </CardHeader>
@@ -286,7 +287,7 @@ export default function ReportsPage() {
                   >
                     <div className="flex gap-0.5 items-end w-full h-28">
                       <div
-                        className="flex-1 rounded-t-md bg-[#2563EB] transition-all duration-500 min-h-[4px]"
+                        className="flex-1 rounded-t-md bg-[#7C3AED] transition-all duration-500 min-h-[4px]"
                         style={{ height: `${Math.max(createdH, 4)}%` }}
                         title={`Dibuat: ${day.created}`}
                       />
@@ -305,7 +306,7 @@ export default function ReportsPage() {
             </div>
             <div className="mt-3 flex items-center justify-center gap-4 text-xs text-[#64748B]">
               <span className="flex items-center gap-1.5">
-                <span className="h-2.5 w-2.5 rounded-sm bg-[#2563EB]" />
+                <span className="h-2.5 w-2.5 rounded-sm bg-[#7C3AED]" />
                 Dibuat
               </span>
               <span className="flex items-center gap-1.5">
@@ -452,7 +453,7 @@ export default function ReportsPage() {
                       <td className="py-3 px-3 text-center text-[#64748B]">
                         {tech.totalAssigned}
                       </td>
-                      <td className="py-3 px-3 text-center font-semibold text-[#2563EB]">
+                      <td className="py-3 px-3 text-center font-semibold text-[#7C3AED]">
                         {tech.resolvedCount}
                       </td>
                       <td className="py-3 px-3 text-center">
