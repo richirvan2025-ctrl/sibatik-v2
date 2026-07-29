@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
+import type { Prisma } from "@prisma/client";
 import { z } from "zod";
 
 const updateTicketSchema = z.object({
@@ -58,7 +59,9 @@ export async function GET(
         where: { id: userId },
         select: { department: true },
       });
-      isSupervisorOrAgentInDept = !!deptUser?.department && deptUser.department === (ticket as any).category?.department;
+      isSupervisorOrAgentInDept =
+        !!deptUser?.department &&
+        deptUser.department === ticket.category.department;
     }
 
     const hasAccess =
@@ -124,7 +127,7 @@ export async function PATCH(
       });
       supervisorCanUpdate =
         !!deptUser?.department &&
-        deptUser.department === (ticket as any).category?.department;
+        deptUser.department === ticket.category.department;
     } else if (role === "AGENT") {
       const deptUser = await prisma.user.findUnique({
         where: { id: userId },
@@ -132,7 +135,7 @@ export async function PATCH(
       });
       agentCanUpdate =
         !!deptUser?.department &&
-        deptUser.department === (ticket as any).category?.department;
+        deptUser.department === ticket.category.department;
     }
 
     // Agent/Supervisor tidak boleh memberi rating pada tiket yang di-assign ke dirinya
@@ -177,7 +180,7 @@ export async function PATCH(
       );
     }
 
-    const updateData: any = { ...validated };
+    const updateData: Prisma.TicketUncheckedUpdateInput = { ...validated };
 
     // Track first response
     if (

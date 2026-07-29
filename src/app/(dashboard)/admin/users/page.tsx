@@ -1,7 +1,7 @@
 "use client";
 
-import { useState, useEffect } from "react";
-import { Card, CardContent } from "@/components/ui/card";
+import { useCallback, useEffect, useState } from "react";
+import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -53,7 +53,10 @@ interface Category {
   parentId: string | null;
 }
 
-const roleConfig: Record<string, { bg: string; text: string; icon: any; label: string }> = {
+const roleConfig: Record<
+  string,
+  { bg: string; text: string; icon: React.ElementType; label: string }
+> = {
   ADMIN: { bg: "bg-blue-50", text: "text-blue-700", icon: Shield, label: "Admin" },
   AGENT: { bg: "bg-orange-50", text: "text-orange-700", icon: Wrench, label: "Agent" },
   USER: { bg: "bg-slate-100", text: "text-slate-600", icon: Users, label: "User" },
@@ -91,14 +94,7 @@ export default function UsersPage() {
   const [formError, setFormError] = useState<string | null>(null);
   const [formLoading, setFormLoading] = useState(false);
 
-  useEffect(() => {
-    fetchUsers();
-    fetch("/api/admin/categories").then(r => r.json()).then(data => {
-      if (Array.isArray(data)) setCategories(data);
-    });
-  }, []);
-
-  const fetchUsers = async () => {
+  const fetchUsers = useCallback(async () => {
     try {
       const res = await fetch("/api/admin/users");
       if (res.ok) {
@@ -110,7 +106,23 @@ export default function UsersPage() {
     } finally {
       setLoading(false);
     }
-  };
+  }, []);
+
+  useEffect(() => {
+    fetch("/api/admin/users")
+      .then((response) => (response.ok ? response.json() : []))
+      .then((data) => {
+        if (Array.isArray(data)) setUsers(data);
+      })
+      .catch((error) => console.error("Failed to fetch users:", error))
+      .finally(() => setLoading(false));
+
+    fetch("/api/admin/categories")
+      .then((response) => response.json())
+      .then((data) => {
+        if (Array.isArray(data)) setCategories(data);
+      });
+  }, []);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
