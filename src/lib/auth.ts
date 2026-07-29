@@ -1,27 +1,49 @@
 import { cache } from "react";
-import { connection } from "next/server";
+import { cookies } from "next/headers";
 import { prisma } from "./prisma";
 import type { AppSession } from "./auth-types";
+import { SESSION_COOKIE_NAME, verifySessionToken } from "./session";
 
 /**
- * Temporary identity adapter for the SIBATIK module.
- *
- * The standalone login has been removed because authentication will be owned
- * by Sinergy. After the Sinergy flow is inspected, replace the development
- * lookup below with a verified identity supplied by the host system. Keeping
- * this boundary in one server-only module prevents authentication details from
- * leaking into pages and Route Handlers.
+ * SIBATIK does not own a login screen. Sinergy validates the user once through
+ * /sso/callback, then this adapter resolves the short-lived signed SIBATIK
+ * session for Server Components and Route Handlers.
  */
 export const auth = cache(async (): Promise<AppSession | null> => {
-  await connection();
+  const sessionToken = (await cookies()).get(SESSION_COOKIE_NAME)?.value;
+  const sessionPayload = sessionToken
+    ? verifySessionToken(sessionToken)
+    : null;
+
+  if (sessionPayload) {
+    const user = await prisma.user.findFirst({
+      where: {
+        id: sessionPayload.userId,
+        isActive: true,
+      },
+      select: {
+        id: true,
+        name: true,
+        email: true,
+        role: true,
+        department: true,
+      },
+    });
+
+    if (user) {
+      return {
+        user,
+        source: "sinergy",
+      };
+    }
+  }
 
   const developmentEmail = process.env.SIBATIK_DEV_USER_EMAIL?.trim();
   const email =
     developmentEmail ||
     (process.env.NODE_ENV !== "production" ? "admin@idbbali.ac.id" : null);
 
-  // Production must wait for the verified Sinergy identity adapter. There is
-  // deliberately no insecure anonymous fallback outside local development.
+  // There is deliberately no fixed-user fallback in production.
   if (!email) return null;
 
   const user = await prisma.user.findFirst({
