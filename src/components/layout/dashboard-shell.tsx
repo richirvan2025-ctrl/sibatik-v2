@@ -10,10 +10,10 @@ export function DashboardShell({ children }: { children: React.ReactNode }) {
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
   return (
-    <div className="flex h-screen bg-[#F3F6FB] text-[#101A36]">
+    <div className="flex h-[100dvh] min-h-[100svh] bg-[var(--background)] text-[#101A36]">
       {sidebarOpen && (
         <div
-          className="fixed inset-0 z-20 bg-[#081A34]/70 backdrop-blur-[2px] md:hidden"
+          className="fixed inset-0 z-20 bg-[#06445B]/75 backdrop-blur-[2px] md:hidden"
           onClick={() => setSidebarOpen(false)}
         />
       )}
@@ -27,11 +27,11 @@ export function DashboardShell({ children }: { children: React.ReactNode }) {
       </aside>
 
       <div className="flex min-w-0 flex-1 flex-col">
-        <header className="flex h-16 shrink-0 items-center justify-between border-b border-[#DEE5EF] bg-white px-4 md:px-7">
+        <header className="flex h-[calc(4rem+env(safe-area-inset-top))] shrink-0 items-center justify-between border-b border-[var(--brand-header-border)] bg-[var(--brand-header)] px-4 pt-[env(safe-area-inset-top)] text-white shadow-[0_8px_24px_rgba(4,76,113,0.16)] md:h-16 md:px-7 md:pt-0">
           <div className="flex items-center gap-3">
             <button
               onClick={() => setSidebarOpen(true)}
-              className="flex h-10 w-10 items-center justify-center rounded-xl border border-[#DCE4EF] bg-white text-[#526079] shadow-sm transition-colors hover:bg-[#F5F2FF] hover:text-[#7047EB] md:hidden"
+              className="flex h-10 w-10 items-center justify-center rounded-xl border border-white/20 bg-white/10 text-white shadow-sm transition-colors hover:bg-white/20 md:hidden"
               aria-label="Buka menu"
             >
               <Menu className="h-5 w-5" />
@@ -47,28 +47,28 @@ export function DashboardShell({ children }: { children: React.ReactNode }) {
                 />
               </div>
               <div>
-                <p className="text-[14px] font-bold leading-tight text-[#101A36]">IDB Bali</p>
-                <p className="text-[9px] font-bold uppercase tracking-[0.16em] text-[#7047EB]">SIBATIK</p>
+                <p className="text-[14px] font-bold leading-tight text-white">IDB Bali</p>
+                <p className="text-[9px] font-bold uppercase tracking-[0.16em] text-[var(--brand-header-muted)]">SIBATIK</p>
               </div>
             </div>
             <div className="hidden items-center gap-3 md:flex">
-              <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-[#F0EDFF] text-[#7047EB]">
+              <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-white/12 text-[#FFD0A6] ring-1 ring-white/12">
                 <CalendarDays className="h-4 w-4" />
               </div>
               <div>
-                <p className="text-[11px] font-semibold uppercase tracking-[0.12em] text-[#8190A8]">
+                <p className="text-[11px] font-semibold uppercase tracking-[0.12em] text-[var(--brand-header-muted)]">
                   Pusat Layanan Kampus
                 </p>
-                <p className="text-sm font-bold text-[#16213D]">SIBATIK IDB Bali</p>
+                <p className="text-sm font-bold text-white">SIBATIK IDB Bali</p>
               </div>
             </div>
           </div>
 
           <div className="ml-auto flex items-center gap-2">
-            <NotificationBell />
+            <NotificationBell tone="dark" />
             <a
               href="https://sinergy.idbbali.ac.id/dashboard.php"
-              className="flex items-center gap-1.5 rounded-xl border border-[#DCE4EF] bg-white px-3 py-2 text-[12px] font-semibold text-[#526079] transition-colors hover:bg-[#F5F2FF] hover:text-[#7047EB]"
+              className="flex items-center gap-1.5 rounded-xl border border-white/20 bg-white/10 px-3 py-2 text-[12px] font-semibold text-white transition-colors hover:bg-white/20"
             >
               <ExternalLink className="h-3.5 w-3.5" />
               <span className="hidden sm:inline">Kembali ke Sinergy</span>
@@ -76,7 +76,7 @@ export function DashboardShell({ children }: { children: React.ReactNode }) {
           </div>
         </header>
 
-        <main className="app-scrollbar flex-1 overflow-y-auto">
+        <main className="app-scrollbar flex-1 overflow-y-auto bg-[#F4F8FA]">
           <div className="mx-auto min-h-full w-full max-w-[1680px] p-4 md:p-6 xl:p-7">{children}</div>
         </main>
       </div>

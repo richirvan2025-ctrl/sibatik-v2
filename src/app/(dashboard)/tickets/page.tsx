@@ -2,9 +2,9 @@
 
 import { useState, useEffect } from "react";
 import { useSession } from "@/components/auth/session-provider";
+import { useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { Card, CardContent } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
@@ -55,42 +55,59 @@ const priorityConfig: Record<string, { bg: string; text: string }> = {
 
 export default function TicketsPage() {
   const { data: session } = useSession();
+  const searchParams = useSearchParams();
+  const requestedStatus = searchParams.get("status") || "";
+  const requestedPriority = searchParams.get("priority") || "";
+  const scope = searchParams.get("scope") === "department" ? "department" : "";
   const [tickets, setTickets] = useState<TicketItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
-  const [statusFilter, setStatusFilter] = useState("");
-  const [priorityFilter, setPriorityFilter] = useState("");
+  const [appliedSearch, setAppliedSearch] = useState("");
+  const [statusFilter, setStatusFilter] = useState(requestedStatus);
+  const [priorityFilter, setPriorityFilter] = useState(requestedPriority);
 
   useEffect(() => {
-    fetchTickets();
-  }, [statusFilter, priorityFilter]);
+    let cancelled = false;
 
-  const fetchTickets = async () => {
-    try {
-      const params = new URLSearchParams();
-      if (statusFilter) params.append("status", statusFilter);
-      if (priorityFilter) params.append("priority", priorityFilter);
-      if (search) params.append("search", search);
+    const loadTickets = async () => {
+      try {
+        const params = new URLSearchParams();
+        if (statusFilter) params.append("status", statusFilter);
+        if (priorityFilter) params.append("priority", priorityFilter);
+        if (appliedSearch) params.append("search", appliedSearch);
+        if (scope) params.append("scope", scope);
 
-      const res = await fetch(`/api/tickets?${params}`);
-      if (res.ok) {
-        const data = await res.json();
-        setTickets(data);
+        const res = await fetch(`/api/tickets?${params}`);
+        if (res.ok && !cancelled) {
+          const data = await res.json();
+          setTickets(data);
+        }
+      } catch (error) {
+        console.error("Failed to fetch tickets:", error);
+      } finally {
+        if (!cancelled) setLoading(false);
       }
-    } catch (error) {
-      console.error("Failed to fetch tickets:", error);
-    } finally {
-      setLoading(false);
-    }
-  };
+    };
+
+    void loadTickets();
+    return () => {
+      cancelled = true;
+    };
+  }, [appliedSearch, priorityFilter, scope, statusFilter]);
 
   const handleSearch = () => {
-    fetchTickets();
+    setAppliedSearch(search);
   };
 
   const role = session?.user?.role;
+  const isExecutive = role === "EXECUTIVE";
+  const canCreateTicket = !isExecutive;
   const pageTitle =
-    role === "ADMIN"
+    isExecutive
+      ? "Monitor Tiket"
+      : scope === "department"
+      ? "Tiket Divisi"
+      : role === "ADMIN"
       ? "Semua Tiket"
       : role === "AGENT" || role === "SUPERVISOR"
       ? "Tiket"
@@ -116,12 +133,14 @@ export default function TicketsPage() {
             Kelola, prioritaskan, dan pantau progres layanan
           </p>
         </div>
-        <Link href="/tickets/new">
-          <Button className="h-11 bg-white px-4 text-[#102B50] shadow-sm hover:bg-[#F0EDFF] hover:text-[#5F39DB]">
-            <Plus className="mr-2 h-4 w-4" />
-            Buat Tiket
-          </Button>
-        </Link>
+        {canCreateTicket && (
+          <Link href="/tickets/new">
+            <Button className="h-11 bg-white px-4 text-[#102B50] shadow-sm hover:bg-[#F0EDFF] hover:text-[#5F39DB]">
+              <Plus className="mr-2 h-4 w-4" />
+              Buat Tiket
+            </Button>
+          </Link>
+        )}
       </div>
 
       {/* Filters */}
@@ -165,6 +184,7 @@ export default function TicketsPage() {
                   <SelectItem value="">Semua Status</SelectItem>
                   <SelectItem value="OPEN">Open</SelectItem>
                   <SelectItem value="IN_PROGRESS">In Progress</SelectItem>
+                  <SelectItem value="COMPLETED">Selesai</SelectItem>
                   <SelectItem value="RESOLVED">Resolved</SelectItem>
                   <SelectItem value="CLOSED">Closed</SelectItem>
                   <SelectItem value="ESCALATED">Escalated</SelectItem>
@@ -290,12 +310,14 @@ export default function TicketsPage() {
               <p className="mt-1 max-w-sm text-sm text-[#71809A]">
                 Coba ubah filter atau buat tiket baru
               </p>
-              <Link href="/tickets/new" className="mt-5">
-                <Button>
-                  <Plus className="h-4 w-4" />
-                  Buat tiket pertama
-                </Button>
-              </Link>
+              {canCreateTicket && (
+                <Link href="/tickets/new" className="mt-5">
+                  <Button>
+                    <Plus className="h-4 w-4" />
+                    Buat tiket pertama
+                  </Button>
+                </Link>
+              )}
             </CardContent>
           </Card>
         )}

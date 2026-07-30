@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
+import { sendMail } from "@/lib/mailer";
 import { z } from "zod";
 
 const attachmentSchema = z.object({
@@ -42,8 +43,8 @@ export async function GET(req: NextRequest) {
 
     let where: any = {};
 
-    if (role === "ADMIN") {
-      // Admin sees all tickets
+    if (role === "ADMIN" || role === "EXECUTIVE") {
+      // Management sees all tickets. Executive access remains read-only in the UI.
     } else if (role === "AGENT" || role === "SUPERVISOR") {
       if (scope === "department") {
         // Tiket Divisi: semua tiket yang masuk ke divisi user
@@ -63,14 +64,17 @@ export async function GET(req: NextRequest) {
         };
       }
     } else {
-      // USER & EXECUTIVE: hanya tiket yang dibuat sendiri
+      // USER & MAHASISWA: hanya tiket yang dibuat sendiri
       where = {
         OR: [{ createdById: userId }, { onBehalfOfId: userId }],
       };
     }
 
     if (status) {
-      where.status = status;
+      where.status =
+        status === "COMPLETED"
+          ? { in: ["RESOLVED", "CLOSED"] }
+          : status;
     }
     if (priority) {
       where.priority = priority;
@@ -230,24 +234,20 @@ export async function POST(req: NextRequest) {
       });
     }
 
-    const recipients = await prisma.user.findMany({
-      where: {
-        isActive: true,
-        id: { not: userId },
-        OR: [
-          { role: "ADMIN" },
-          { role: "EXECUTIVE" },
-          ...(categoryDept === "Sistem Informasi & IT Support"
-            ? [{ role: "AGENT" as const }]
-            : []),
-          // Semua anggota divisi tujuan (supervisor, agent, staf) menerima notifikasi
-          ...(categoryDept
-            ? [{ department: categoryDept, role: { not: "MAHASISWA" as const } }]
-            : []),
-        ],
-      },
-      select: { id: true },
-    });
+    // Penerima notifikasi: HANYA anggota aktif divisi tujuan (kategori),
+    // kecuali MAHASISWA dan pembuat tiket sendiri.
+    // Catatan: Admin & Executive lintas divisi TIDAK menerima notifikasi tiket.
+    const recipients = categoryDept
+      ? await prisma.user.findMany({
+          where: {
+            isActive: true,
+            id: { not: userId },
+            department: categoryDept,
+            role: { not: "MAHASISWA" },
+          },
+          select: { id: true, email: true },
+        })
+      : [];
 
     const notifRecipients = recipients.map((r) => ({
       userId: r.id,
@@ -270,6 +270,34 @@ export async function POST(req: NextRequest) {
       await prisma.notification.createMany({
         data: notifRecipients,
       });
+    }
+
+    // Kirim notifikasi via email (best-effort; tidak menggagalkan request)
+    const ticketUrl = `${process.env.NEXTAUTH_URL ?? ""}/tickets/${ticket.id}`;
+    const emailRecipients = recipients.map((r) => r.email).filter(Boolean) as string[];
+    if (emailRecipients.length > 0) {
+      void sendMail({
+        to: emailRecipients,
+        subject: `[Tiket Baru] ${ticket.ticketNumber} — ${ticket.title}`,
+        text: `${notifMessage}\n\nLihat tiket: ${ticketUrl}`,
+        html: `<p>${notifMessage}</p><p><a href="${ticketUrl}">Lihat tiket ${ticket.ticketNumber}</a></p>`,
+      });
+    }
+
+    // Email khusus ke assignee otomatis
+    if (autoAssignedId && autoAssignedId !== userId) {
+      const assignee = await prisma.user.findUnique({
+        where: { id: autoAssignedId },
+        select: { email: true },
+      });
+      if (assignee?.email) {
+        void sendMail({
+          to: assignee.email,
+          subject: `[Tiket Ditugaskan] ${ticket.ticketNumber} — ${ticket.title}`,
+          text: `Tiket ${ticket.ticketNumber} — "${ticket.title}" telah di-assign ke Anda secara otomatis.\n\nLihat tiket: ${ticketUrl}`,
+          html: `<p>Tiket <strong>${ticket.ticketNumber}</strong> — "${ticket.title}" telah di-assign ke Anda secara otomatis.</p><p><a href="${ticketUrl}">Lihat tiket</a></p>`,
+        });
+      }
     }
 
     return NextResponse.json(ticket, { status: 201 });

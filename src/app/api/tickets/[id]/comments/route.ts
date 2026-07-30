@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
+import { sendMail } from "@/lib/mailer";
 import { z } from "zod";
 
 const commentSchema = z.object({
@@ -90,14 +91,33 @@ export async function POST(
           where: { id },
           select: { ticketNumber: true, title: true },
         });
+        const notifMessage = `${commenterName} membalas tiket ${ticketData?.ticketNumber}: "${validated.message.slice(0, 80)}${validated.message.length > 80 ? "..." : ""}"`;
         await prisma.notification.createMany({
           data: Array.from(recipients).map((recipientId) => ({
             userId: recipientId,
             ticketId: id,
             type: "COMMENT_ADDED",
-            message: `${commenterName} membalas tiket ${ticketData?.ticketNumber}: "${validated.message.slice(0, 80)}${validated.message.length > 80 ? "..." : ""}"`,
+            message: notifMessage,
           })),
         });
+
+        // Kirim notifikasi via email (best-effort)
+        const recipientUsers = await prisma.user.findMany({
+          where: { id: { in: Array.from(recipients) } },
+          select: { email: true },
+        });
+        const emailRecipients = recipientUsers
+          .map((u) => u.email)
+          .filter(Boolean) as string[];
+        if (emailRecipients.length > 0) {
+          const ticketUrl = `${process.env.NEXTAUTH_URL ?? ""}/tickets/${id}`;
+          void sendMail({
+            to: emailRecipients,
+            subject: `[Komentar Baru] ${ticketData?.ticketNumber} — ${ticketData?.title}`,
+            text: `${notifMessage}\n\nLihat tiket: ${ticketUrl}`,
+            html: `<p>${notifMessage}</p><p><a href="${ticketUrl}">Lihat tiket ${ticketData?.ticketNumber}</a></p>`,
+          });
+        }
       }
     }
 

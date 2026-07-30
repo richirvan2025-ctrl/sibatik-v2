@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useSearchParams } from "next/navigation";
 import { useSession } from "@/components/auth/session-provider";
 import {
   BarChart3,
@@ -50,7 +50,7 @@ const navigation = {
   AGENT: [
     { name: "Dashboard", href: "/dashboard", icon: LayoutDashboard },
     { name: "Asisten", href: "/chat", icon: MessageCircle, beta: true },
-    { name: "Tiket Divisi", href: "/technician/tickets", icon: Shield },
+    { name: "Tiket Divisi", href: "/tickets?scope=department", icon: Shield },
     { name: "Tiket Saya", href: "/tickets", icon: Ticket },
     { name: "Buat Tiket", href: "/tickets/new", icon: PlusCircle },
     { name: "Knowledge Base", href: "/kb", icon: BookOpen },
@@ -58,14 +58,14 @@ const navigation = {
   SUPERVISOR: [
     { name: "Dashboard", href: "/dashboard", icon: LayoutDashboard },
     { name: "Asisten", href: "/chat", icon: MessageCircle, beta: true },
-    { name: "Tiket Divisi", href: "/department/tickets", icon: Building2 },
+    { name: "Tiket Divisi", href: "/tickets?scope=department", icon: Building2 },
     { name: "Tiket Saya", href: "/tickets", icon: Ticket },
     { name: "Buat Tiket", href: "/tickets/new", icon: PlusCircle },
     { name: "Knowledge Base", href: "/kb", icon: BookOpen },
   ],
   EXECUTIVE: [
-    { name: "Dashboard", href: "/executive/dashboard", icon: Crown },
-    { name: "Monitor Tiket", href: "/executive/tickets", icon: Ticket },
+    { name: "Dashboard", href: "/dashboard", icon: Crown },
+    { name: "Monitor Tiket", href: "/tickets", icon: Ticket },
     { name: "Laporan", href: "/executive/reports", icon: BarChart3 },
   ],
 };
@@ -79,13 +79,14 @@ type NavItem = {
 
 export function Sidebar({ onClose }: { onClose?: () => void }) {
   const pathname = usePathname();
+  const searchParams = useSearchParams();
   const { data: session } = useSession();
   const role = (session?.user?.role as keyof typeof navigation) || "USER";
   const items = (navigation[role] || navigation.USER) as NavItem[];
 
   return (
-    <div className="flex h-full flex-col border-r border-[#203858] bg-[#0B1D3A] text-white shadow-[10px_0_30px_rgba(8,26,52,0.08)]">
-      <div className="flex h-[84px] items-center gap-3 border-b border-white/10 px-5">
+    <div className="flex h-full flex-col border-r border-[var(--brand-header-border)] bg-[var(--brand-header)] text-white shadow-[10px_0_30px_rgba(4,76,113,0.10)]">
+      <div className="flex h-[calc(84px+env(safe-area-inset-top))] items-center gap-3 border-b border-white/10 px-5 pt-[env(safe-area-inset-top)] md:h-[84px] md:pt-0">
         <div className="flex h-12 w-12 items-center justify-center overflow-hidden rounded-[14px] bg-white shadow-[0_8px_20px_rgba(0,0,0,0.18)]">
           <Image
             src="/logo.png"
@@ -100,27 +101,37 @@ export function Sidebar({ onClose }: { onClose?: () => void }) {
           <h1 className="text-[17px] font-bold leading-tight tracking-[-0.02em] text-white">
             IDB BALI
           </h1>
-          <p className="mt-1 text-[10px] font-medium tracking-wide text-[#B7C5DA]">
+          <p className="mt-1 text-[10px] font-medium tracking-wide text-[var(--brand-header-muted)]">
             SIBATIK Support
           </p>
         </div>
       </div>
 
       <nav className="app-scrollbar flex-1 space-y-1 overflow-y-auto px-3 py-5">
-        <p className="mb-2 px-3 text-[10px] font-bold uppercase tracking-[0.18em] text-[#7185A2]">
+        <p className="mb-2 px-3 text-[10px] font-bold uppercase tracking-[0.18em] text-[#8FC5D1]">
           Menu Utama
         </p>
         {items.map((item) => {
+          const [itemPath, itemQuery = ""] = item.href.split("?");
+          const itemScope = new URLSearchParams(itemQuery).get("scope");
+          const currentScope = searchParams.get("scope");
           const hasMoreSpecificActiveItem = items.some(
-            (candidate) =>
-              candidate.href !== item.href &&
-              candidate.href.startsWith(`${item.href}/`) &&
-              (pathname === candidate.href ||
-                pathname.startsWith(`${candidate.href}/`))
+            (candidate) => {
+              const candidatePath = candidate.href.split("?")[0];
+              return (
+                candidatePath !== itemPath &&
+                candidatePath.startsWith(`${itemPath}/`) &&
+                (pathname === candidatePath ||
+                  pathname.startsWith(`${candidatePath}/`))
+              );
+            }
           );
+          const scopeMatches =
+            itemPath !== "/tickets" || itemScope === currentScope;
           const isActive =
             !hasMoreSpecificActiveItem &&
-            (pathname === item.href || pathname.startsWith(`${item.href}/`));
+            scopeMatches &&
+            (pathname === itemPath || pathname.startsWith(`${itemPath}/`));
 
           return (
             <div key={item.name}>
@@ -135,16 +146,16 @@ export function Sidebar({ onClose }: { onClose?: () => void }) {
                 className={cn(
                   "group flex min-h-11 items-center gap-3 rounded-xl px-3 py-2.5 text-[13px] font-semibold transition-all duration-200",
                   isActive
-                    ? "bg-[#7047EB] text-white shadow-[0_8px_18px_rgba(112,71,235,0.28)]"
-                    : "text-[#B8C6D9] hover:bg-white/7 hover:text-white"
+                    ? "bg-white text-[#044C71] shadow-[0_8px_22px_rgba(0,47,63,0.20)]"
+                    : "text-[#C9E0E5] hover:bg-white/10 hover:text-white"
                 )}
               >
                 <div
                   className={cn(
                     "flex h-7 w-7 items-center justify-center rounded-lg transition-colors",
                     isActive
-                      ? "bg-white/14 text-white"
-                      : "text-[#9DB0C9] group-hover:text-white"
+                      ? "bg-[#E8F3F5] text-[#044C71]"
+                      : "text-[#A9D1DA] group-hover:text-white"
                   )}
                 >
                   <item.icon className="h-[17px] w-[17px]" strokeWidth={1.9} />
@@ -168,7 +179,7 @@ export function Sidebar({ onClose }: { onClose?: () => void }) {
           <p className="truncate text-[13px] font-bold text-white">
             {session?.user?.name}
           </p>
-          <p className="mt-0.5 truncate text-[11px] text-[#91A5C0]">
+          <p className="mt-0.5 truncate text-[11px] text-[#B6D7DE]">
             {session?.user?.email}
           </p>
           <span className="mt-2 inline-flex items-center rounded-full border border-[#8E72F1]/30 bg-[#7047EB]/20 px-2.5 py-0.5 text-[10px] font-bold uppercase tracking-wide text-[#D8CEFF]">

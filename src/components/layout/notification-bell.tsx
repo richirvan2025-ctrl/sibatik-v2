@@ -26,7 +26,7 @@ function timeAgo(dateStr: string) {
   return `${Math.floor(hrs / 24)}h`;
 }
 
-export function NotificationBell() {
+export function NotificationBell({ tone = "light" }: { tone?: "light" | "dark" }) {
   const [open, setOpen] = useState(false);
   const [notifications, setNotifications] = useState<NotificationItem[]>([]);
   const [unreadCount, setUnreadCount] = useState(0);
@@ -44,9 +44,12 @@ export function NotificationBell() {
   };
 
   useEffect(() => {
-    fetchNotifications();
+    const initialFetch = window.setTimeout(fetchNotifications, 0);
     const interval = setInterval(fetchNotifications, 30000);
-    return () => clearInterval(interval);
+    return () => {
+      window.clearTimeout(initialFetch);
+      clearInterval(interval);
+    };
   }, []);
 
   // Tutup dropdown jika klik di luar
@@ -88,7 +91,11 @@ export function NotificationBell() {
       <button
         type="button"
         onClick={() => setOpen((o) => !o)}
-        className="relative flex h-10 w-10 items-center justify-center rounded-xl border border-[#DCE4EF] bg-white text-[#637089] shadow-[0_1px_2px_rgba(16,24,40,0.05)] transition-all duration-200 hover:border-[#C9BCF8] hover:bg-[#F5F2FF] hover:text-[#7047EB] focus-visible:outline-none focus-visible:ring-3 focus-visible:ring-[#7047EB]/20"
+        className={`relative flex h-10 w-10 items-center justify-center rounded-xl border shadow-[0_1px_2px_rgba(16,24,40,0.05)] transition-all duration-200 focus-visible:outline-none focus-visible:ring-3 ${
+          tone === "dark"
+            ? "border-white/20 bg-white/10 text-white hover:bg-white/20 focus-visible:ring-white/25"
+            : "border-[#DCE4EF] bg-white text-[#637089] hover:border-[#C9BCF8] hover:bg-[#F5F2FF] hover:text-[#7047EB] focus-visible:ring-[#7047EB]/20"
+        }`}
         aria-label="Buka notifikasi"
       >
         <Bell className="h-4 w-4" />

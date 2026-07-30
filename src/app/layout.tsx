@@ -9,17 +9,23 @@ const plusJakarta = Plus_Jakarta_Sans({
 });
 
 export const metadata: Metadata = {
-  title: "SIBATIK IDB Bali - Sistem Support Ticket",
+  title: "SIBATIK IDB Bali",
   description: "SIBATIK - Sistem Support Ticket Kampus IDB Bali",
   manifest: "/manifest.json",
-  icons: { icon: "/logo.png" },
+  appleWebApp: {
+    capable: true,
+    title: "SIBATIK IDB Bali",
+    statusBarStyle: "black-translucent",
+  },
 };
 
 export const viewport: Viewport = {
   width: "device-width",
   initialScale: 1,
   maximumScale: 1,
-  themeColor: "#7047EB",
+  viewportFit: "cover",
+  themeColor: "#044C71",
+  colorScheme: "light",
 };
 
 export default function RootLayout({
@@ -28,8 +34,8 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="id" className={`${plusJakarta.variable} h-full antialiased`}>
-      <body className="min-h-full flex flex-col font-sans">{children}</body>
+    <html lang="id" className={`${plusJakarta.variable} min-h-full antialiased`}>
+      <body className="flex min-h-[100dvh] flex-col font-sans">{children}</body>
     </html>
   );
 }

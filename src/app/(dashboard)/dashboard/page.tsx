@@ -66,12 +66,12 @@ const statCards = [
   },
   {
     key: "resolved" as const,
-    label: "Resolved",
+    label: "Selesai",
     helper: "Berhasil diselesaikan",
     icon: CheckCircle2,
     color: "bg-[#24AE78]",
     iconColor: "text-[#CBF5E4]",
-    href: "/tickets?status=RESOLVED",
+    href: "/tickets?status=COMPLETED",
   },
 ];
 
@@ -146,7 +146,24 @@ export default function DashboardPage() {
   }
 
   const role = session?.user?.role;
-  const isAdmin = role === "ADMIN";
+  const isExecutive = role === "EXECUTIVE";
+  const isManagement = role === "ADMIN" || isExecutive;
+  const visibleQuickActions = isExecutive
+    ? [
+        {
+          label: "Monitor tiket",
+          description: "Pantau seluruh tiket dan progres penanganan",
+          href: "/tickets",
+          icon: Ticket,
+        },
+        {
+          label: "Laporan layanan",
+          description: "Lihat analitik, SLA, dan performa layanan",
+          href: "/executive/reports",
+          icon: BarChart3,
+        },
+      ]
+    : quickActions;
   const today = new Intl.DateTimeFormat("id-ID", {
     day: "numeric",
     month: "long",
@@ -155,7 +172,7 @@ export default function DashboardPage() {
 
   return (
     <div className="space-y-5 md:space-y-6">
-      <section className="overflow-hidden rounded-[16px] bg-[#102B50] px-5 py-6 text-white shadow-[0_12px_32px_rgba(16,43,80,0.16)] md:px-7 md:py-7">
+      <section className="overflow-hidden rounded-[16px] bg-[var(--brand-header)] px-5 py-6 text-white shadow-[0_12px_32px_rgba(4,76,113,0.18)] md:px-7 md:py-7">
         <div className="flex flex-col gap-6 xl:flex-row xl:items-center xl:justify-between">
           <div className="max-w-2xl">
             <div className="mb-3 flex flex-wrap items-center gap-2">
@@ -163,7 +180,7 @@ export default function DashboardPage() {
                 <ShieldCheck className="mr-1 h-3.5 w-3.5" />
                 {role || "USER"}
               </Badge>
-              <span className="inline-flex items-center gap-1.5 text-xs font-medium text-[#BFD0E5]">
+              <span className="inline-flex items-center gap-1.5 text-xs font-medium text-[var(--brand-header-muted)]">
                 <span className="h-2 w-2 rounded-full bg-[#38C793]" />
                 Sistem aktif
               </span>
@@ -171,26 +188,28 @@ export default function DashboardPage() {
             <h1 className="text-[28px] font-bold leading-tight tracking-[-0.03em] md:text-[34px]">
               Dashboard SIBATIK
             </h1>
-            <p className="mt-2 max-w-xl text-sm leading-6 text-[#C4D2E4] md:text-[15px]">
+            <p className="mt-2 max-w-xl text-sm leading-6 text-[#D4E7EB] md:text-[15px]">
               Selamat datang kembali, <span className="font-semibold text-white">{session?.user?.name}</span>. Pantau layanan, tindak lanjut, dan performa tiket dalam satu tempat.
             </p>
           </div>
 
           <div className="flex flex-col gap-2.5 sm:flex-row">
             <div className="flex min-h-12 items-center gap-3 rounded-xl border border-white/12 bg-white/[0.07] px-4">
-              <CalendarDays className="h-5 w-5 text-[#B8A6FF]" />
+              <CalendarDays className="h-5 w-5 text-[#FFD0A6]" />
               <div>
                 <p className="text-[10px] font-semibold uppercase tracking-[0.1em] text-[#9FB1C9]">Hari ini</p>
                 <p className="text-sm font-bold text-white">{today}</p>
               </div>
             </div>
-            <Link
-              href="/tickets/new"
-              className="inline-flex min-h-12 items-center justify-center gap-2 rounded-xl bg-white px-4 text-sm font-bold text-[#102B50] shadow-sm transition-colors hover:bg-[#F0EDFF] focus-visible:outline-none focus-visible:ring-3 focus-visible:ring-white/35"
-            >
-              <Plus className="h-4 w-4 text-[#7047EB]" />
-              Buat Tiket
-            </Link>
+            {!isExecutive && (
+              <Link
+                href="/tickets/new"
+                className="inline-flex min-h-12 items-center justify-center gap-2 rounded-xl bg-white px-4 text-sm font-bold text-[#044C71] shadow-sm transition-colors hover:bg-[#F0F7F8] focus-visible:outline-none focus-visible:ring-3 focus-visible:ring-white/35"
+              >
+                <Plus className="h-4 w-4 text-[#F47D24]" />
+                Buat Tiket
+              </Link>
+            )}
           </div>
         </div>
       </section>
@@ -198,13 +217,17 @@ export default function DashboardPage() {
       <section aria-label="Ringkasan tiket" className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
         {statCards.map((card) => {
           const Icon = card.icon;
+          const value =
+            card.key === "resolved"
+              ? stats.resolved + stats.closed
+              : stats[card.key];
           return (
             <Link key={card.key} href={card.href} className="group block rounded-[14px] focus-visible:outline-none focus-visible:ring-3 focus-visible:ring-[#7047EB]/25">
               <article className={`${card.color} overflow-hidden rounded-[14px] text-white shadow-[0_8px_24px_rgba(28,43,75,0.10)] transition-transform duration-200 group-hover:-translate-y-0.5`}>
                 <div className="flex items-start justify-between px-5 pb-4 pt-5">
                   <div>
                     <p className="text-[11px] font-extrabold uppercase tracking-[0.08em] text-white/82">{card.label}</p>
-                    <p className="mt-2 text-[38px] font-bold leading-none tracking-[-0.04em]">{stats[card.key]}</p>
+                    <p className="mt-2 text-[38px] font-bold leading-none tracking-[-0.04em]">{value}</p>
                     <p className="mt-1.5 text-xs font-semibold text-white/90">Tiket</p>
                   </div>
                   <Icon className={`h-10 w-10 ${card.iconColor}`} strokeWidth={1.7} />
@@ -219,7 +242,7 @@ export default function DashboardPage() {
         })}
       </section>
 
-      {isAdmin && (
+      {isManagement && (
         <section className="grid gap-3 md:grid-cols-3" aria-label="Metrik operasional">
           <Card className="py-0">
             <CardContent className="flex items-center gap-4 p-4.5">
@@ -269,8 +292,12 @@ export default function DashboardPage() {
             </div>
             <Settings2 className="h-5 w-5 text-[#8A96AC]" />
           </CardHeader>
-          <CardContent className="grid gap-3 pb-5 sm:grid-cols-3">
-            {quickActions.map((action) => {
+          <CardContent
+            className={`grid gap-3 pb-5 ${
+              isExecutive ? "sm:grid-cols-2" : "sm:grid-cols-3"
+            }`}
+          >
+            {visibleQuickActions.map((action) => {
               const Icon = action.icon;
               return (
                 <Link

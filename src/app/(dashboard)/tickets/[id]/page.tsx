@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { useSession } from "@/components/auth/session-provider";
 import { useParams, useRouter } from "next/navigation";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -75,7 +75,8 @@ interface Ticket {
   firstResponseAt: string | null;
   slaBreached: boolean;
   responseSlaBreached: boolean;
-  category: { name: string };
+  category: { name: string; department: string | null };
+  reopenCount?: number;
   createdBy: { id: string; name: string; email: string };
   assignedTo: { id: string; name: string; email: string } | null;
   onBehalfOf: { id: string; name: string; email: string } | null;
@@ -113,11 +114,32 @@ export default function TicketDetailPage() {
   const isAdmin = role === "ADMIN";
   const isAgent = role === "AGENT";
   const isSupervisor = role === "SUPERVISOR";
+  const isExecutive = role === "EXECUTIVE";
   const canManage = isAdmin || isAgent || isSupervisor;
+  const canComment = !isExecutive;
+
+  const fetchTicket = useCallback(
+    async (silent = false) => {
+      try {
+        const res = await fetch(`/api/tickets/${params.id}`);
+        if (res.ok) {
+          const data = await res.json();
+          setTicket(data);
+        }
+      } catch (error) {
+        console.error("Failed to fetch ticket:", error);
+      } finally {
+        if (!silent) setLoading(false);
+      }
+    },
+    [params.id]
+  );
 
   useEffect(() => {
-    fetchTicket();
-  }, [params.id]);
+    // Initial data loading is intentionally synchronized with the route id.
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    void fetchTicket();
+  }, [fetchTicket]);
 
   // Polling komentar setiap 20 detik — hanya jika tab aktif dan tiket belum selesai
   useEffect(() => {
@@ -136,22 +158,7 @@ export default function TicketDetailPage() {
       clearInterval(interval);
       document.removeEventListener("visibilitychange", poll);
     };
-  }, [params.id, ticket?.status]);
-
-  const fetchTicket = async (silent = false) => {
-    try {
-      if (!silent) setLoading(true);
-      const res = await fetch(`/api/tickets/${params.id}`);
-      if (res.ok) {
-        const data = await res.json();
-        setTicket(data);
-      }
-    } catch (error) {
-      console.error("Failed to fetch ticket:", error);
-    } finally {
-      if (!silent) setLoading(false);
-    }
-  };
+  }, [fetchTicket, ticket?.status]);
 
   const handleStatusChange = async (newStatus: string) => {
     try {
@@ -436,51 +443,55 @@ export default function TicketDetailPage() {
                 </div>
               )}
 
-              <Separator className="my-4" />
+              {canComment && (
+                <>
+                  <Separator className="my-4" />
 
-              {/* Add Comment */}
-              <form onSubmit={handleSubmitComment} className="space-y-3">
-                <div className="space-y-2">
-                  <Label className="flex items-center gap-2 text-sm font-medium text-[#1E293B]">
-                    <Send className="h-4 w-4 text-[#7C3AED]" />
-                    Tambah Komentar
-                  </Label>
-                  <Textarea
-                    placeholder="Tulis komentar..."
-                    value={comment}
-                    onChange={(e) => setComment(e.target.value)}
-                    rows={3}
-                    className="border-[#E2E8F0] bg-[#F8FAFC] rounded-xl text-sm focus:bg-white focus:border-[#7C3AED] resize-none"
-                  />
-                </div>
-                {canManage && (
-                  <div className="flex items-center gap-2">
-                    <input
-                      type="checkbox"
-                      id="internal"
-                      checked={isInternal}
-                      onChange={(e) => setIsInternal(e.target.checked)}
-                      className="rounded border-[#E2E8F0] text-[#7C3AED] focus:ring-[#7C3AED]"
-                    />
-                    <Label
-                      htmlFor="internal"
-                      className="text-sm font-normal text-[#64748B]"
+                  {/* Add Comment */}
+                  <form onSubmit={handleSubmitComment} className="space-y-3">
+                    <div className="space-y-2">
+                      <Label className="flex items-center gap-2 text-sm font-medium text-[#1E293B]">
+                        <Send className="h-4 w-4 text-[#7C3AED]" />
+                        Tambah Komentar
+                      </Label>
+                      <Textarea
+                        placeholder="Tulis komentar..."
+                        value={comment}
+                        onChange={(e) => setComment(e.target.value)}
+                        rows={3}
+                        className="border-[#E2E8F0] bg-[#F8FAFC] rounded-xl text-sm focus:bg-white focus:border-[#7C3AED] resize-none"
+                      />
+                    </div>
+                    {canManage && (
+                      <div className="flex items-center gap-2">
+                        <input
+                          type="checkbox"
+                          id="internal"
+                          checked={isInternal}
+                          onChange={(e) => setIsInternal(e.target.checked)}
+                          className="rounded border-[#E2E8F0] text-[#7C3AED] focus:ring-[#7C3AED]"
+                        />
+                        <Label
+                          htmlFor="internal"
+                          className="text-sm font-normal text-[#64748B]"
+                        >
+                          Komentar Internal (hanya Admin/Technician)
+                        </Label>
+                      </div>
+                    )}
+                    <Button
+                      type="submit"
+                      disabled={submitting}
+                      className="h-9 bg-[#7C3AED] hover:bg-[#6D28D9] text-white shadow-md shadow-[#7C3AED]/25 rounded-xl text-sm"
                     >
-                      Komentar Internal (hanya Admin/Technician)
-                    </Label>
-                  </div>
-                )}
-                <Button
-                  type="submit"
-                  disabled={submitting}
-                  className="h-9 bg-[#7C3AED] hover:bg-[#6D28D9] text-white shadow-md shadow-[#7C3AED]/25 rounded-xl text-sm"
-                >
-                  {submitting && (
-                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                  )}
-                  Kirim Komentar
-                </Button>
-              </form>
+                      {submitting && (
+                        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                      )}
+                      Kirim Komentar
+                    </Button>
+                  </form>
+                </>
+              )}
             </CardContent>
           </Card>
 
@@ -631,7 +642,7 @@ export default function TicketDetailPage() {
                       <Lock className="h-4 w-4 text-slate-500" />
                       <span className="text-sm text-slate-600">Tiket telah ditutup</span>
                     </div>
-                    {(isAdmin || ticket.createdBy.id === userId || ticket.onBehalfOf?.id === userId) && (ticket as any).reopenCount < 1 ? (
+                    {(isAdmin || ticket.createdBy.id === userId || ticket.onBehalfOf?.id === userId) && (ticket.reopenCount ?? 0) < 1 ? (
                       <Button
                         onClick={async () => {
                           if (!confirm("Apakah Anda yakin ingin membuka kembali tiket ini?")) return;
@@ -701,7 +712,7 @@ export default function TicketDetailPage() {
                       currentId={ticket.assignedTo?.id}
                       onAssign={handleAssign}
                       isSupervisor={isSupervisor}
-                      categoryDept={(ticket.category as any)?.department ?? null}
+                      categoryDept={ticket.category.department}
                     />
                   </div>
                 )}

@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
+import { sendMail } from "@/lib/mailer";
 import type { Prisma } from "@prisma/client";
 import { z } from "zod";
 
@@ -66,6 +67,7 @@ export async function GET(
 
     const hasAccess =
       role === "ADMIN" ||
+      role === "EXECUTIVE" ||
       role === "AGENT" ||
       isSupervisorOrAgentInDept ||
       ticket.assignedToId === userId ||
@@ -232,14 +234,30 @@ export async function PATCH(
       validated.assignedToId !== ticket.assignedToId &&
       validated.assignedToId
     ) {
+      const assignMessage = `Tiket ${ticket.ticketNumber} — "${ticket.title}" telah di-assign ke Anda.`;
       await prisma.notification.create({
         data: {
           userId: validated.assignedToId,
           ticketId: id,
           type: "TICKET_ASSIGNED",
-          message: `Tiket ${ticket.ticketNumber} — "${ticket.title}" telah di-assign ke Anda.`,
+          message: assignMessage,
         },
       });
+
+      // Kirim notifikasi via email (best-effort)
+      const assignee = await prisma.user.findUnique({
+        where: { id: validated.assignedToId },
+        select: { email: true },
+      });
+      if (assignee?.email) {
+        const ticketUrl = `${process.env.NEXTAUTH_URL ?? ""}/tickets/${id}`;
+        void sendMail({
+          to: assignee.email,
+          subject: `[Tiket Ditugaskan] ${ticket.ticketNumber} — ${ticket.title}`,
+          text: `${assignMessage}\n\nLihat tiket: ${ticketUrl}`,
+          html: `<p>${assignMessage}</p><p><a href="${ticketUrl}">Lihat tiket</a></p>`,
+        });
+      }
     }
 
     return NextResponse.json(updated);

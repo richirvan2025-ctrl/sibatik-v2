@@ -47,8 +47,11 @@
 }
 
 :root {
-  --background: #F3F6FB;
+  --background: #F4F8FA;
   --foreground: #101A36;
+  --brand-header: #044C71;
+  --brand-header-border: #176B82;
+  --brand-header-muted: #C6E0E6;
   --card: #FFFFFF;
   --card-foreground: #101A36;
   --popover: #FFFFFF;
@@ -75,13 +78,13 @@
   --chart-5: #1C7082;
 
   /* Sidebar */
-  --sidebar: #0B1D3A;
+  --sidebar: #044C71;
   --sidebar-foreground: #FFFFFF;
   --sidebar-primary: #7047EB;
   --sidebar-primary-foreground: #FFFFFF;
-  --sidebar-accent: #183255;
+  --sidebar-accent: #176B82;
   --sidebar-accent-foreground: #FFFFFF;
-  --sidebar-border: #223A5C;
+  --sidebar-border: #176B82;
   --sidebar-ring: #8C6CF2;
 }
 
@@ -119,14 +122,17 @@
     @apply border-border outline-ring/50;
   }
   body {
-    @apply bg-background text-foreground;
-    min-height: 100%;
+    @apply text-foreground;
+    min-height: 100dvh;
+    background-color: var(--background) !important;
     font-family: "Segoe UI Variable", "Segoe UI", ui-sans-serif, system-ui, sans-serif;
+    overscroll-behavior-y: none;
     text-rendering: optimizeLegibility;
   }
   html {
     @apply font-sans;
-    background: var(--background);
+    min-height: 100%;
+    background-color: var(--background) !important;
   }
 
   ::selection {

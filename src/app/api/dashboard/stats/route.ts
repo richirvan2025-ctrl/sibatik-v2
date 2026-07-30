@@ -13,8 +13,8 @@ export async function GET() {
     const role = session.user.role;
 
     let baseWhere: any = {};
-    if (role === "ADMIN") {
-      // Admin sees all
+    if (role === "ADMIN" || role === "EXECUTIVE") {
+      // Management sees all tickets.
     } else if (role === "AGENT") {
       baseWhere = { assignedToId: userId };
     } else if (role === "SUPERVISOR") {
