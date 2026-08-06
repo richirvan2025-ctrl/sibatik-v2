@@ -28,6 +28,8 @@ import {
   FolderOpen,
   FileText,
   Building,
+  Trash2,
+  AlertTriangle,
 } from "lucide-react";
 import { toast } from "sonner";
 
@@ -37,8 +39,8 @@ const DEPARTMENTS = [
   "Marketing",
   "Kerjasama",
   "HRD/Kepegawaian",
-  "Operasional dan Security",
-  "Digital Communication",
+  "Operasional",
+  "DCC",
   "Penjamin Mutu",
   "Sistem Informasi & IT Support",
   "Prodi DKV",
@@ -48,6 +50,12 @@ const DEPARTMENTS = [
   "Prodi Bisnis Digital",
   "Prodi STI",
   "Prodi Manajemen Retail",
+  "Prodi MBD",
+  "Prodi MDS",
+  "LKTI (Litbang Kerjasama & Terapan Inovasi)",
+  "Kesekretariatan, Tata Usaha, dan Administrasi Umum ( KTA )",
+  "Branding Humas dan Kerjasama",
+  "Rektorat",
 ];
 
 interface SubCategory {
@@ -85,6 +93,9 @@ export default function CategoriesPage() {
   const [responseTimeHours, setResponseTimeHours] = useState(24);
   const [resolveTimeHours, setResolveTimeHours] = useState(72);
   const [parentId, setParentId] = useState("");
+
+  const [deleteTarget, setDeleteTarget] = useState<Category | SubCategory | null>(null);
+  const [deleteLoading, setDeleteLoading] = useState(false);
 
   useEffect(() => {
     fetchCategories();
@@ -168,6 +179,29 @@ export default function CategoriesPage() {
     setParentId(parentCategory.id);
     setDepartment(parentCategory.department || "");
     setDialogOpen(true);
+  };
+
+  const handleDelete = async () => {
+    if (!deleteTarget) return;
+    setDeleteLoading(true);
+    try {
+      const res = await fetch(`/api/admin/categories/${deleteTarget.id}`, {
+        method: "DELETE",
+      });
+      if (res.ok) {
+        toast.success("Kategori berhasil dihapus");
+        setDeleteTarget(null);
+        fetchCategories();
+      } else {
+        const data = await res.json();
+        toast.error(data.error || "Gagal menghapus kategori");
+      }
+    } catch (error) {
+      console.error("Failed to delete category:", error);
+      toast.error("Terjadi kesalahan");
+    } finally {
+      setDeleteLoading(false);
+    }
   };
 
   const editingIsParent =
@@ -293,10 +327,10 @@ export default function CategoriesPage() {
                   <SelectTrigger className="h-10 border-[#E2E8F0] bg-[#F8FAFC] rounded-xl text-sm focus:bg-white focus:border-[#7C3AED]">
                     <SelectValue placeholder="Pilih divisi (opsional)" />
                   </SelectTrigger>
-                  <SelectContent className="max-h-72">
-                    <SelectItem value="">Tidak ada (IT/Umum)</SelectItem>
+                  <SelectContent className="max-h-72 w-[320px]">
+                    <SelectItem value="" className="whitespace-normal">Tidak ada (IT/Umum)</SelectItem>
                     {DEPARTMENTS.map((d) => (
-                      <SelectItem key={d} value={d}>
+                      <SelectItem key={d} value={d} className="whitespace-normal">
                         {d}
                       </SelectItem>
                     ))}
@@ -428,6 +462,14 @@ export default function CategoriesPage() {
                           >
                             <Pencil className="h-4 w-4" />
                           </Button>
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            onClick={() => setDeleteTarget(category)}
+                            className="h-8 w-8 p-0 text-[#64748B] hover:text-red-600 hover:bg-red-50 rounded-lg"
+                          >
+                            <Trash2 className="h-4 w-4" />
+                          </Button>
                         </div>
                       </td>
                     </tr>,
@@ -505,14 +547,24 @@ export default function CategoriesPage() {
                       />
                     </td>
                     <td className="py-3 px-4 text-right align-middle">
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        onClick={() => openEdit(sub as unknown as Category)}
-                        className="h-8 w-8 p-0 text-[#64748B] hover:text-[#7C3AED] hover:bg-violet-50 rounded-lg"
-                      >
-                        <Pencil className="h-4 w-4" />
-                      </Button>
+                      <div className="flex items-center justify-end gap-1">
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          onClick={() => openEdit(sub as unknown as Category)}
+                          className="h-8 w-8 p-0 text-[#64748B] hover:text-[#7C3AED] hover:bg-violet-50 rounded-lg"
+                        >
+                          <Pencil className="h-4 w-4" />
+                        </Button>
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          onClick={() => setDeleteTarget(sub)}
+                          className="h-8 w-8 p-0 text-[#64748B] hover:text-red-600 hover:bg-red-50 rounded-lg"
+                        >
+                          <Trash2 className="h-4 w-4" />
+                        </Button>
+                      </div>
                     </td>
                   </tr>
                 ));
@@ -527,6 +579,48 @@ export default function CategoriesPage() {
           </div>
         )}
       </Card>
+
+      {/* Delete Confirmation Dialog */}
+      <Dialog open={deleteTarget !== null} onOpenChange={(open) => { if (!open) setDeleteTarget(null); }}>
+        <DialogContent className="border border-[#E2E8F0] shadow-xl rounded-xl p-0 gap-0 overflow-hidden sm:max-w-md">
+          <div className="h-1 bg-red-500" />
+          <div className="p-5 space-y-4">
+            <DialogHeader>
+              <DialogTitle className="text-lg font-bold text-[#1E293B] flex items-center gap-2">
+                <AlertTriangle className="h-5 w-5 text-red-500" />
+                Hapus Kategori
+              </DialogTitle>
+            </DialogHeader>
+            {deleteTarget && (
+              <div className="space-y-4">
+                <p className="text-sm text-[#64748B]">
+                  Apakah Anda yakin ingin menghapus kategori{" "}
+                  <span className="font-semibold text-[#1E293B]">{deleteTarget.name}</span>?
+                  {deleteTarget.parentId && (
+                    <span className="block mt-1">Ini adalah subkategori.</span>
+                  )}
+                </p>
+                <div className="flex gap-2 justify-end pt-2">
+                  <Button
+                    variant="outline"
+                    onClick={() => setDeleteTarget(null)}
+                    className="h-10 rounded-xl text-sm font-semibold border-[#E2E8F0] text-[#64748B]"
+                  >
+                    Batal
+                  </Button>
+                  <Button
+                    onClick={handleDelete}
+                    disabled={deleteLoading}
+                    className="h-10 bg-red-600 hover:bg-red-700 text-white rounded-xl text-sm font-semibold disabled:opacity-50"
+                  >
+                    {deleteLoading ? "Menghapus..." : "Hapus"}
+                  </Button>
+                </div>
+              </div>
+            )}
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }

@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { Sidebar } from "./sidebar";
 import { NotificationBell } from "./notification-bell";
-import { CalendarDays, ExternalLink, Menu } from "lucide-react";
+import { ExternalLink, Menu } from "lucide-react";
 import Image from "next/image";
 
 export function DashboardShell({ children }: { children: React.ReactNode }) {
@@ -28,7 +28,7 @@ export function DashboardShell({ children }: { children: React.ReactNode }) {
 
       <div className="flex min-w-0 flex-1 flex-col">
         <header className="flex h-[calc(4rem+env(safe-area-inset-top))] shrink-0 items-center justify-between border-b border-[var(--brand-header-border)] bg-[var(--brand-header)] px-4 pt-[env(safe-area-inset-top)] text-white shadow-[0_8px_24px_rgba(4,76,113,0.16)] md:h-16 md:px-7 md:pt-0">
-          <div className="flex items-center gap-3">
+          <div className="flex min-w-0 items-center gap-3">
             <button
               onClick={() => setSidebarOpen(true)}
               className="flex h-10 w-10 items-center justify-center rounded-xl border border-white/20 bg-white/10 text-white shadow-sm transition-colors hover:bg-white/20 md:hidden"
@@ -36,32 +36,15 @@ export function DashboardShell({ children }: { children: React.ReactNode }) {
             >
               <Menu className="h-5 w-5" />
             </button>
-            <div className="flex items-center gap-2 md:hidden">
-              <div className="flex h-9 w-9 items-center justify-center overflow-hidden rounded-xl border border-[#DCE4EF] bg-white shadow-sm">
-                <Image
-                  src="/logo.png"
-                  alt="IDB Bali"
-                  width={24}
-                  height={24}
-                  className="h-6 w-6 object-contain"
-                />
-              </div>
-              <div>
-                <p className="text-[14px] font-bold leading-tight text-white">IDB Bali</p>
-                <p className="text-[9px] font-bold uppercase tracking-[0.16em] text-[var(--brand-header-muted)]">SIBATIK</p>
-              </div>
-            </div>
-            <div className="hidden items-center gap-3 md:flex">
-              <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-white/12 text-[#FFD0A6] ring-1 ring-white/12">
-                <CalendarDays className="h-4 w-4" />
-              </div>
-              <div>
-                <p className="text-[11px] font-semibold uppercase tracking-[0.12em] text-[var(--brand-header-muted)]">
-                  Pusat Layanan Kampus
-                </p>
-                <p className="text-sm font-bold text-white">SIBATIK IDB Bali</p>
-              </div>
-            </div>
+            <Image
+              src="/sibatik-logo-white.png"
+              alt="SIBATIK"
+              width={2201}
+              height={714}
+              sizes="123px"
+              className="h-10 w-auto shrink-0 object-contain object-left md:hidden"
+              priority
+            />
           </div>
 
           <div className="ml-auto flex items-center gap-2">

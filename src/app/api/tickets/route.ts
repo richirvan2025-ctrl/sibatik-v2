@@ -39,12 +39,18 @@ export async function GET(req: NextRequest) {
 
     const userId = session.user.id;
     const role = session.user.role;
-    const scope = searchParams.get("scope"); // "my" | "department" | null
+    const scope = searchParams.get("scope"); // "mine" | "department" | null
 
     let where: any = {};
 
     if (role === "ADMIN" || role === "EXECUTIVE") {
       // Management sees all tickets. Executive access remains read-only in the UI.
+      if (scope === "mine") {
+        // Tiket Saya: tiket yang dibuat sendiri atau atas nama user
+        where = {
+          OR: [{ createdById: userId }, { onBehalfOfId: userId }],
+        };
+      }
     } else if (role === "AGENT" || role === "SUPERVISOR") {
       if (scope === "department") {
         // Tiket Divisi: semua tiket yang masuk ke divisi user

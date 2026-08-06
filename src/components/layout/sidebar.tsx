@@ -66,6 +66,8 @@ const navigation = {
   EXECUTIVE: [
     { name: "Dashboard", href: "/dashboard", icon: Crown },
     { name: "Monitor Tiket", href: "/tickets", icon: Ticket },
+    { name: "Tiket Saya", href: "/tickets?scope=mine", icon: Ticket },
+    { name: "Buat Tiket", href: "/tickets/new", icon: PlusCircle },
     { name: "Laporan", href: "/executive/reports", icon: BarChart3 },
   ],
 };
@@ -86,25 +88,16 @@ export function Sidebar({ onClose }: { onClose?: () => void }) {
 
   return (
     <div className="flex h-full flex-col border-r border-[var(--brand-header-border)] bg-[var(--brand-header)] text-white shadow-[10px_0_30px_rgba(4,76,113,0.10)]">
-      <div className="flex h-[calc(84px+env(safe-area-inset-top))] items-center gap-3 border-b border-white/10 px-5 pt-[env(safe-area-inset-top)] md:h-[84px] md:pt-0">
-        <div className="flex h-12 w-12 items-center justify-center overflow-hidden rounded-[14px] bg-white shadow-[0_8px_20px_rgba(0,0,0,0.18)]">
-          <Image
-            src="/logo.png"
-            alt="IDB Bali Logo"
-            width={38}
-            height={38}
-            className="h-9 w-9 object-contain"
-            priority
-          />
-        </div>
-        <div>
-          <h1 className="text-[17px] font-bold leading-tight tracking-[-0.02em] text-white">
-            IDB BALI
-          </h1>
-          <p className="mt-1 text-[10px] font-medium tracking-wide text-[var(--brand-header-muted)]">
-            SIBATIK Support
-          </p>
-        </div>
+      <div className="flex h-[calc(4rem+env(safe-area-inset-top))] items-center border-b border-white/10 px-4 pt-[env(safe-area-inset-top)] md:h-16 md:pt-0">
+        <Image
+          src="/sibatik-logo-white.png"
+          alt="SIBATIK"
+          width={2201}
+          height={714}
+          sizes="173px"
+          className="h-14 w-auto object-contain object-left"
+          priority
+        />
       </div>
 
       <nav className="app-scrollbar flex-1 space-y-1 overflow-y-auto px-3 py-5">

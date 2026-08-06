@@ -58,7 +58,13 @@ export default function TicketsPage() {
   const searchParams = useSearchParams();
   const requestedStatus = searchParams.get("status") || "";
   const requestedPriority = searchParams.get("priority") || "";
-  const scope = searchParams.get("scope") === "department" ? "department" : "";
+  const scopeParam = searchParams.get("scope");
+  const scope =
+    scopeParam === "department"
+      ? "department"
+      : scopeParam === "mine"
+      ? "mine"
+      : "";
   const [tickets, setTickets] = useState<TicketItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
@@ -101,10 +107,12 @@ export default function TicketsPage() {
 
   const role = session?.user?.role;
   const isExecutive = role === "EXECUTIVE";
-  const canCreateTicket = !isExecutive;
+  const canCreateTicket = true;
   const pageTitle =
     isExecutive
-      ? "Monitor Tiket"
+      ? scope === "mine"
+        ? "Tiket Saya"
+        : "Monitor Tiket"
       : scope === "department"
       ? "Tiket Divisi"
       : role === "ADMIN"
@@ -273,7 +281,7 @@ export default function TicketsPage() {
                         </span>
                         {ticket.assignedTo && (
                           <span>
-                            Technician:{" "}
+                            Assignee:{" "}
                             <span className="font-semibold text-[#7047EB]">
                               {ticket.assignedTo.name}
                             </span>

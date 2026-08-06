@@ -53,6 +53,34 @@ interface Category {
   parentId: string | null;
 }
 
+const DEPARTMENTS = [
+  "BAA/Akademik",
+  "Keuangan",
+  "Kemahasiswaan",
+  "LP2M",
+  "Humas & Marketing",
+  "Kerjasama",
+  "HRD/Kepegawaian",
+  "Operasional",
+  "Perpustakaan",
+  "DCC",
+  "Penjamin Mutu",
+  "Sistem Informasi & IT Support",
+  "Prodi DKV",
+  "Prodi Desain Interior",
+  "Prodi Desain Mode",
+  "Prodi Arsitektur",
+  "Prodi Bisnis Digital",
+  "Prodi STI",
+  "Prodi Manajemen Retail",
+  "Prodi MBD",
+  "Prodi MDS",
+  "LKTI (Litbang Kerjasama & Terapan Inovasi)",
+  "Kesekretariatan, Tata Usaha, dan Administrasi Umum ( KTA )",
+  "Branding Humas dan Kerjasama",
+  "Rektorat",
+] as const;
+
 const roleConfig: Record<
   string,
   { bg: string; text: string; icon: React.ElementType; label: string }
@@ -81,6 +109,7 @@ export default function UsersPage() {
   const [dialogOpen, setDialogOpen] = useState(false);
   const [editingUser, setEditingUser] = useState<User | null>(null);
   const [search, setSearch] = useState("");
+  const [departmentFilter, setDepartmentFilter] = useState("ALL");
 
   const [deleteTarget, setDeleteTarget] = useState<User | null>(null);
   const [deleteLoading, setDeleteLoading] = useState(false);
@@ -238,11 +267,14 @@ export default function UsersPage() {
     setDialogOpen(true);
   };
 
-  const filteredUsers = users.filter(
-    (u) =>
+  const filteredUsers = users.filter((u) => {
+    const matchesSearch =
       u.name.toLowerCase().includes(search.toLowerCase()) ||
-      (u.email || "").toLowerCase().includes(search.toLowerCase())
-  );
+      (u.email || "").toLowerCase().includes(search.toLowerCase());
+    const matchesDepartment =
+      departmentFilter === "ALL" || u.department === departmentFilter;
+    return matchesSearch && matchesDepartment;
+  });
 
   if (loading) {
     return (
@@ -326,26 +358,12 @@ export default function UsersPage() {
                   <SelectTrigger className="h-10 border-[#E2E8F0] bg-[#F8FAFC] rounded-xl text-sm focus:bg-white focus:border-[#2563EB]">
                     <SelectValue placeholder="Pilih divisi" />
                   </SelectTrigger>
-                  <SelectContent className="max-h-72 min-w-[280px]">
-                    <SelectItem value="BAA/Akademik">BAA/Akademik</SelectItem>
-                    <SelectItem value="Keuangan">Keuangan</SelectItem>
-                    <SelectItem value="Kemahasiswaan">Kemahasiswaan</SelectItem>
-                    <SelectItem value="LP2M">LP2M</SelectItem>
-                    <SelectItem value="Humas & Marketing">Humas & Marketing</SelectItem>
-                    <SelectItem value="Kerjasama">Kerjasama</SelectItem>
-                    <SelectItem value="HRD/Kepegawaian">HRD/Kepegawaian</SelectItem>
-                    <SelectItem value="Operasional dan Security">Operasional dan Security</SelectItem>
-                    <SelectItem value="Perpustakaan">Perpustakaan</SelectItem>
-                    <SelectItem value="Digital Communication">Digital Communication</SelectItem>
-                    <SelectItem value="Penjamin Mutu">Penjamin Mutu</SelectItem>
-                    <SelectItem value="Sistem Informasi & IT Support">Sistem Informasi & IT Support</SelectItem>
-                    <SelectItem value="Prodi DKV">Prodi DKV</SelectItem>
-                    <SelectItem value="Prodi Desain Interior">Prodi Desain Interior</SelectItem>
-                    <SelectItem value="Prodi Desain Mode">Prodi Desain Mode</SelectItem>
-                    <SelectItem value="Prodi Arsitektur">Prodi Arsitektur</SelectItem>
-                    <SelectItem value="Prodi Bisnis Digital">Prodi Bisnis Digital</SelectItem>
-                    <SelectItem value="Prodi STI">Prodi STI</SelectItem>
-                    <SelectItem value="Prodi Manajemen Retail">Prodi Manajemen Retail</SelectItem>
+                  <SelectContent className="max-h-72 w-[320px]">
+                    {DEPARTMENTS.map((dept) => (
+                      <SelectItem key={dept} value={dept} className="whitespace-normal">
+                        {dept}
+                      </SelectItem>
+                    ))}
                   </SelectContent>
                 </Select>
               </div>
@@ -361,15 +379,33 @@ export default function UsersPage() {
         </Dialog>
       </div>
 
-      {/* Search */}
-      <div className="relative max-w-md">
-        <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-[#94A3B8]" />
-        <Input
-          placeholder="Cari user..."
-          value={search}
-          onChange={(e) => setSearch(e.target.value)}
-          className="pl-10 h-10 border-[#E2E8F0] bg-white rounded-xl text-sm focus:border-[#2563EB]"
-        />
+      {/* Search & Filter */}
+      <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
+        <div className="relative w-full sm:max-w-md">
+          <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-[#94A3B8]" />
+          <Input
+            placeholder="Cari user..."
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            className="pl-10 h-10 border-[#E2E8F0] bg-white rounded-xl text-sm focus:border-[#2563EB]"
+          />
+        </div>
+        <Select value={departmentFilter} onValueChange={(value) => setDepartmentFilter(value || "ALL")}>
+          <SelectTrigger className="h-10 w-full border-[#E2E8F0] bg-white rounded-xl text-sm focus:border-[#2563EB] sm:w-64">
+            <div className="flex items-center gap-2">
+              <Building className="h-4 w-4 text-[#94A3B8]" />
+              <SelectValue placeholder="Semua Divisi" />
+            </div>
+          </SelectTrigger>
+          <SelectContent className="max-h-72 w-[320px]">
+            <SelectItem value="ALL" className="whitespace-normal">Semua Divisi</SelectItem>
+            {DEPARTMENTS.map((dept) => (
+              <SelectItem key={dept} value={dept} className="whitespace-normal">
+                {dept}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
       </div>
 
       {/* Users Table */}

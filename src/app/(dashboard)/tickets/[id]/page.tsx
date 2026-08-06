@@ -475,7 +475,7 @@ export default function TicketDetailPage() {
                           htmlFor="internal"
                           className="text-sm font-normal text-[#64748B]"
                         >
-                          Komentar Internal (hanya Admin/Technician)
+                          Komentar Internal (hanya Admin/Assignee)
                         </Label>
                       </div>
                     )}

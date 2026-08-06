@@ -7,6 +7,7 @@ interface SinergyTokenResponse {
   code?: number | string;
   idsso?: number | string;
   pengguna?: string;
+  nama_lengkap?: string;
 }
 
 function getSinergyBaseUrl() {
@@ -77,7 +78,9 @@ async function checkSinergyToken(token: string) {
 
   return {
     displayName:
-      typeof data.pengguna === "string" && data.pengguna.trim()
+      typeof data.nama_lengkap === "string" && data.nama_lengkap.trim()
+        ? data.nama_lengkap.trim()
+        : typeof data.pengguna === "string" && data.pengguna.trim()
         ? data.pengguna.trim()
         : `Pengguna Sinergy ${String(data.idsso)}`,
     ssoId: String(data.idsso),
@@ -115,7 +118,14 @@ export async function resolveSinergyUser(token: string) {
       data: {
         provider: "sinergy",
         ssoId: identity.ssoId,
+        name: identity.displayName,
       },
+    });
+  } else {
+    // Sync nama_lengkap terbaru dari Sinergy setiap login
+    user = await prisma.user.update({
+      where: { id: user.id },
+      data: { name: identity.displayName },
     });
   }
 

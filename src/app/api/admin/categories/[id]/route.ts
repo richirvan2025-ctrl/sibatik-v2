@@ -70,3 +70,48 @@ export async function PATCH(
     return NextResponse.json({ error: "Internal server error" }, { status: 500 });
   }
 }
+
+export async function DELETE(
+  req: NextRequest,
+  { params }: { params: Promise<{ id: string }> }
+) {
+  try {
+    const session = await auth();
+    if (session?.user?.role !== "ADMIN") {
+      return NextResponse.json({ error: "Forbidden" }, { status: 403 });
+    }
+
+    const { id } = await params;
+
+    // Check if category has tickets
+    const ticketCount = await prisma.ticket.count({
+      where: { categoryId: id },
+    });
+    if (ticketCount > 0) {
+      return NextResponse.json(
+        { error: `Tidak bisa menghapus kategori karena masih memiliki ${ticketCount} tiket` },
+        { status: 400 }
+      );
+    }
+
+    // Check if category has children
+    const childCount = await prisma.category.count({
+      where: { parentId: id },
+    });
+    if (childCount > 0) {
+      return NextResponse.json(
+        { error: `Tidak bisa menghapus kategori karena masih memiliki ${childCount} subkategori. Hapus subkategori terlebih dahulu.` },
+        { status: 400 }
+      );
+    }
+
+    await prisma.category.delete({
+      where: { id },
+    });
+
+    return NextResponse.json({ success: true });
+  } catch (error) {
+    console.error("DELETE admin/categories error:", error);
+    return NextResponse.json({ error: "Internal server error" }, { status: 500 });
+  }
+}

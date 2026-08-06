@@ -1,0 +1,27 @@
+{
+  "$schema": "https://opencode.ai/config.json",
+  "provider": {
+    "myprovider": {
+      "npm": "@ai-sdk/openai-compatible",
+      "name": "inferhub",
+      "options": {
+        "baseURL": "http://192.168.1.125:20128/v1",
+        "apiKey": "sk-ecd2fde06a585e76-8ejxfu-7ace1fc2"
+      },
+      "models": {
+        "inf/cbcn/deepseek-v4-pro": {
+          "name": "inf/cbcn/deepseek-v4-pro"
+        },
+        "inf/cbcn/deepseek-v4-flash": {
+          "name": "inf/cbcn/deepseek-v4-flash"
+        },
+        "inf/cbcn/glm-5.2": {
+          "name": "inf/cbcn/glm-5.2"
+        },
+        "inf/cp/cline-pass/qwen3.7-plus": {
+          "name": "inf/cp/cline-pass/qwen3.7-plus"
+        }
+      }
+    }
+  }
+}
