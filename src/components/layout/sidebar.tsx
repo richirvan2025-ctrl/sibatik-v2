@@ -35,21 +35,18 @@ const navigation = {
   ],
   USER: [
     { name: "Dashboard", href: "/dashboard", icon: LayoutDashboard },
-    { name: "Asisten", href: "/chat", icon: MessageCircle, beta: true },
     { name: "Tiket Saya", href: "/tickets", icon: Ticket },
     { name: "Buat Tiket", href: "/tickets/new", icon: PlusCircle },
     { name: "Knowledge Base", href: "/kb", icon: BookOpen },
   ],
   MAHASISWA: [
     { name: "Dashboard", href: "/dashboard", icon: LayoutDashboard },
-    { name: "Asisten", href: "/chat", icon: MessageCircle, beta: true },
     { name: "Tiket Saya", href: "/tickets", icon: Ticket },
     { name: "Buat Tiket", href: "/tickets/new", icon: PlusCircle },
     { name: "Knowledge Base", href: "/kb", icon: BookOpen },
   ],
   AGENT: [
     { name: "Dashboard", href: "/dashboard", icon: LayoutDashboard },
-    { name: "Asisten", href: "/chat", icon: MessageCircle, beta: true },
     { name: "Tiket Divisi", href: "/tickets?scope=department", icon: Shield },
     { name: "Tiket Saya", href: "/tickets", icon: Ticket },
     { name: "Buat Tiket", href: "/tickets/new", icon: PlusCircle },
@@ -57,7 +54,6 @@ const navigation = {
   ],
   SUPERVISOR: [
     { name: "Dashboard", href: "/dashboard", icon: LayoutDashboard },
-    { name: "Asisten", href: "/chat", icon: MessageCircle, beta: true },
     { name: "Tiket Divisi", href: "/tickets?scope=department", icon: Building2 },
     { name: "Tiket Saya", href: "/tickets", icon: Ticket },
     { name: "Buat Tiket", href: "/tickets/new", icon: PlusCircle },

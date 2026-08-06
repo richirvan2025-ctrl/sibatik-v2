@@ -19,6 +19,10 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
+    if (session.user.role !== "ADMIN") {
+      return NextResponse.json({ error: "Forbidden" }, { status: 403 });
+    }
+
     if (!NVIDIA_API_KEY) {
       return NextResponse.json(
         { error: "Chatbot belum dikonfigurasi (API key missing)" },
