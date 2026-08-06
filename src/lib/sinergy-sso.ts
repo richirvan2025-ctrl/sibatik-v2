@@ -2,6 +2,7 @@ import "server-only";
 
 import { createHmac, timingSafeEqual } from "node:crypto";
 import { prisma } from "./prisma";
+import { getNamaLengkapFromSinergy } from "./sinergy-db";
 
 interface SinergyTokenResponse {
   code?: number | string;
@@ -76,13 +77,15 @@ async function checkSinergyToken(token: string) {
   const data = (await response.json()) as SinergyTokenResponse;
   if (Number(data.code) !== 200 || data.idsso === undefined) return null;
 
+  // Ambil nama_lengkap dari database Sinergy (tb_user_sso)
+  const namaLengkap = await getNamaLengkapFromSinergy(String(data.idsso));
+
   return {
     displayName:
-      typeof data.nama_lengkap === "string" && data.nama_lengkap.trim()
-        ? data.nama_lengkap.trim()
-        : typeof data.pengguna === "string" && data.pengguna.trim()
-        ? data.pengguna.trim()
-        : `Pengguna Sinergy ${String(data.idsso)}`,
+      (namaLengkap?.trim())
+        || (typeof data.nama_lengkap === "string" && data.nama_lengkap.trim())
+        || (typeof data.pengguna === "string" && data.pengguna.trim())
+        || `Pengguna Sinergy ${String(data.idsso)}`,
     ssoId: String(data.idsso),
   };
 }

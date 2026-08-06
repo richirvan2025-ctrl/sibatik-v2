@@ -18,6 +18,9 @@
         "inf/cbcn/glm-5.2": {
           "name": "inf/cbcn/glm-5.2"
         },
+        "tr/moonshotai/kimi-k3-free": {
+          "name": "tr/moonshotai/kimi-k3-free"
+        },
         "inf/cp/cline-pass/qwen3.7-plus": {
           "name": "inf/cp/cline-pass/qwen3.7-plus"
         }
