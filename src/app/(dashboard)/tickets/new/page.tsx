@@ -34,7 +34,6 @@ import {
   ImageIcon,
   File,
   Check,
-  ChevronDown,
   Link as LinkIcon,
   CalendarClock,
   Users,
@@ -94,7 +93,6 @@ export default function NewTicketPage() {
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const [selectedCategoryIds, setSelectedCategoryIds] = useState<string[]>([]);
-  const [subCategoryId, setSubCategoryId] = useState("");
   const [priority, setPriority] = useState("MEDIUM");
   const [onBehalfOfId, setOnBehalfOfId] = useState("");
   const [deadline, setDeadline] = useState("");
@@ -157,7 +155,7 @@ export default function NewTicketPage() {
     //   setDynamicFields(null);
     // }
     setDynamicFields(null);
-  }, [selectedCategoryIds, subCategoryId, role]);
+  }, [selectedCategoryIds, role]);
 
   // Fetch assignees berdasarkan divisi dari kategori yang dipilih
   useEffect(() => {
@@ -463,7 +461,6 @@ export default function NewTicketPage() {
                                   setSelectedCategoryIds((prev) => [...prev, cat.id]);
                                   setCategorySearch("");
                                 }
-                                setSubCategoryId("");
                               }}
                               disabled={isSelected}
                               className={`flex w-full items-center gap-2 px-3 py-2 text-sm transition-colors ${
@@ -519,7 +516,6 @@ export default function NewTicketPage() {
                             type="button"
                             onClick={() => {
                               setSelectedCategoryIds((prev) => prev.filter((cid) => cid !== id));
-                              setSubCategoryId("");
                             }}
                             className="hover:text-red-500 transition-colors"
                           >
@@ -614,40 +610,6 @@ export default function NewTicketPage() {
                 </p>
               </div>
             )}
-
-            {(() => {
-              // Only show sub-category when exactly 1 category is selected
-              if (selectedCategoryIds.length !== 1) return null;
-              const parent = categories.find((c) => c.id === selectedCategoryIds[0]);
-              if (!parent || parent.children.length === 0) return null;
-              return (
-                <div className="space-y-2">
-                  <Label className="flex items-center gap-2 text-sm font-medium text-[#1E293B]">
-                    <FolderOpen className="h-4 w-4 text-[#7C3AED]" />
-                    Sub-Kategori
-                    <span className="text-xs font-normal text-[#94A3B8]">(opsional)</span>
-                  </Label>
-                  <Select
-                    value={subCategoryId}
-                    onValueChange={(value) => setSubCategoryId(value || "")}
-                  >
-                    <SelectTrigger aria-label="Sub-kategori tiket" className="h-10 border-[#E2E8F0] bg-[#F8FAFC] rounded-xl text-sm focus:bg-white focus:border-[#2563EB] w-full">
-                      <SelectValue placeholder="Pilih sub-kategori (opsional)">
-                        {parent.children.find((c) => c.id === subCategoryId)?.name || "Pilih sub-kategori (opsional)"}
-                      </SelectValue>
-                    </SelectTrigger>
-                    <SelectContent className="min-w-[var(--radix-select-trigger-width)] !w-auto">
-                      <SelectItem value="">— Gunakan kategori utama —</SelectItem>
-                      {parent.children.map((sub) => (
-                        <SelectItem key={sub.id} value={sub.id}>
-                          {sub.name}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                </div>
-              );
-            })()}
 
             {/* Dynamic Fields untuk Instalasi Software */}
             {/* NOTE: dynamicFields selalu null saat ini (lib dynamic-field-config belum ada), blok inert. */}
