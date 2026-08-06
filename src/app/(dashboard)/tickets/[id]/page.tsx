@@ -73,8 +73,6 @@ interface Ticket {
   rating: number | null;
   feedback: string | null;
   firstResponseAt: string | null;
-  slaBreached: boolean;
-  responseSlaBreached: boolean;
   category: { name: string; department: string | null };
   reopenCount?: number;
   createdBy: { id: string; name: string; email: string };
@@ -271,12 +269,6 @@ export default function TicketDetailPage() {
               >
                 {ticket.priority}
               </span>
-              {ticket.slaBreached && (
-                <Badge className="bg-red-50 text-red-700 border-red-200 hover:bg-red-50 text-xs">
-                  <AlertCircle className="mr-1 h-3 w-3" />
-                  SLA Breached
-                </Badge>
-              )}
             </div>
             <h1 className="text-xl font-bold tracking-tight text-[#1E293B]">
               {ticket.title}

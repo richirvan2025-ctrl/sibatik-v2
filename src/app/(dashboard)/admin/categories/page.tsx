@@ -23,8 +23,6 @@ import {
   Plus,
   Pencil,
   Settings,
-  Clock,
-  Zap,
   FolderOpen,
   FileText,
   Building,
@@ -63,8 +61,6 @@ interface SubCategory {
   name: string;
   description: string | null;
   department: string | null;
-  responseTimeHours: number;
-  resolveTimeHours: number;
   isActive: boolean;
   parentId: string;
 }
@@ -74,8 +70,6 @@ interface Category {
   name: string;
   description: string | null;
   department: string | null;
-  responseTimeHours: number;
-  resolveTimeHours: number;
   isActive: boolean;
   parentId: string | null;
   children: SubCategory[];
@@ -90,8 +84,6 @@ export default function CategoriesPage() {
   const [name, setName] = useState("");
   const [description, setDescription] = useState("");
   const [department, setDepartment] = useState("");
-  const [responseTimeHours, setResponseTimeHours] = useState(24);
-  const [resolveTimeHours, setResolveTimeHours] = useState(72);
   const [parentId, setParentId] = useState("");
 
   const [deleteTarget, setDeleteTarget] = useState<Category | SubCategory | null>(null);
@@ -122,8 +114,6 @@ export default function CategoriesPage() {
         name,
         description,
         department: department || null,
-        responseTimeHours,
-        resolveTimeHours,
         parentId: parentId || null,
       };
 
@@ -157,8 +147,6 @@ export default function CategoriesPage() {
     setName("");
     setDescription("");
     setDepartment("");
-    setResponseTimeHours(24);
-    setResolveTimeHours(72);
     setParentId("");
     setEditingCategory(null);
   };
@@ -168,8 +156,6 @@ export default function CategoriesPage() {
     setName(category.name);
     setDescription(category.description || "");
     setDepartment(category.department || "");
-    setResponseTimeHours(category.responseTimeHours);
-    setResolveTimeHours(category.resolveTimeHours);
     setParentId(category.parentId || "");
     setDialogOpen(true);
   };
@@ -228,7 +214,7 @@ export default function CategoriesPage() {
             Kategori
           </h1>
           <p className="text-sm text-[#64748B] mt-1">
-            Kelola kategori tiket dan konfigurasi SLA
+            Kelola kategori tiket
           </p>
         </div>
         <Dialog open={dialogOpen} onOpenChange={(open) => { setDialogOpen(open); if (!open) resetForm(); }}>
@@ -337,36 +323,6 @@ export default function CategoriesPage() {
                   </SelectContent>
                 </Select>
               </div>
-              <div className="grid grid-cols-2 gap-4">
-                <div className="space-y-2">
-                  <Label className="flex items-center gap-2 text-sm font-medium text-[#1E293B]">
-                    <Clock className="h-4 w-4 text-[#0EA5E9]" />
-                    Response (jam)
-                  </Label>
-                  <Input
-                    type="number"
-                    min={1}
-                    value={responseTimeHours}
-                    onChange={(e) => setResponseTimeHours(parseInt(e.target.value))}
-                    className="h-10 border-[#E2E8F0] bg-[#F8FAFC] rounded-xl text-sm focus:bg-white focus:border-[#7C3AED]"
-                    required
-                  />
-                </div>
-                <div className="space-y-2">
-                  <Label className="flex items-center gap-2 text-sm font-medium text-[#1E293B]">
-                    <Zap className="h-4 w-4 text-[#0EA5E9]" />
-                    Resolve (jam)
-                  </Label>
-                  <Input
-                    type="number"
-                    min={1}
-                    value={resolveTimeHours}
-                    onChange={(e) => setResolveTimeHours(parseInt(e.target.value))}
-                    className="h-10 border-[#E2E8F0] bg-[#F8FAFC] rounded-xl text-sm focus:bg-white focus:border-[#7C3AED]"
-                    required
-                  />
-                </div>
-              </div>
               <Button
                 type="submit"
                 className="w-full h-10 bg-[#7C3AED] hover:bg-[#6D28D9] text-white shadow-md rounded-xl text-sm font-semibold"
@@ -396,9 +352,6 @@ export default function CategoriesPage() {
                 </th>
                 <th className="text-left py-3 px-4 text-[11px] font-semibold text-[#94A3B8] uppercase tracking-wider">
                   Detail
-                </th>
-                <th className="text-left py-3 px-4 text-[11px] font-semibold text-[#94A3B8] uppercase tracking-wider w-36">
-                  SLA
                 </th>
                 <th className="text-right py-3 px-4 text-[11px] font-semibold text-[#94A3B8] uppercase tracking-wider w-20">
                   Aksi
@@ -436,12 +389,6 @@ export default function CategoriesPage() {
                       <td className="py-3 px-4 text-sm text-[#94A3B8] align-middle">—</td>
                       <td className="py-3 px-4 text-sm text-[#64748B] align-middle">
                         {category.description || "—"}
-                      </td>
-                      <td className="py-3 px-4 align-middle">
-                        <SLABadges
-                          responseTimeHours={category.responseTimeHours}
-                          resolveTimeHours={category.resolveTimeHours}
-                        />
                       </td>
                       <td className="py-3 px-4 text-right align-middle">
                         <div className="flex items-center justify-end gap-1">
@@ -540,12 +487,6 @@ export default function CategoriesPage() {
                         {sub.description || <span className="text-[#CBD5E1]">—</span>}
                       </p>
                     </td>
-                    <td className="py-3 px-4 align-middle">
-                      <SLABadges
-                        responseTimeHours={sub.responseTimeHours}
-                        resolveTimeHours={sub.resolveTimeHours}
-                      />
-                    </td>
                     <td className="py-3 px-4 text-right align-middle">
                       <div className="flex items-center justify-end gap-1">
                         <Button
@@ -621,27 +562,6 @@ export default function CategoriesPage() {
           </div>
         </DialogContent>
       </Dialog>
-    </div>
-  );
-}
-
-function SLABadges({
-  responseTimeHours,
-  resolveTimeHours,
-}: {
-  responseTimeHours: number;
-  resolveTimeHours: number;
-}) {
-  return (
-    <div className="flex flex-col gap-1">
-      <span className="inline-flex items-center gap-1 rounded-full bg-orange-50 border border-orange-100 px-2 py-0.5 text-[11px] font-semibold text-orange-700 w-fit">
-        <Clock className="h-2.5 w-2.5" />
-        Resp. {responseTimeHours}j
-      </span>
-      <span className="inline-flex items-center gap-1 rounded-full bg-blue-50 border border-blue-100 px-2 py-0.5 text-[11px] font-semibold text-blue-700 w-fit">
-        <Zap className="h-2.5 w-2.5" />
-        Resolve {resolveTimeHours}j
-      </span>
     </div>
   );
 }

@@ -32,7 +32,6 @@ interface Stats {
   inProgress: number;
   resolved: number;
   closed: number;
-  slaBreached: number;
   avgResolutionHours: number;
 }
 
@@ -243,19 +242,7 @@ export default function DashboardPage() {
       </section>
 
       {isManagement && (
-        <section className="grid gap-3 md:grid-cols-3" aria-label="Metrik operasional">
-          <Card className="py-0">
-            <CardContent className="flex items-center gap-4 p-4.5">
-              <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-[#FDECEC] text-[#D94349]">
-                <AlertCircle className="h-5 w-5" />
-              </div>
-              <div>
-                <p className="text-[10px] font-bold uppercase tracking-[0.08em] text-[#71809A]">SLA Breached</p>
-                <p className="mt-0.5 text-xl font-bold text-[#18233E]">{stats.slaBreached}</p>
-                <p className="text-xs text-[#7B879D]">Melewati batas penanganan</p>
-              </div>
-            </CardContent>
-          </Card>
+        <section className="grid gap-3 md:grid-cols-2" aria-label="Metrik operasional">
           <Card className="py-0">
             <CardContent className="flex items-center gap-4 p-4.5">
               <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-[#EAF4FC] text-[#268EDB]">

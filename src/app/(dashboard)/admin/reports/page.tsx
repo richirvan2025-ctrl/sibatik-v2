@@ -26,7 +26,6 @@ interface TechPerformance {
   avgResponseHours: number;
   avgResolutionHours: number;
   avgRating: number;
-  slaComplianceRate: number;
   escalationRate: number;
 }
 
@@ -34,7 +33,6 @@ interface ReportData {
   statusCounts: { status: string; count: number }[];
   priorityCounts: { priority: string; count: number }[];
   categoryCounts: { category: string; count: number }[];
-  slaBreached: number;
   totalTickets: number;
   openTickets: number;
   avgResolutionHours: number;
@@ -131,14 +129,6 @@ export default function ReportsPage() {
           color="#F59E0B"
           bgLight="bg-amber-50"
           textColor="text-amber-600"
-        />
-        <StatCard
-          label="SLA Breached"
-          value={data.slaBreached}
-          icon={AlertCircle}
-          color="#EF4444"
-          bgLight="bg-red-50"
-          textColor="text-red-600"
         />
         <StatCard
           label="Avg Resolution"
@@ -369,9 +359,6 @@ export default function ReportsPage() {
                         )}
                       </div>
                     </div>
-                    <Badge className="bg-emerald-50 text-emerald-700 border-emerald-200 text-xs">
-                      {tech.slaComplianceRate}% SLA
-                    </Badge>
                   </div>
                 ))}
               </div>
@@ -429,12 +416,6 @@ export default function ReportsPage() {
                     </th>
                     <th className="text-center py-3 px-3 text-[11px] font-semibold text-[#94A3B8] uppercase tracking-wider">
                       <span className="flex items-center justify-center gap-1">
-                        <CheckCircle className="h-3 w-3" />
-                        SLA
-                      </span>
-                    </th>
-                    <th className="text-center py-3 px-3 text-[11px] font-semibold text-[#94A3B8] uppercase tracking-wider">
-                      <span className="flex items-center justify-center gap-1">
                         <Zap className="h-3 w-3" />
                         Escalation
                       </span>
@@ -479,19 +460,6 @@ export default function ReportsPage() {
                         ) : (
                           <span className="text-[#94A3B8]">-</span>
                         )}
-                      </td>
-                      <td className="py-3 px-3 text-center">
-                        <Badge
-                          className={`text-xs ${
-                            tech.slaComplianceRate >= 90
-                              ? "bg-emerald-50 text-emerald-700 border-emerald-200"
-                              : tech.slaComplianceRate >= 70
-                              ? "bg-amber-50 text-amber-700 border-amber-200"
-                              : "bg-red-50 text-red-700 border-red-200"
-                          }`}
-                        >
-                          {tech.slaComplianceRate}%
-                        </Badge>
                       </td>
                       <td className="py-3 px-3 text-center">
                         <Badge

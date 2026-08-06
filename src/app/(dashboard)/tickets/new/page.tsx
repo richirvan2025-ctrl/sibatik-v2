@@ -371,9 +371,8 @@ export default function NewTicketPage() {
           <div className="flex flex-col gap-2 rounded-xl border border-[#DCE4EF] bg-[#F8FAFD] px-4 py-3 sm:flex-row sm:items-center sm:justify-between">
             <div>
               <p className="text-sm font-bold text-[#26334D]">Informasi permintaan</p>
-              <p className="mt-0.5 text-xs text-[#71809A]">Kolom bertanda wajib perlu diisi sebelum tiket dikirim.</p>
-            </div>
-            <span className="inline-flex w-fit items-center rounded-full bg-[#EAF8F2] px-2.5 py-1 text-[10px] font-bold uppercase tracking-wide text-[#168660]">Respons terpantau SLA</span>
+            <p className="mt-0.5 text-xs text-[#71809A]">Kolom bertanda wajib perlu diisi sebelum tiket dikirim.</p>
+          </div>
           </div>
           {error && (
             <Alert
