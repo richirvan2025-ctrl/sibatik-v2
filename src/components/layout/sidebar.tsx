@@ -83,7 +83,7 @@ export function Sidebar({ onClose }: { onClose?: () => void }) {
   const items = (navigation[role] || navigation.USER) as NavItem[];
 
   return (
-    <div className="flex h-full flex-col border-r border-[var(--brand-header-border)] bg-[var(--brand-header)] text-white shadow-[10px_0_30px_rgba(4,76,113,0.10)]">
+    <div className="flex h-full flex-col border-r border-[var(--sidebar-border)] bg-[var(--sidebar)] text-white shadow-[10px_0_30px_rgba(4,76,113,0.10)]">
       <div className="flex h-[calc(4rem+env(safe-area-inset-top))] items-center border-b border-white/10 px-4 pt-[env(safe-area-inset-top)] md:h-16 md:pt-0">
         <Image
           src="/sibatik-logo-white.png"
