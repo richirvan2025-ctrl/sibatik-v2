@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import {
+  Activity,
   BarChart3,
   Ticket,
   Clock,
@@ -17,7 +18,10 @@ import {
   Zap,
   Timer,
   Award,
+  Target,
+  Layers3,
 } from "lucide-react";
+import type { LucideIcon } from "lucide-react";
 
 interface TechPerformance {
   name: string;
@@ -49,7 +53,10 @@ const statusConfig: Record<string, { color: string; label: string }> = {
   ESCALATED: { color: "#EF4444", label: "Escalated" },
 };
 
-const priorityConfig: Record<string, { color: string; bg: string; label: string }> = {
+const priorityConfig: Record<
+  string,
+  { color: string; bg: string; label: string }
+> = {
   LOW: { color: "#64748B", bg: "bg-slate-100", label: "Low" },
   MEDIUM: { color: "#7C3AED", bg: "bg-blue-50", label: "Medium" },
   HIGH: { color: "#0EA5E9", bg: "bg-orange-50", label: "High" },
@@ -61,22 +68,27 @@ export default function ReportsPage() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    fetchReports();
-  }, []);
+    let cancelled = false;
 
-  const fetchReports = async () => {
-    try {
-      const res = await fetch("/api/admin/reports");
-      if (res.ok) {
-        const result = await res.json();
-        setData(result);
-      }
-    } catch (error) {
-      console.error("Failed to fetch reports:", error);
-    } finally {
-      setLoading(false);
-    }
-  };
+    fetch("/api/admin/reports")
+      .then(async (res) => {
+        if (!res.ok) return null;
+        return (await res.json()) as ReportData;
+      })
+      .then((result) => {
+        if (!cancelled && result) setData(result);
+      })
+      .catch((error) => {
+        console.error("Failed to fetch reports:", error);
+      })
+      .finally(() => {
+        if (!cancelled) setLoading(false);
+      });
+
+    return () => {
+      cancelled = true;
+    };
+  }, []);
 
   if (loading) {
     return (
@@ -96,64 +108,112 @@ export default function ReportsPage() {
 
   const maxDaily = Math.max(
     ...data.dailyTrends.map((d) => Math.max(d.created, d.resolved)),
-    1
+    1,
   );
-  const maxCategory = Math.max(...data.categoryCounts.map((c) => c.count), 1);
+  const completedTickets = data.statusCounts
+    .filter((item) => item.status === "RESOLVED" || item.status === "CLOSED")
+    .reduce((total, item) => total + item.count, 0);
+  const completionRate = Math.round(
+    (completedTickets / Math.max(data.totalTickets, 1)) * 100,
+  );
+  const createdLastSevenDays = data.dailyTrends.reduce(
+    (total, day) => total + day.created,
+    0,
+  );
+  const resolvedLastSevenDays = data.dailyTrends.reduce(
+    (total, day) => total + day.resolved,
+    0,
+  );
 
   return (
-    <div className="space-y-6">
+    <div className="mx-auto max-w-[1600px] space-y-5">
       {/* Header */}
-      <div>
-        <h1 className="text-2xl font-bold tracking-tight text-[#1E293B]">
-          Laporan
-        </h1>
-        <p className="text-sm text-[#64748B] mt-1">
-          Analitik dan statistik tiket support
-        </p>
+      <div className="flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
+        <div>
+          <div className="mb-2 flex items-center gap-2 text-[11px] font-bold uppercase tracking-[0.18em] text-[#7C3AED]">
+            <Activity className="h-3.5 w-3.5" />
+            Analitik operasional
+          </div>
+          <h1 className="text-2xl font-bold tracking-tight text-[#172033] md:text-[28px]">
+            Laporan Layanan
+          </h1>
+          <p className="mt-1 text-sm text-[#64748B]">
+            Pantau volume, status, dan performa penanganan tiket dalam satu
+            tampilan.
+          </p>
+        </div>
+        <div className="flex w-fit items-center gap-2 rounded-full border border-emerald-200 bg-emerald-50 px-3 py-1.5 text-xs font-semibold text-emerald-700 shadow-sm">
+          <span className="relative flex h-2 w-2">
+            <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-400 opacity-50" />
+            <span className="relative inline-flex h-2 w-2 rounded-full bg-emerald-500" />
+          </span>
+          Data operasional terkini
+        </div>
       </div>
 
       {/* Summary Stats */}
-      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+      <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
         <StatCard
           label="Total Tiket"
           value={data.totalTickets}
           icon={Ticket}
-          color="#7C3AED"
           bgLight="bg-blue-50"
           textColor="text-blue-600"
+          helper="Seluruh tiket tercatat"
+          accent="bg-blue-500"
         />
         <StatCard
           label="Tiket Terbuka"
           value={data.openTickets}
           icon={Clock}
-          color="#F59E0B"
           bgLight="bg-amber-50"
           textColor="text-amber-600"
+          helper="Perlu tindak lanjut"
+          accent="bg-amber-500"
         />
         <StatCard
-          label="Avg Resolution"
+          label="Rata-rata Resolusi"
           value={`${data.avgResolutionHours}j`}
           icon={TrendingUp}
-          color="#10B981"
           bgLight="bg-emerald-50"
           textColor="text-emerald-600"
+          helper="Waktu penyelesaian"
+          accent="bg-emerald-500"
+        />
+        <StatCard
+          label="Tingkat Penyelesaian"
+          value={`${completionRate}%`}
+          icon={Target}
+          bgLight="bg-violet-50"
+          textColor="text-violet-600"
+          helper={`${completedTickets} tiket selesai`}
+          accent="bg-violet-500"
+          progress={completionRate}
         />
       </div>
 
-      <div className="grid gap-6 lg:grid-cols-2">
+      <div className="grid gap-4 lg:grid-cols-2">
         {/* Status Distribution */}
-        <Card className="border border-[#E2E8F0] bg-white rounded-xl shadow-[0_1px_3px_rgba(0,0,0,0.05),0_1px_2px_rgba(0,0,0,0.03)] overflow-hidden">
-          <div className="h-1 bg-[#7C3AED]" />
-          <CardHeader className="pb-3 pt-5 px-5">
-            <CardTitle className="flex items-center gap-2 text-sm font-semibold text-[#1E293B]">
-              <CheckCircle className="h-4 w-4 text-[#7C3AED]" />
-              Distribusi Status
-            </CardTitle>
+        <Card className="overflow-hidden rounded-2xl border border-[#E2E8F0] bg-white shadow-[0_8px_30px_rgba(15,23,42,0.04)]">
+          <CardHeader className="px-5 pb-3 pt-5">
+            <div className="flex items-center gap-3">
+              <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-violet-50 text-[#7C3AED]">
+                <CheckCircle className="h-5 w-5" />
+              </div>
+              <div>
+                <CardTitle className="text-[15px] font-bold text-[#1E293B]">
+                  Distribusi Status
+                </CardTitle>
+                <p className="mt-0.5 text-xs text-[#94A3B8]">
+                  Posisi seluruh tiket saat ini
+                </p>
+              </div>
+            </div>
           </CardHeader>
-          <CardContent className="px-5 pb-5 space-y-4">
+          <CardContent className="space-y-4 px-5 pb-5">
             {data.statusCounts.map((item) => {
               const pct = Math.round(
-                (item.count / Math.max(data.totalTickets, 1)) * 100
+                (item.count / Math.max(data.totalTickets, 1)) * 100,
               );
               const cfg = statusConfig[item.status] || {
                 color: "#94A3B8",
@@ -183,7 +243,7 @@ export default function ReportsPage() {
                       </Badge>
                     </div>
                   </div>
-                  <div className="h-2 w-full rounded-full bg-[#F1F5F9] overflow-hidden">
+                  <div className="h-2.5 w-full overflow-hidden rounded-full bg-[#F1F5F9]">
                     <div
                       className="h-full rounded-full transition-all duration-500"
                       style={{
@@ -199,18 +259,26 @@ export default function ReportsPage() {
         </Card>
 
         {/* Priority Distribution */}
-        <Card className="border border-[#E2E8F0] bg-white rounded-xl shadow-[0_1px_3px_rgba(0,0,0,0.05),0_1px_2px_rgba(0,0,0,0.03)] overflow-hidden">
-          <div className="h-1 bg-[#0EA5E9]" />
-          <CardHeader className="pb-3 pt-5 px-5">
-            <CardTitle className="flex items-center gap-2 text-sm font-semibold text-[#1E293B]">
-              <AlertCircle className="h-4 w-4 text-[#0EA5E9]" />
-              Distribusi Prioritas
-            </CardTitle>
+        <Card className="overflow-hidden rounded-2xl border border-[#E2E8F0] bg-white shadow-[0_8px_30px_rgba(15,23,42,0.04)]">
+          <CardHeader className="px-5 pb-3 pt-5">
+            <div className="flex items-center gap-3">
+              <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-sky-50 text-[#0EA5E9]">
+                <AlertCircle className="h-5 w-5" />
+              </div>
+              <div>
+                <CardTitle className="text-[15px] font-bold text-[#1E293B]">
+                  Distribusi Prioritas
+                </CardTitle>
+                <p className="mt-0.5 text-xs text-[#94A3B8]">
+                  Tingkat urgensi tiket masuk
+                </p>
+              </div>
+            </div>
           </CardHeader>
-          <CardContent className="px-5 pb-5 space-y-4">
+          <CardContent className="space-y-4 px-5 pb-5">
             {data.priorityCounts.map((item) => {
               const pct = Math.round(
-                (item.count / Math.max(data.totalTickets, 1)) * 100
+                (item.count / Math.max(data.totalTickets, 1)) * 100,
               );
               const cfg = priorityConfig[item.priority] || {
                 color: "#94A3B8",
@@ -235,7 +303,7 @@ export default function ReportsPage() {
                       </Badge>
                     </div>
                   </div>
-                  <div className="h-2 w-full rounded-full bg-[#F1F5F9] overflow-hidden">
+                  <div className="h-2.5 w-full overflow-hidden rounded-full bg-[#F1F5F9]">
                     <div
                       className="h-full rounded-full transition-all duration-500"
                       style={{
@@ -251,18 +319,36 @@ export default function ReportsPage() {
         </Card>
       </div>
 
-      <div className="grid gap-6 lg:grid-cols-2">
+      <div className="grid gap-4 lg:grid-cols-[minmax(0,1.35fr)_minmax(340px,0.65fr)]">
         {/* Daily Trends */}
-        <Card className="border border-[#E2E8F0] bg-white rounded-xl shadow-[0_1px_3px_rgba(0,0,0,0.05),0_1px_2px_rgba(0,0,0,0.03)] overflow-hidden">
-          <div className="h-1 bg-[#10B981]" />
-          <CardHeader className="pb-3 pt-5 px-5">
-            <CardTitle className="flex items-center gap-2 text-sm font-semibold text-[#1E293B]">
-              <Calendar className="h-4 w-4 text-[#10B981]" />
-              Tiket 7 Hari Terakhir
-            </CardTitle>
+        <Card className="overflow-hidden rounded-2xl border border-[#E2E8F0] bg-white shadow-[0_8px_30px_rgba(15,23,42,0.04)]">
+          <CardHeader className="px-5 pb-2 pt-5">
+            <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+              <div className="flex items-center gap-3">
+                <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-emerald-50 text-[#10B981]">
+                  <Calendar className="h-5 w-5" />
+                </div>
+                <div>
+                  <CardTitle className="text-[15px] font-bold text-[#1E293B]">
+                    Tiket 7 Hari Terakhir
+                  </CardTitle>
+                  <p className="mt-0.5 text-xs text-[#94A3B8]">
+                    Perbandingan tiket dibuat dan diselesaikan
+                  </p>
+                </div>
+              </div>
+              <div className="flex items-center gap-2 text-xs font-semibold">
+                <span className="rounded-full bg-violet-50 px-2.5 py-1 text-violet-700">
+                  {createdLastSevenDays} dibuat
+                </span>
+                <span className="rounded-full bg-emerald-50 px-2.5 py-1 text-emerald-700">
+                  {resolvedLastSevenDays} selesai
+                </span>
+              </div>
+            </div>
           </CardHeader>
           <CardContent className="px-5 pb-5">
-            <div className="flex items-end gap-3 h-40">
+            <div className="flex h-44 items-end gap-2 rounded-xl bg-gradient-to-b from-[#FAFBFF] to-white px-3 pt-5">
               {data.dailyTrends.map((day) => {
                 const date = new Date(day.date);
                 const label = date.toLocaleDateString("id-ID", {
@@ -273,16 +359,16 @@ export default function ReportsPage() {
                 return (
                   <div
                     key={day.date}
-                    className="flex flex-1 flex-col items-center gap-1.5"
+                    className="group flex flex-1 flex-col items-center gap-1.5"
                   >
-                    <div className="flex gap-0.5 items-end w-full h-28">
+                    <div className="flex h-28 w-full items-end gap-1">
                       <div
-                        className="flex-1 rounded-t-md bg-[#7C3AED] transition-all duration-500 min-h-[4px]"
+                        className="min-h-[4px] flex-1 rounded-t-md bg-gradient-to-t from-[#7047EB] to-[#9B7CF5] shadow-[0_-3px_10px_rgba(112,71,235,0.12)] transition-all duration-500 group-hover:brightness-105"
                         style={{ height: `${Math.max(createdH, 4)}%` }}
                         title={`Dibuat: ${day.created}`}
                       />
                       <div
-                        className="flex-1 rounded-t-md bg-[#10B981] transition-all duration-500 min-h-[4px]"
+                        className="min-h-[4px] flex-1 rounded-t-md bg-gradient-to-t from-[#10B981] to-[#5ED5AB] shadow-[0_-3px_10px_rgba(16,185,129,0.12)] transition-all duration-500 group-hover:brightness-105"
                         style={{ height: `${Math.max(resolvedH, 4)}%` }}
                         title={`Resolved: ${day.resolved}`}
                       />
@@ -308,34 +394,51 @@ export default function ReportsPage() {
         </Card>
 
         {/* Top Performer */}
-        <Card className="border border-[#E2E8F0] bg-white rounded-xl shadow-[0_1px_3px_rgba(0,0,0,0.05),0_1px_2px_rgba(0,0,0,0.03)] overflow-hidden">
-          <div className="h-1 bg-[#F59E0B]" />
-          <CardHeader className="pb-3 pt-5 px-5">
-            <CardTitle className="flex items-center gap-2 text-sm font-semibold text-[#1E293B]">
-              <Award className="h-4 w-4 text-[#F59E0B]" />
-              Top Performer
-            </CardTitle>
+        <Card className="overflow-hidden rounded-2xl border border-[#E2E8F0] bg-white shadow-[0_8px_30px_rgba(15,23,42,0.04)]">
+          <CardHeader className="px-5 pb-2 pt-5">
+            <div className="flex items-center gap-3">
+              <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-amber-50 text-[#F59E0B]">
+                <Award className="h-5 w-5" />
+              </div>
+              <div>
+                <CardTitle className="text-[15px] font-bold text-[#1E293B]">
+                  Top Performer
+                </CardTitle>
+                <p className="mt-0.5 text-xs text-[#94A3B8]">
+                  Teknisi dengan performa terbaik
+                </p>
+              </div>
+            </div>
           </CardHeader>
           <CardContent className="px-5 pb-5">
             {data.technicianPerformance.length === 0 && (
-              <p className="text-sm text-[#94A3B8] text-center py-4">
-                Belum ada data technician
-              </p>
+              <div className="flex min-h-44 flex-col items-center justify-center rounded-xl border border-dashed border-[#E2E8F0] bg-[#FAFBFC] px-5 text-center">
+                <div className="mb-3 flex h-11 w-11 items-center justify-center rounded-full bg-amber-50 text-amber-500">
+                  <Award className="h-5 w-5" />
+                </div>
+                <p className="text-sm font-semibold text-[#334155]">
+                  Belum ada performa tercatat
+                </p>
+                <p className="mt-1 max-w-[240px] text-xs leading-5 text-[#94A3B8]">
+                  Peringkat akan muncul setelah tiket mulai diselesaikan oleh
+                  teknisi.
+                </p>
+              </div>
             )}
             {data.technicianPerformance.length > 0 && (
               <div className="space-y-4">
                 {data.technicianPerformance.slice(0, 3).map((tech, idx) => (
                   <div
                     key={tech.name}
-                    className="flex items-center gap-3 rounded-xl bg-[#F8FAFC] p-3 border border-[#E2E8F0]"
+                    className="flex items-center gap-3 rounded-xl border border-[#E2E8F0] bg-[#F8FAFC] p-3 transition-colors hover:border-violet-200 hover:bg-violet-50/40"
                   >
                     <div
                       className={`flex h-9 w-9 items-center justify-center rounded-lg font-bold text-sm ${
                         idx === 0
                           ? "bg-amber-50 text-amber-600"
                           : idx === 1
-                          ? "bg-slate-100 text-slate-500"
-                          : "bg-orange-50 text-orange-600"
+                            ? "bg-slate-100 text-slate-500"
+                            : "bg-orange-50 text-orange-600"
                       }`}
                     >
                       #{idx + 1}
@@ -368,19 +471,34 @@ export default function ReportsPage() {
       </div>
 
       {/* Technician Performance Table */}
-      <Card className="border border-[#E2E8F0] bg-white rounded-xl shadow-[0_1px_3px_rgba(0,0,0,0.05),0_1px_2px_rgba(0,0,0,0.03)] overflow-hidden">
-        <div className="h-1 bg-[#8B5CF6]" />
-        <CardHeader className="pb-3 pt-5 px-5">
-          <CardTitle className="flex items-center gap-2 text-sm font-semibold text-[#1E293B]">
-            <Users className="h-4 w-4 text-[#8B5CF6]" />
-            Detail Performa Technician
-          </CardTitle>
+      <Card className="overflow-hidden rounded-2xl border border-[#E2E8F0] bg-white shadow-[0_8px_30px_rgba(15,23,42,0.04)]">
+        <CardHeader className="px-5 pb-3 pt-5">
+          <div className="flex items-center gap-3">
+            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-violet-50 text-[#8B5CF6]">
+              <Users className="h-5 w-5" />
+            </div>
+            <div>
+              <CardTitle className="text-[15px] font-bold text-[#1E293B]">
+                Detail Performa Teknisi
+              </CardTitle>
+              <p className="mt-0.5 text-xs text-[#94A3B8]">
+                Produktivitas, kecepatan respons, dan kualitas penyelesaian
+              </p>
+            </div>
+          </div>
         </CardHeader>
         <CardContent className="px-5 pb-5">
           {data.technicianPerformance.length === 0 && (
-            <p className="text-sm text-[#94A3B8] text-center py-4">
-              Belum ada data technician
-            </p>
+            <div className="flex min-h-32 flex-col items-center justify-center rounded-xl border border-dashed border-[#E2E8F0] bg-[#FAFBFC] px-5 text-center">
+              <Users className="mb-2 h-6 w-6 text-violet-300" />
+              <p className="text-sm font-semibold text-[#334155]">
+                Belum ada data performa teknisi
+              </p>
+              <p className="mt-1 text-xs text-[#94A3B8]">
+                Data akan terisi otomatis setelah ada aktivitas penanganan
+                tiket.
+              </p>
+            </div>
           )}
           {data.technicianPerformance.length > 0 && (
             <div className="overflow-x-auto">
@@ -388,36 +506,36 @@ export default function ReportsPage() {
                 <thead>
                   <tr className="border-b border-[#E2E8F0]">
                     <th className="text-left py-3 px-3 text-[11px] font-semibold text-[#94A3B8] uppercase tracking-wider">
-                      Technician
+                      Teknisi
                     </th>
                     <th className="text-center py-3 px-3 text-[11px] font-semibold text-[#94A3B8] uppercase tracking-wider">
-                      Assigned
+                      Ditugaskan
                     </th>
                     <th className="text-center py-3 px-3 text-[11px] font-semibold text-[#94A3B8] uppercase tracking-wider">
-                      Resolved
+                      Selesai
                     </th>
                     <th className="text-center py-3 px-3 text-[11px] font-semibold text-[#94A3B8] uppercase tracking-wider">
                       <span className="flex items-center justify-center gap-1">
                         <Timer className="h-3 w-3" />
-                        Avg Response
+                        Rata-rata Respons
                       </span>
                     </th>
                     <th className="text-center py-3 px-3 text-[11px] font-semibold text-[#94A3B8] uppercase tracking-wider">
                       <span className="flex items-center justify-center gap-1">
                         <Clock className="h-3 w-3" />
-                        Avg Resolution
+                        Rata-rata Resolusi
                       </span>
                     </th>
                     <th className="text-center py-3 px-3 text-[11px] font-semibold text-[#94A3B8] uppercase tracking-wider">
                       <span className="flex items-center justify-center gap-1">
                         <Star className="h-3 w-3" />
-                        Rating
+                        Penilaian
                       </span>
                     </th>
                     <th className="text-center py-3 px-3 text-[11px] font-semibold text-[#94A3B8] uppercase tracking-wider">
                       <span className="flex items-center justify-center gap-1">
                         <Zap className="h-3 w-3" />
-                        Escalation
+                        Eskalasi
                       </span>
                     </th>
                   </tr>
@@ -426,7 +544,7 @@ export default function ReportsPage() {
                   {data.technicianPerformance.map((tech) => (
                     <tr
                       key={tech.name}
-                      className="border-b border-[#F1F5F9] hover:bg-[#F8FAFC] transition-colors"
+                      className="border-b border-[#F1F5F9] transition-colors hover:bg-violet-50/40"
                     >
                       <td className="py-3 px-3 font-medium text-[#1E293B]">
                         {tech.name}
@@ -467,8 +585,8 @@ export default function ReportsPage() {
                             tech.escalationRate <= 5
                               ? "bg-emerald-50 text-emerald-700 border-emerald-200"
                               : tech.escalationRate <= 15
-                              ? "bg-amber-50 text-amber-700 border-amber-200"
-                              : "bg-red-50 text-red-700 border-red-200"
+                                ? "bg-amber-50 text-amber-700 border-amber-200"
+                                : "bg-red-50 text-red-700 border-red-200"
                           }`}
                         >
                           {tech.escalationRate}%
@@ -484,49 +602,68 @@ export default function ReportsPage() {
       </Card>
 
       {/* Category Breakdown */}
-      <Card className="border border-[#E2E8F0] bg-white rounded-xl shadow-[0_1px_3px_rgba(0,0,0,0.05),0_1px_2px_rgba(0,0,0,0.03)] overflow-hidden">
-        <div className="h-1 bg-[#0EA5E9]" />
-        <CardHeader className="pb-3 pt-5 px-5">
-          <CardTitle className="flex items-center gap-2 text-sm font-semibold text-[#1E293B]">
-            <BarChart3 className="h-4 w-4 text-[#0EA5E9]" />
-            Tiket per Kategori
-          </CardTitle>
+      <Card className="overflow-hidden rounded-2xl border border-[#E2E8F0] bg-white shadow-[0_8px_30px_rgba(15,23,42,0.04)]">
+        <CardHeader className="px-5 pb-3 pt-5">
+          <div className="flex items-center gap-3">
+            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-sky-50 text-[#0EA5E9]">
+              <Layers3 className="h-5 w-5" />
+            </div>
+            <div>
+              <CardTitle className="text-[15px] font-bold text-[#1E293B]">
+                Tiket per Kategori
+              </CardTitle>
+              <p className="mt-0.5 text-xs text-[#94A3B8]">
+                Sebaran permintaan berdasarkan divisi tujuan
+              </p>
+            </div>
+          </div>
         </CardHeader>
         <CardContent className="px-5 pb-5">
-          <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-            {data.categoryCounts.map((cat) => {
-              const pct = Math.round(
-                (cat.count / Math.max(data.totalTickets, 1)) * 100
-              );
-              return (
-                <div
-                  key={cat.category}
-                  className="rounded-xl border border-[#E2E8F0] p-4"
-                >
-                  <div className="flex items-center justify-between mb-2">
-                    <span className="text-sm font-medium text-[#1E293B]">
-                      {cat.category}
-                    </span>
-                    <Badge
-                      variant="outline"
-                      className="bg-blue-50 text-blue-700 border-blue-200 text-xs"
-                    >
-                      {cat.count}
-                    </Badge>
+          {data.categoryCounts.length === 0 ? (
+            <div className="flex min-h-28 flex-col items-center justify-center rounded-xl border border-dashed border-[#E2E8F0] bg-[#FAFBFC] text-center">
+              <BarChart3 className="mb-2 h-6 w-6 text-sky-300" />
+              <p className="text-sm font-semibold text-[#334155]">
+                Belum ada data kategori
+              </p>
+            </div>
+          ) : (
+            <div className="grid gap-3 md:grid-cols-2 xl:grid-cols-3">
+              {data.categoryCounts.map((cat) => {
+                const pct = Math.round(
+                  (cat.count / Math.max(data.totalTickets, 1)) * 100,
+                );
+                return (
+                  <div
+                    key={cat.category}
+                    className="group rounded-xl border border-[#E2E8F0] bg-gradient-to-br from-white to-[#F8FBFF] p-4 transition-all hover:-translate-y-0.5 hover:border-sky-200 hover:shadow-[0_8px_20px_rgba(14,165,233,0.08)]"
+                  >
+                    <div className="flex items-center justify-between mb-2">
+                      <span className="text-sm font-medium text-[#1E293B]">
+                        {cat.category}
+                      </span>
+                      <Badge
+                        variant="outline"
+                        className="bg-blue-50 text-blue-700 border-blue-200 text-xs"
+                      >
+                        {cat.count}
+                      </Badge>
+                    </div>
+                    <div className="h-2.5 w-full overflow-hidden rounded-full bg-[#EAF1F6]">
+                      <div
+                        className="h-full rounded-full bg-gradient-to-r from-[#0EA5E9] to-[#38BDF8] transition-all duration-500"
+                        style={{
+                          width: `${Math.max(pct, 5)}%`,
+                        }}
+                      />
+                    </div>
+                    <p className="mt-1.5 text-xs text-[#94A3B8]">
+                      {pct}% dari total
+                    </p>
                   </div>
-                  <div className="h-2 w-full rounded-full bg-[#F1F5F9] overflow-hidden">
-                    <div
-                      className="h-full rounded-full bg-[#0EA5E9] transition-all duration-500"
-                      style={{
-                        width: `${Math.max(pct, 5)}%`,
-                      }}
-                    />
-                  </div>
-                  <p className="mt-1.5 text-xs text-[#94A3B8]">{pct}% dari total</p>
-                </div>
-              );
-            })}
-          </div>
+                );
+              })}
+            </div>
+          )}
         </CardContent>
       </Card>
     </div>
@@ -537,37 +674,52 @@ function StatCard({
   label,
   value,
   icon: Icon,
-  color,
   bgLight,
   textColor,
+  helper,
+  accent,
+  progress,
 }: {
   label: string;
   value: string | number;
-  icon: any;
-  color: string;
+  icon: LucideIcon;
   bgLight: string;
   textColor: string;
+  helper: string;
+  accent: string;
+  progress?: number;
 }) {
   return (
-    <Card className="group border border-[#E2E8F0] bg-white rounded-xl shadow-[0_1px_3px_rgba(0,0,0,0.05),0_1px_2px_rgba(0,0,0,0.03)] transition-all duration-200 hover:shadow-[0_4px_12px_rgba(0,0,0,0.08)] hover:-translate-y-0.5">
-      <CardHeader className="flex flex-row items-center justify-between pb-2 pt-5 px-5">
-        <CardTitle className="text-xs font-semibold text-[#64748B] uppercase tracking-wider">
-          {label}
-        </CardTitle>
-        <div
-          className={`flex h-9 w-9 items-center justify-center rounded-lg ${bgLight}`}
-        >
-          <Icon className={`h-5 w-5 ${textColor}`} />
+    <Card className="group relative overflow-hidden rounded-2xl border border-[#E2E8F0] bg-white shadow-[0_8px_30px_rgba(15,23,42,0.04)] transition-all duration-200 hover:-translate-y-0.5 hover:border-violet-200 hover:shadow-[0_12px_32px_rgba(15,23,42,0.08)]">
+      <div className={`absolute inset-x-0 top-0 h-1 ${accent}`} />
+      <CardContent className="p-5">
+        <div className="flex items-start justify-between gap-4">
+          <div>
+            <p className="text-[11px] font-bold uppercase tracking-[0.12em] text-[#64748B]">
+              {label}
+            </p>
+            <div className="mt-3 text-[28px] font-bold leading-none tracking-tight text-[#172033]">
+              {value}
+            </div>
+          </div>
+          <div
+            className={`flex h-11 w-11 shrink-0 items-center justify-center rounded-xl ${bgLight}`}
+          >
+            <Icon className={`h-5 w-5 ${textColor}`} />
+          </div>
         </div>
-      </CardHeader>
-      <CardContent className="pb-5 px-5">
-        <div className="text-2xl font-bold tracking-tight text-[#1E293B]">
-          {value}
+        <div className="mt-4 flex items-center justify-between gap-3 text-xs text-[#94A3B8]">
+          <span>{helper}</span>
+          <ArrowUpRight className="h-3.5 w-3.5 shrink-0 transition-transform group-hover:-translate-y-0.5 group-hover:translate-x-0.5" />
         </div>
-        <div className="mt-2 flex items-center text-xs text-[#94A3B8]">
-          <ArrowUpRight className="mr-1 h-3 w-3" />
-          Statistik
-        </div>
+        {progress !== undefined && (
+          <div className="mt-3 h-1.5 overflow-hidden rounded-full bg-violet-100">
+            <div
+              className="h-full rounded-full bg-gradient-to-r from-[#7047EB] to-[#9B7CF5] transition-all duration-500"
+              style={{ width: `${Math.min(Math.max(progress, 0), 100)}%` }}
+            />
+          </div>
+        )}
       </CardContent>
     </Card>
   );
