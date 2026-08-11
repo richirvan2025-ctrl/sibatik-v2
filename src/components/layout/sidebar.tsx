@@ -84,14 +84,14 @@ export function Sidebar({ onClose }: { onClose?: () => void }) {
 
   return (
     <div className="flex h-full flex-col border-r border-[var(--sidebar-border)] bg-[var(--sidebar)] text-white shadow-[10px_0_30px_rgba(4,76,113,0.10)]">
-      <div className="flex h-[calc(4rem+env(safe-area-inset-top))] items-center border-b border-white/10 px-4 pt-[env(safe-area-inset-top)] md:h-16 md:pt-0">
+      <div className="flex h-[calc(4rem+env(safe-area-inset-top))] items-center border-b border-white/10 px-4 pt-[env(safe-area-inset-top)] md:h-14 md:pt-0">
         <Image
           src="/sibatik-logo-white.png"
           alt="SIBATIK"
           width={2201}
           height={714}
-          sizes="173px"
-          className="h-14 w-auto object-contain object-left"
+          sizes="148px"
+          className="h-12 w-auto object-contain object-left"
           priority
         />
       </div>

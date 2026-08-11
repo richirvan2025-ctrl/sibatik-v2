@@ -19,7 +19,7 @@ export function DashboardShell({ children }: { children: React.ReactNode }) {
       )}
 
       <aside
-        className={`fixed inset-y-0 left-0 z-30 w-[248px] transition-transform duration-300 ease-in-out md:static md:translate-x-0 ${
+        className={`fixed inset-y-0 left-0 z-30 w-[248px] transition-transform duration-300 ease-in-out md:static md:w-[224px] md:translate-x-0 ${
           sidebarOpen ? "translate-x-0" : "-translate-x-full"
         }`}
       >
@@ -27,7 +27,7 @@ export function DashboardShell({ children }: { children: React.ReactNode }) {
       </aside>
 
       <div className="flex min-w-0 flex-1 flex-col">
-        <header className="flex h-[calc(4rem+env(safe-area-inset-top))] shrink-0 items-center justify-between border-b border-[var(--brand-header-border)] bg-[var(--brand-header)] px-4 pt-[env(safe-area-inset-top)] text-white shadow-[0_8px_24px_rgba(4,76,113,0.16)] md:h-16 md:px-7 md:pt-0">
+        <header className="flex h-[calc(4rem+env(safe-area-inset-top))] shrink-0 items-center justify-between border-b border-[var(--brand-header-border)] bg-[var(--brand-header)] px-4 pt-[env(safe-area-inset-top)] text-white shadow-[0_8px_24px_rgba(4,76,113,0.16)] md:h-14 md:px-5 md:pt-0">
           <div className="flex min-w-0 items-center gap-3">
             <button
               onClick={() => setSidebarOpen(true)}
