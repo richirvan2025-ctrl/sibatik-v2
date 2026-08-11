@@ -194,7 +194,7 @@ export default function ReportsPage() {
 
       <div className="grid gap-4 lg:grid-cols-2">
         {/* Status Distribution */}
-        <Card className="overflow-hidden rounded-2xl border border-[#E2E8F0] bg-white shadow-[0_8px_30px_rgba(15,23,42,0.04)]">
+        <Card className="gap-0 overflow-hidden rounded-2xl border border-[#E2E8F0] bg-white py-0 shadow-[0_8px_30px_rgba(15,23,42,0.04)]">
           <CardHeader className="px-5 pb-3 pt-5">
             <div className="flex items-center gap-3">
               <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-violet-50 text-[#7C3AED]">
@@ -259,7 +259,7 @@ export default function ReportsPage() {
         </Card>
 
         {/* Priority Distribution */}
-        <Card className="overflow-hidden rounded-2xl border border-[#E2E8F0] bg-white shadow-[0_8px_30px_rgba(15,23,42,0.04)]">
+        <Card className="gap-0 overflow-hidden rounded-2xl border border-[#E2E8F0] bg-white py-0 shadow-[0_8px_30px_rgba(15,23,42,0.04)]">
           <CardHeader className="px-5 pb-3 pt-5">
             <div className="flex items-center gap-3">
               <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-sky-50 text-[#0EA5E9]">
@@ -321,7 +321,7 @@ export default function ReportsPage() {
 
       <div className="grid gap-4 lg:grid-cols-[minmax(0,1.35fr)_minmax(340px,0.65fr)]">
         {/* Daily Trends */}
-        <Card className="overflow-hidden rounded-2xl border border-[#E2E8F0] bg-white shadow-[0_8px_30px_rgba(15,23,42,0.04)]">
+        <Card className="gap-0 overflow-hidden rounded-2xl border border-[#E2E8F0] bg-white py-0 shadow-[0_8px_30px_rgba(15,23,42,0.04)]">
           <CardHeader className="px-5 pb-2 pt-5">
             <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
               <div className="flex items-center gap-3">
@@ -394,7 +394,7 @@ export default function ReportsPage() {
         </Card>
 
         {/* Top Performer */}
-        <Card className="overflow-hidden rounded-2xl border border-[#E2E8F0] bg-white shadow-[0_8px_30px_rgba(15,23,42,0.04)]">
+        <Card className="gap-0 overflow-hidden rounded-2xl border border-[#E2E8F0] bg-white py-0 shadow-[0_8px_30px_rgba(15,23,42,0.04)]">
           <CardHeader className="px-5 pb-2 pt-5">
             <div className="flex items-center gap-3">
               <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-amber-50 text-[#F59E0B]">
@@ -471,7 +471,7 @@ export default function ReportsPage() {
       </div>
 
       {/* Technician Performance Table */}
-      <Card className="overflow-hidden rounded-2xl border border-[#E2E8F0] bg-white shadow-[0_8px_30px_rgba(15,23,42,0.04)]">
+      <Card className="gap-0 overflow-hidden rounded-2xl border border-[#E2E8F0] bg-white py-0 shadow-[0_8px_30px_rgba(15,23,42,0.04)]">
         <CardHeader className="px-5 pb-3 pt-5">
           <div className="flex items-center gap-3">
             <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-violet-50 text-[#8B5CF6]">
@@ -602,7 +602,7 @@ export default function ReportsPage() {
       </Card>
 
       {/* Category Breakdown */}
-      <Card className="overflow-hidden rounded-2xl border border-[#E2E8F0] bg-white shadow-[0_8px_30px_rgba(15,23,42,0.04)]">
+      <Card className="gap-0 overflow-hidden rounded-2xl border border-[#E2E8F0] bg-white py-0 shadow-[0_8px_30px_rgba(15,23,42,0.04)]">
         <CardHeader className="px-5 pb-3 pt-5">
           <div className="flex items-center gap-3">
             <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-sky-50 text-[#0EA5E9]">
@@ -690,7 +690,7 @@ function StatCard({
   progress?: number;
 }) {
   return (
-    <Card className="group relative overflow-hidden rounded-2xl border border-[#E2E8F0] bg-white shadow-[0_8px_30px_rgba(15,23,42,0.04)] transition-all duration-200 hover:-translate-y-0.5 hover:border-violet-200 hover:shadow-[0_12px_32px_rgba(15,23,42,0.08)]">
+    <Card className="group relative gap-0 overflow-hidden rounded-2xl border border-[#E2E8F0] bg-white py-0 shadow-[0_8px_30px_rgba(15,23,42,0.04)] transition-all duration-200 hover:-translate-y-0.5 hover:border-violet-200 hover:shadow-[0_12px_32px_rgba(15,23,42,0.08)]">
       <div className={`absolute inset-x-0 top-0 h-1 ${accent}`} />
       <CardContent className="p-5">
         <div className="flex items-start justify-between gap-4">
