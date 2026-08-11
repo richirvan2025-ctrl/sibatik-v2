@@ -168,6 +168,11 @@ export default function DashboardPage() {
     month: "long",
     year: "numeric",
   }).format(new Date());
+  const activeTickets = stats.open + stats.inProgress;
+  const completedTickets = stats.resolved + stats.closed;
+  const metricBase = Math.max(stats.total, activeTickets + completedTickets, 1);
+  const activeRate = Math.round((activeTickets / metricBase) * 100);
+  const completionRate = Math.round((completedTickets / metricBase) * 100);
 
   return (
     <div className="space-y-5 md:space-y-6">
@@ -281,7 +286,7 @@ export default function DashboardPage() {
           </CardHeader>
           <CardContent
             className={`grid gap-3 pb-5 ${
-              isExecutive ? "sm:grid-cols-2" : "sm:grid-cols-3"
+              isExecutive ? "grid-cols-1" : "md:grid-cols-3"
             }`}
           >
             {visibleQuickActions.map((action) => {
@@ -290,15 +295,17 @@ export default function DashboardPage() {
                 <Link
                   key={action.href}
                   href={action.href}
-                  className="group rounded-xl border border-[#E0E6EF] bg-[#F8FAFD] p-4 transition-all hover:border-[#CFC3F8] hover:bg-[#F6F3FF] focus-visible:outline-none focus-visible:ring-3 focus-visible:ring-[#7047EB]/20"
+                  className="group flex min-h-[88px] items-center gap-3.5 rounded-xl border border-[#D8E0EC] bg-white px-4 py-3.5 shadow-[0_1px_2px_rgba(16,24,40,0.04)] transition-all duration-200 hover:-translate-y-0.5 hover:border-[#BDAFF3] hover:bg-[#F8F6FF] hover:shadow-[0_8px_20px_rgba(112,71,235,0.12)] focus-visible:outline-none focus-visible:ring-3 focus-visible:ring-[#7047EB]/25"
                 >
-                  <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-[#EEE9FF] text-[#7047EB]">
-                    <Icon className="h-4.5 w-4.5" />
+                  <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-[#EEE9FF] text-[#7047EB] ring-1 ring-[#DCD3FF] transition-colors group-hover:bg-[#7047EB] group-hover:text-white group-hover:ring-[#7047EB]">
+                    <Icon className="h-5 w-5" />
                   </div>
-                  <h3 className="mt-3 text-sm font-bold text-[#17223D]">{action.label}</h3>
-                  <p className="mt-1 text-xs leading-5 text-[#71809A]">{action.description}</p>
-                  <span className="mt-3 inline-flex items-center gap-1 text-xs font-bold text-[#7047EB]">
-                    Buka <ArrowRight className="h-3.5 w-3.5 transition-transform group-hover:translate-x-0.5" />
+                  <div className="min-w-0 flex-1">
+                    <h3 className="text-[15px] font-bold text-[#17223D]">{action.label}</h3>
+                    <p className="mt-1 text-[13px] leading-[1.45] text-[#64718A]">{action.description}</p>
+                  </div>
+                  <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-[#F0EDFF] text-[#7047EB] transition-all group-hover:translate-x-0.5 group-hover:bg-[#7047EB] group-hover:text-white">
+                    <ArrowRight className="h-4 w-4" />
                   </span>
                 </Link>
               );
@@ -319,20 +326,70 @@ export default function DashboardPage() {
             </div>
           </CardHeader>
           <CardContent className="pb-5">
-            <div className="space-y-3 rounded-xl border border-[#E0E6EF] bg-white p-4">
-              <div className="flex items-center justify-between text-sm">
-                <span className="text-[#64718A]">Tiket aktif</span>
-                <span className="font-bold text-[#17223D]">{stats.open + stats.inProgress}</span>
+            <div className="grid gap-3">
+              <div className="rounded-xl border border-[#DCE6F2] bg-white p-3.5 shadow-[0_1px_2px_rgba(16,24,40,0.03)]">
+                <div className="flex items-center justify-between gap-3">
+                  <div className="flex items-center gap-2.5">
+                    <span className="h-2.5 w-2.5 rounded-full bg-[#268EDB] shadow-[0_0_0_4px_rgba(38,142,219,0.12)]" />
+                    <div>
+                      <p className="text-sm font-bold text-[#17223D]">Tiket aktif</p>
+                      <p className="text-[11px] text-[#71809A]">Open dan sedang ditangani</p>
+                    </div>
+                  </div>
+                  <span className="rounded-full bg-[#EAF4FC] px-2.5 py-1 text-sm font-extrabold text-[#176FAF]">{activeTickets}</span>
+                </div>
+                <div
+                  className="mt-3 h-2 overflow-hidden rounded-full bg-[#EAF4FC]"
+                  role="progressbar"
+                  aria-label="Proporsi tiket aktif"
+                  aria-valuemin={0}
+                  aria-valuemax={100}
+                  aria-valuenow={activeRate}
+                >
+                  <div
+                    className="h-full rounded-full bg-[#268EDB] transition-[width] duration-500"
+                    style={{ width: `${activeRate}%` }}
+                  />
+                </div>
+                <p className="mt-1.5 text-right text-[11px] font-semibold text-[#71809A]">{activeRate}% dari total tiket</p>
               </div>
-              <div className="h-px bg-[#E8EDF4]" />
-              <div className="flex items-center justify-between text-sm">
-                <span className="text-[#64718A]">Tiket selesai</span>
-                <span className="font-bold text-[#16966A]">{stats.resolved + stats.closed}</span>
+
+              <div className="rounded-xl border border-[#D9ECE4] bg-white p-3.5 shadow-[0_1px_2px_rgba(16,24,40,0.03)]">
+                <div className="flex items-center justify-between gap-3">
+                  <div className="flex items-center gap-2.5">
+                    <span className="h-2.5 w-2.5 rounded-full bg-[#24AE78] shadow-[0_0_0_4px_rgba(36,174,120,0.12)]" />
+                    <div>
+                      <p className="text-sm font-bold text-[#17223D]">Tiket selesai</p>
+                      <p className="text-[11px] text-[#71809A]">Resolved dan ditutup</p>
+                    </div>
+                  </div>
+                  <span className="rounded-full bg-[#EAF8F2] px-2.5 py-1 text-sm font-extrabold text-[#147957]">{completedTickets}</span>
+                </div>
+                <div
+                  className="mt-3 h-2 overflow-hidden rounded-full bg-[#EAF8F2]"
+                  role="progressbar"
+                  aria-label="Proporsi tiket selesai"
+                  aria-valuemin={0}
+                  aria-valuemax={100}
+                  aria-valuenow={completionRate}
+                >
+                  <div
+                    className="h-full rounded-full bg-[#24AE78] transition-[width] duration-500"
+                    style={{ width: `${completionRate}%` }}
+                  />
+                </div>
+                <p className="mt-1.5 text-right text-[11px] font-semibold text-[#71809A]">{completionRate}% dari total tiket</p>
               </div>
-              <div className="h-px bg-[#E8EDF4]" />
-              <div className="flex items-center justify-between text-sm">
-                <span className="text-[#64718A]">Status layanan</span>
-                <span className="inline-flex items-center gap-1.5 font-bold text-[#16966A]"><span className="h-2 w-2 rounded-full bg-[#24AE78]" />Aktif</span>
+
+              <div className="flex items-center justify-between gap-3 rounded-xl border border-[#CDE9DD] bg-[#F0FAF6] px-3.5 py-3">
+                <div>
+                  <p className="text-sm font-bold text-[#17223D]">Status layanan</p>
+                  <p className="mt-0.5 text-[11px] text-[#5F7F72]">Sistem siap menerima tiket</p>
+                </div>
+                <span className="inline-flex items-center gap-2 rounded-full border border-[#BDE4D4] bg-white px-2.5 py-1 text-xs font-extrabold text-[#147957] shadow-sm">
+                  <span className="h-2 w-2 rounded-full bg-[#24AE78] shadow-[0_0_0_3px_rgba(36,174,120,0.14)]" />
+                  Aktif
+                </span>
               </div>
             </div>
           </CardContent>
