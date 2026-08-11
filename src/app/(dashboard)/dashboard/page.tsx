@@ -188,7 +188,7 @@ export default function DashboardPage() {
               Dashboard SIBATIK
             </h1>
             <p className="mt-2 max-w-xl text-sm leading-6 text-[#D4E7EB] md:text-[15px]">
-              Selamat datang kembali, <span className="font-semibold text-white">{session?.user?.name}</span>. Pantau layanan, tindak lanjut, dan performa tiket dalam satu tempat.
+              Selamat datang kembali, <span className="font-semibold text-white">{session?.user?.name}</span>.
             </p>
           </div>
 
