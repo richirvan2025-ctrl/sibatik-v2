@@ -20,23 +20,15 @@ import { DateTimePicker } from "@/components/ui/date-time-picker";
 import {
   AlertCircle,
   Loader2,
-  Ticket,
   ArrowLeft,
   Send,
-  User,
-  FolderOpen,
-  Flag,
-  Type,
   FileText,
-  Paperclip,
   Upload,
   X,
   ImageIcon,
   File,
   Check,
   Link as LinkIcon,
-  CalendarClock,
-  Users,
 } from "lucide-react";
 
 interface Category {
@@ -66,6 +58,10 @@ const priorityConfig: Record<string, { color: string; bg: string; label: string 
   HIGH: { color: "text-orange-700", bg: "bg-orange-50", label: "High - Tinggi" },
   URGENT: { color: "text-red-700", bg: "bg-red-50", label: "Urgent - Darurat" },
 };
+
+const fieldClassName =
+  "h-11 rounded-xl border border-[#E2E8F0] bg-white text-sm shadow-[0_1px_2px_rgba(16,24,40,0.03)] transition-all focus-visible:border-[#7047EB] focus-visible:ring-3 focus-visible:ring-[#7047EB]/15 data-[popup-open]:border-[#7047EB] data-[popup-open]:ring-3 data-[popup-open]:ring-[#7047EB]/15";
+const fieldLabelClassName = "text-[13px] font-bold text-[#26334D]";
 
 function formatFileSize(bytes: number) {
   if (bytes < 1024) return `${bytes} B`;
@@ -337,40 +333,33 @@ export default function NewTicketPage() {
   };
 
   return (
-    <div className="mx-auto max-w-4xl space-y-5">
-      {/* Header */}
-      <div className="rounded-[16px] bg-[var(--brand-header)] px-5 py-5 text-white shadow-[0_12px_32px_rgba(4,76,113,0.18)] md:px-6">
-        <Button
-          variant="ghost"
-          className="mb-3 -ml-2 h-9 bg-transparent text-sm text-[#C3D0E2] shadow-none hover:bg-white/10 hover:text-white"
+    <div className="mx-auto max-w-5xl space-y-4">
+      <header className="px-1 pt-1">
+        <button
+          type="button"
+          className="inline-flex items-center gap-1.5 text-[13px] font-semibold text-[#71809A] transition-colors hover:text-[#44516A] focus-visible:outline-none focus-visible:ring-3 focus-visible:ring-[#7047EB]/15"
           onClick={() => router.push("/tickets")}
         >
-          <ArrowLeft className="mr-1 h-4 w-4" />
+          <ArrowLeft className="h-4 w-4" />
           Kembali
-        </Button>
-        <div className="flex items-center gap-3">
-          <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-[#7047EB] shadow-[0_8px_20px_rgba(112,71,235,0.28)]">
-            <Ticket className="h-5 w-5 text-white" />
-          </div>
-          <div>
-            <h1 className="text-[24px] font-bold tracking-[-0.025em] text-white">
-              Buat Tiket Baru
-            </h1>
-            <p className="mt-0.5 text-sm text-[#BDCCE0]">
-              Berikan detail yang jelas agar tim dapat membantu lebih cepat
-            </p>
-          </div>
+        </button>
+        <div className="mt-3">
+          <h1 className="text-[28px] font-bold tracking-[-0.03em] text-[#17223D] md:text-[30px]">
+            Buat Tiket Baru
+          </h1>
+          <p className="mt-1 text-sm leading-6 text-[#71809A]">
+            Berikan detail yang jelas agar tim kami dapat membantu Anda lebih cepat.
+          </p>
         </div>
-      </div>
+      </header>
 
-      <Card className="overflow-hidden py-0">
-        <div className="h-1 bg-[#7047EB]" />
-        <CardContent className="space-y-5 p-5 md:p-7">
-          <div className="flex flex-col gap-2 rounded-xl border border-[#DCE4EF] bg-[#F8FAFD] px-4 py-3 sm:flex-row sm:items-center sm:justify-between">
-            <div>
-              <p className="text-sm font-bold text-[#26334D]">Informasi permintaan</p>
-            <p className="mt-0.5 text-xs text-[#71809A]">Kolom bertanda wajib perlu diisi sebelum tiket dikirim.</p>
-          </div>
+      <Card className="overflow-hidden py-0 shadow-[0_8px_28px_rgba(29,43,76,0.06)]">
+        <CardContent className="space-y-5 p-5 md:p-6">
+          <div className="flex flex-col gap-1 border-b border-[#E8EDF4] pb-4 sm:flex-row sm:items-center sm:justify-between">
+            <p className="text-sm font-bold text-[#26334D]">Informasi permintaan</p>
+            <p className="text-xs text-[#71809A]">
+              Kolom bertanda <span className="font-bold text-[#E5484D]">*</span> wajib diisi.
+            </p>
           </div>
           {error && (
             <Alert
@@ -382,18 +371,18 @@ export default function NewTicketPage() {
             </Alert>
           )}
 
-          <form onSubmit={handleSubmit} className="space-y-6">
+          <form onSubmit={handleSubmit} className="space-y-5">
             {canCreateOnBehalf && (
               <div className="space-y-2">
-                <Label className="flex items-center gap-2 text-sm font-medium text-[#1E293B]">
-                  <User className="h-4 w-4 text-[#2563EB]" />
-                  Dibuat Untuk (Opsional)
+                <Label className={fieldLabelClassName}>
+                  Dibuat Untuk
+                  <span className="ml-1 text-xs font-medium text-[#94A3B8]">(opsional)</span>
                 </Label>
                 <Select
                   value={onBehalfOfId}
                   onValueChange={(value) => setOnBehalfOfId(value || "")}
                 >
-                  <SelectTrigger aria-label="Dibuat untuk" className="h-10 border-[#E2E8F0] bg-[#F8FAFC] rounded-xl text-sm focus:bg-white focus:border-[#2563EB] w-full">
+                  <SelectTrigger aria-label="Dibuat untuk" className={`${fieldClassName} w-full`}>
                     <SelectValue placeholder="Pilih user (default: diri sendiri)">
                       {users.find((u) => u.id === onBehalfOfId)?.name || (onBehalfOfId ? onBehalfOfId : "Diri Sendiri")}
                     </SelectValue>
@@ -411,25 +400,23 @@ export default function NewTicketPage() {
             )}
 
             <div className="space-y-2">
-              <Label className="flex items-center gap-2 text-sm font-medium text-[#1E293B]">
-                <Type className="h-4 w-4 text-[#7C3AED]" />
-                Judul
+              <Label className={fieldLabelClassName}>
+                Judul Tiket <span className="text-[#E5484D]">*</span>
               </Label>
               <Input
                 aria-label="Judul tiket"
                 placeholder="Ringkasan masalah"
                 value={title}
                 onChange={(e) => setTitle(e.target.value)}
-                className="h-10 border-[#E2E8F0] bg-[#F8FAFC] rounded-xl text-sm focus:bg-white focus:border-[#7C3AED]"
+                className={fieldClassName}
                 required
               />
             </div>
 
             <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
               <div className="space-y-2">
-                <Label className="flex items-center gap-2 text-sm font-medium text-[#1E293B]">
-                  <FolderOpen className="h-4 w-4 text-[#7C3AED]" />
-                  Divisi Tujuan
+                <Label className={fieldLabelClassName}>
+                  Divisi Tujuan <span className="text-[#E5484D]">*</span>
                 </Label>
                 <div className="relative" ref={categoryDropdownRef}>
                   <input
@@ -441,7 +428,9 @@ export default function NewTicketPage() {
                       setShowCategoryDropdown(true);
                     }}
                     onFocus={() => setShowCategoryDropdown(true)}
-                    className="h-10 w-full rounded-xl border border-[#E2E8F0] bg-[#F8FAFC] px-3 text-sm transition-colors focus:bg-white focus:border-[#7C3AED] focus:outline-none"
+                    aria-label="Divisi tujuan"
+                    aria-required="true"
+                    className={`${fieldClassName} w-full px-3 outline-none`}
                   />
                   {showCategoryDropdown && (
                     <div className="absolute z-50 mt-1 w-full rounded-xl border border-[#E2E8F0] bg-white shadow-lg max-h-60 overflow-y-auto">
@@ -529,15 +518,14 @@ export default function NewTicketPage() {
               </div>
 
               <div className="space-y-2">
-                <Label className="flex items-center gap-2 text-sm font-medium text-[#1E293B]">
-                  <Flag className="h-4 w-4 text-[#0EA5E9]" />
-                  Prioritas
+                <Label className={fieldLabelClassName}>
+                  Prioritas <span className="text-[#E5484D]">*</span>
                 </Label>
                 <Select
                   value={priority}
                   onValueChange={(value) => setPriority(value || "MEDIUM")}
                 >
-                  <SelectTrigger aria-label="Prioritas tiket" className="h-10 border-[#E2E8F0] bg-[#F8FAFC] rounded-xl text-sm focus:bg-white focus:border-[#2563EB] w-full">
+                  <SelectTrigger aria-label="Prioritas tiket" className={`${fieldClassName} w-full`}>
                     <SelectValue>
                       {priorityConfig[priority]?.label || priority}
                     </SelectValue>
@@ -556,69 +544,90 @@ export default function NewTicketPage() {
               </div>
             </div>
 
-            {/* Assignees - muncul setelah divisi tujuan dipilih */}
-            {selectedCategoryIds.length > 0 && (
+            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
               <div className="space-y-2">
-                <Label className="flex items-center gap-2 text-sm font-medium text-[#1E293B]">
-                  <Users className="h-4 w-4 text-[#7C3AED]" />
-                  Assignees
-                  <span className="text-xs font-normal text-[#94A3B8]">(opsional)</span>
+                <Label className={fieldLabelClassName}>
+                  Deadline
+                  <span className="ml-1 text-xs font-medium text-[#94A3B8]">(opsional)</span>
                 </Label>
-                {loadingAssignees ? (
-                  <div className="flex h-10 items-center gap-2 rounded-xl border border-[#E2E8F0] bg-[#F8FAFC] px-3 text-sm text-[#94A3B8]">
-                    <Loader2 className="h-4 w-4 animate-spin" />
-                    Memuat daftar anggota divisi...
-                  </div>
-                ) : assignees.length === 0 ? (
-                  <div className="flex h-10 items-center rounded-xl border border-[#E2E8F0] bg-[#F8FAFC] px-3 text-sm text-[#94A3B8]">
-                    Tidak ada anggota di divisi ini
-                  </div>
-                ) : (
-                  <Select
-                    value={assigneeId}
-                    onValueChange={(value) => setAssigneeId(value || "")}
-                  >
-                    <SelectTrigger className="h-10 border-[#E2E8F0] bg-[#F8FAFC] rounded-xl text-sm focus:bg-white focus:border-[#7C3AED] w-full">
-                      <SelectValue placeholder="Pilih orang yang menangani (opsional)">
-                        {assignees.find((a) => a.id === assigneeId)
-                          ? `${assignees.find((a) => a.id === assigneeId)?.name}${
-                              assignees.find((a) => a.id === assigneeId)?.department
-                                ? ` — ${assignees.find((a) => a.id === assigneeId)?.department}`
-                                : ""
-                            }`
-                          : "Pilih orang yang menangani (opsional)"}
-                      </SelectValue>
-                    </SelectTrigger>
-                    <SelectContent className="min-w-[var(--radix-select-trigger-width)] !w-auto">
-                      <SelectItem value="">— Otomatis (default) —</SelectItem>
-                      {assignees.map((user) => (
-                        <SelectItem key={user.id} value={user.id}>
-                          <span className="flex flex-col items-start">
-                            <span>{user.name}</span>
-                            <span className="text-[10px] text-[#94A3B8]">
-                              {user.role}
-                              {user.department ? ` · ${user.department}` : ""}
-                            </span>
-                          </span>
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                )}
+                <DateTimePicker
+                  value={deadline}
+                  onChange={setDeadline}
+                  min={new Date(Date.now() - new Date().getTimezoneOffset() * 60000)
+                    .toISOString()
+                    .slice(0, 16)}
+                  placeholder="Pilih tanggal & jam deadline"
+                  className={fieldClassName}
+                />
                 <p className="text-xs text-[#94A3B8]">
-                  Daftar nama sesuai anggota divisi tujuan yang dipilih
+                  Tanggal dan jam batas waktu yang diharapkan
                 </p>
               </div>
-            )}
+
+              {/* Assignees - muncul setelah divisi tujuan dipilih */}
+              {selectedCategoryIds.length > 0 ? (
+                <div className="space-y-2">
+                  <Label className={fieldLabelClassName}>
+                    Assignee
+                    <span className="ml-1 text-xs font-medium text-[#94A3B8]">(opsional)</span>
+                  </Label>
+                  {loadingAssignees ? (
+                    <div className="flex h-11 items-center gap-2 rounded-xl border border-[#E2E8F0] bg-white px-3 text-sm text-[#94A3B8]">
+                      <Loader2 className="h-4 w-4 animate-spin" />
+                      Memuat daftar anggota divisi...
+                    </div>
+                  ) : assignees.length === 0 ? (
+                    <div className="flex h-11 items-center rounded-xl border border-[#E2E8F0] bg-white px-3 text-sm text-[#94A3B8]">
+                      Tidak ada anggota di divisi ini
+                    </div>
+                  ) : (
+                    <Select
+                      value={assigneeId}
+                      onValueChange={(value) => setAssigneeId(value || "")}
+                    >
+                      <SelectTrigger className={`${fieldClassName} w-full`}>
+                        <SelectValue placeholder="Pilih orang yang menangani (opsional)">
+                          {assignees.find((a) => a.id === assigneeId)
+                            ? `${assignees.find((a) => a.id === assigneeId)?.name}${
+                                assignees.find((a) => a.id === assigneeId)?.department
+                                  ? ` — ${assignees.find((a) => a.id === assigneeId)?.department}`
+                                  : ""
+                              }`
+                            : "Pilih orang yang menangani (opsional)"}
+                        </SelectValue>
+                      </SelectTrigger>
+                      <SelectContent className="min-w-[var(--radix-select-trigger-width)] !w-auto">
+                        <SelectItem value="">— Otomatis (default) —</SelectItem>
+                        {assignees.map((user) => (
+                          <SelectItem key={user.id} value={user.id}>
+                            <span className="flex flex-col items-start">
+                              <span>{user.name}</span>
+                              <span className="text-[10px] text-[#94A3B8]">
+                                {user.role}
+                                {user.department ? ` · ${user.department}` : ""}
+                              </span>
+                            </span>
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  )}
+                  <p className="text-xs text-[#94A3B8]">
+                    Sesuai anggota divisi tujuan yang dipilih
+                  </p>
+                </div>
+              ) : (
+                <div className="hidden sm:block" aria-hidden="true" />
+              )}
+            </div>
 
             {/* Dynamic Fields untuk Instalasi Software */}
             {/* NOTE: dynamicFields selalu null saat ini (lib dynamic-field-config belum ada), blok inert. */}
             {dynamicFields && (
               <div className="space-y-4 rounded-xl border border-[#E2E8F0] bg-[#F8FAFC] p-4">
                 <div className="space-y-2">
-                  <Label className="flex items-center gap-2 text-sm font-medium text-[#1E293B]">
-                    <Type className="h-4 w-4 text-[#7C3AED]" />
-                    Email Aktif
+                  <Label className={fieldLabelClassName}>
+                    Email Aktif <span className="text-[#E5484D]">*</span>
                   </Label>
                   <Input
                     type="email"
@@ -627,15 +636,14 @@ export default function NewTicketPage() {
                     onChange={(e) =>
                       setCustomFieldValues({ ...customFieldValues, emailAktif: e.target.value })
                     }
-                    className="h-10 border-[#E2E8F0] bg-white rounded-xl text-sm focus:border-[#7C3AED]"
+                    className={fieldClassName}
                     required
                   />
                 </div>
 
                 <div className="space-y-2">
-                  <Label className="flex items-center gap-2 text-sm font-medium text-[#1E293B]">
-                    <Type className="h-4 w-4 text-[#7C3AED]" />
-                    PIN Laptop
+                  <Label className={fieldLabelClassName}>
+                    PIN Laptop <span className="text-[#E5484D]">*</span>
                   </Label>
                   <Input
                     type="password"
@@ -644,15 +652,14 @@ export default function NewTicketPage() {
                     onChange={(e) =>
                       setCustomFieldValues({ ...customFieldValues, pinLaptop: e.target.value })
                     }
-                    className="h-10 border-[#E2E8F0] bg-white rounded-xl text-sm focus:border-[#7C3AED]"
+                    className={fieldClassName}
                     required
                   />
                 </div>
 
                 <div className="space-y-3">
-                  <Label className="flex items-center gap-2 text-sm font-medium text-[#1E293B]">
-                    <Type className="h-4 w-4 text-[#7C3AED]" />
-                    Software yang Diinstal
+                  <Label className={fieldLabelClassName}>
+                    Software yang Diinstal <span className="text-[#E5484D]">*</span>
                   </Label>
                   {dynamicFields.fields.softwareCategories.map((category: any) => (
                     <div key={category.id} className="space-y-2">
@@ -699,28 +706,8 @@ export default function NewTicketPage() {
             )}
 
             <div className="space-y-2">
-              <Label className="flex items-center gap-2 text-sm font-medium text-[#1E293B]">
-                <CalendarClock className="h-4 w-4 text-[#7C3AED]" />
-                Deadline
-                <span className="text-xs font-normal text-[#94A3B8]">(opsional)</span>
-              </Label>
-              <DateTimePicker
-                value={deadline}
-                onChange={setDeadline}
-                min={new Date(Date.now() - new Date().getTimezoneOffset() * 60000)
-                  .toISOString()
-                  .slice(0, 16)}
-                placeholder="Pilih tanggal & jam deadline"
-              />
-              <p className="text-xs text-[#94A3B8]">
-                Tanggal dan jam batas waktu penyelesaian yang diharapkan
-              </p>
-            </div>
-
-            <div className="space-y-2">
-              <Label className="flex items-center gap-2 text-sm font-medium text-[#1E293B]">
-                <FileText className="h-4 w-4 text-[#7C3AED]" />
-                Deskripsi
+              <Label className={fieldLabelClassName}>
+                Deskripsi <span className="text-[#E5484D]">*</span>
               </Label>
               <Textarea
                 aria-label="Deskripsi tiket"
@@ -728,7 +715,7 @@ export default function NewTicketPage() {
                 value={description}
                 onChange={(e) => setDescription(e.target.value)}
                 rows={6}
-                className="border-[#E2E8F0] bg-[#F8FAFC] rounded-xl text-sm focus:bg-white focus:border-[#7C3AED] resize-none"
+                className="min-h-36 resize-none border-[#E2E8F0] bg-white text-sm focus-visible:border-[#7047EB] focus-visible:ring-3 focus-visible:ring-[#7047EB]/15"
                 required
               />
             </div>
@@ -736,10 +723,9 @@ export default function NewTicketPage() {
             {/* Lampiran */}
             <div className="space-y-2">
               <div className="flex items-center justify-between">
-                <Label className="flex items-center gap-2 text-sm font-medium text-[#1E293B]">
-                  <Paperclip className="h-4 w-4 text-[#7C3AED]" />
+                <Label className={fieldLabelClassName}>
                   Lampiran
-                  <span className="text-xs font-normal text-[#94A3B8]">(opsional, maks. 5)</span>
+                  <span className="ml-1 text-xs font-medium text-[#94A3B8]">(opsional, maks. 5)</span>
                 </Label>
                 <div className="flex items-center gap-3">
                   <label className="flex items-center gap-1.5 cursor-pointer">
@@ -782,15 +768,18 @@ export default function NewTicketPage() {
                   <button
                     type="button"
                     onClick={() => fileInputRef.current?.click()}
-                    className="w-full rounded-xl border-2 border-dashed border-[#E2E8F0] bg-[#F8FAFC] px-4 py-5 text-center transition-colors hover:border-[#7C3AED] hover:bg-violet-50/40 active:bg-blue-50"
+                    className="group flex w-full flex-col items-center gap-3 rounded-xl border border-dashed border-[#CBD5E1] bg-[#F8FAFC] px-5 py-5 text-center transition-all hover:border-[#A995EE] hover:bg-[#F7F5FF] hover:shadow-[0_6px_18px_rgba(112,71,235,0.08)] focus-visible:outline-none focus-visible:ring-3 focus-visible:ring-[#7047EB]/15 sm:flex-row sm:text-left"
                   >
-                    <Upload className="mx-auto mb-2 h-7 w-7 text-[#94A3B8]" />
-                    <p className="text-sm font-medium text-[#64748B]">
-                      Pilih file atau ambil foto
-                    </p>
-                    <p className="mt-1 text-xs text-[#94A3B8]">
-                      PNG, JPG, PDF, DOC, XLS — maks. 10MB per file
-                    </p>
+                    <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-[#EEE9FF] text-[#7047EB] ring-1 ring-[#DDD4FA] transition-colors group-hover:bg-[#7047EB] group-hover:text-white">
+                      <Upload className="h-5 w-5" />
+                    </span>
+                    <span className="min-w-0 flex-1">
+                      <span className="block text-sm font-bold text-[#34415A]">Tambahkan file pendukung</span>
+                      <span className="mt-1 block text-xs text-[#7B879D]">PNG, JPG, PDF, DOC, XLS · maks. 10MB per file</span>
+                    </span>
+                    <span className="inline-flex h-9 shrink-0 items-center justify-center rounded-lg border border-[#D6CCF7] bg-white px-3.5 text-xs font-bold text-[#7047EB] shadow-sm transition-colors group-hover:border-[#7047EB] group-hover:bg-[#7047EB] group-hover:text-white">
+                      Pilih File
+                    </span>
                   </button>
 
                   {/* File list */}
@@ -838,7 +827,7 @@ export default function NewTicketPage() {
                           setAttachmentLinks(newLinks);
                         }}
                         placeholder="https://drive.google.com/..."
-                        className="flex-1 border-[#E2E8F0] bg-[#F8FAFC] rounded-xl text-sm focus:bg-white focus:border-[#7C3AED]"
+                        className={`flex-1 ${fieldClassName}`}
                       />
                       <button
                         type="button"
@@ -863,11 +852,19 @@ export default function NewTicketPage() {
               )}
             </div>
 
-            <div className="flex gap-3 pt-2">
+            <div className="flex flex-col-reverse gap-3 border-t border-[#E8EDF4] pt-5 sm:flex-row sm:justify-end">
+              <Button
+                type="button"
+                variant="outline"
+                onClick={() => router.push("/tickets")}
+                className="h-11 w-full rounded-xl border-[#D7DFEA] bg-white px-5 text-sm font-semibold text-[#59667E] shadow-none hover:bg-[#F8FAFC] hover:text-[#34415A] sm:w-auto"
+              >
+                Batal
+              </Button>
               <Button
                 type="submit"
                 disabled={loading}
-                className="h-11 flex-1 bg-[#7047EB] text-sm font-bold text-white shadow-[0_8px_20px_rgba(112,71,235,0.20)] hover:bg-[#5F39DB]"
+                className="h-11 w-full rounded-xl bg-[#7047EB] px-6 text-sm font-bold text-white shadow-[0_8px_20px_rgba(112,71,235,0.20)] transition-all hover:-translate-y-0.5 hover:bg-[#5F39DB] hover:shadow-[0_10px_24px_rgba(112,71,235,0.26)] sm:w-auto"
               >
                 {loading ? (
                   <>
@@ -880,14 +877,6 @@ export default function NewTicketPage() {
                     Buat Tiket
                   </>
                 )}
-              </Button>
-              <Button
-                type="button"
-                variant="outline"
-                onClick={() => router.push("/tickets")}
-                className="h-11 text-sm text-[#59667E]"
-              >
-                Batal
               </Button>
             </div>
           </form>
