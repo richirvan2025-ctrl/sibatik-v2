@@ -132,7 +132,7 @@ export default function TicketsPage() {
   return (
     <div className="space-y-5 md:space-y-6">
       {/* Header */}
-      <div className="flex flex-col gap-4 rounded-[16px] bg-[#102B50] px-5 py-5 text-white shadow-[0_10px_28px_rgba(16,43,80,0.14)] sm:flex-row sm:items-center sm:justify-between md:px-6">
+      <div className="flex flex-col gap-4 rounded-[16px] bg-[var(--brand-header)] px-5 py-5 text-white shadow-[0_12px_32px_rgba(4,76,113,0.18)] sm:flex-row sm:items-center sm:justify-between md:px-6">
         <div>
           <h1 className="text-[27px] font-bold tracking-[-0.03em] text-white">
             {pageTitle}

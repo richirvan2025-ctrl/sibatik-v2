@@ -339,7 +339,7 @@ export default function NewTicketPage() {
   return (
     <div className="mx-auto max-w-4xl space-y-5">
       {/* Header */}
-      <div className="rounded-[16px] bg-[#102B50] px-5 py-5 text-white shadow-[0_10px_28px_rgba(16,43,80,0.14)] md:px-6">
+      <div className="rounded-[16px] bg-[var(--brand-header)] px-5 py-5 text-white shadow-[0_12px_32px_rgba(4,76,113,0.18)] md:px-6">
         <Button
           variant="ghost"
           className="mb-3 -ml-2 h-9 bg-transparent text-sm text-[#C3D0E2] shadow-none hover:bg-white/10 hover:text-white"

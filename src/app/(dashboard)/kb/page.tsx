@@ -97,7 +97,7 @@ export default function KBPage() {
 
   return (
     <div className="space-y-5 md:space-y-6">
-      <section className="rounded-[16px] bg-[#102B50] px-5 py-6 text-white shadow-[0_10px_28px_rgba(16,43,80,0.14)] md:px-7 md:py-7">
+      <section className="rounded-[16px] bg-[var(--brand-header)] px-5 py-6 text-white shadow-[0_12px_32px_rgba(4,76,113,0.18)] md:px-7 md:py-7">
         <div className="flex items-start gap-4">
           <div className="hidden h-12 w-12 shrink-0 items-center justify-center rounded-[14px] bg-white/10 text-[#CFC3FF] sm:flex">
             <BookOpen className="h-6 w-6" />
