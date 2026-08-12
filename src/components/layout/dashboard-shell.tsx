@@ -55,7 +55,7 @@ export function DashboardShell({ children }: { children: React.ReactNode }) {
         </aside>
 
         <div className="flex min-w-0 flex-1 flex-col">
-          <header className="sibatik-header-batik z-10 flex h-[calc(4rem+env(safe-area-inset-top))] shrink-0 items-center justify-between border-b border-[var(--brand-header-border)] bg-[var(--brand-header)] px-4 pt-[env(safe-area-inset-top)] text-white shadow-[0_4px_12px_rgba(3,59,89,0.22)] md:h-14 md:px-5 md:pt-0">
+          <header className="sibatik-header-batik z-10 flex h-[calc(4rem+env(safe-area-inset-top))] shrink-0 items-center justify-between bg-[var(--brand-header)] px-4 pt-[env(safe-area-inset-top)] text-white shadow-[0_4px_12px_rgba(3,59,89,0.18)] md:h-14 md:px-5 md:pt-0">
             <div className="relative z-[1] flex min-w-0 items-center gap-3">
               <button
                 onClick={() => setSidebarOpen(true)}

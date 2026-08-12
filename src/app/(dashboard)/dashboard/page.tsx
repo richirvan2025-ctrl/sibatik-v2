@@ -309,7 +309,7 @@ export default function DashboardPage() {
         </section>
       )}
 
-      <section className="grid gap-4 xl:grid-cols-[1.25fr_.75fr]">
+      <section className="grid items-start gap-4 xl:grid-cols-[1.25fr_.75fr]">
         <Card>
           <CardHeader className="flex-row items-center justify-between pb-2">
             <div>
@@ -347,8 +347,8 @@ export default function DashboardPage() {
           </CardContent>
         </Card>
 
-        <Card className="bg-[#F8FAFD]">
-          <CardHeader className="pb-2">
+        <Card size="sm" className="self-start bg-[#F8FAFD]">
+          <CardHeader className="pb-1">
             <div className="flex items-center gap-3">
               <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-[#102B50] text-white">
                 <ShieldAlert className="h-5 w-5" />
@@ -359,7 +359,7 @@ export default function DashboardPage() {
               </div>
             </div>
           </CardHeader>
-          <CardContent className="pb-5">
+          <CardContent className="pb-0">
             <div className="grid gap-2.5">
               <Link
                 href="/tickets"
