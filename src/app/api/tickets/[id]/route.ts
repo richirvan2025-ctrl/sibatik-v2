@@ -192,7 +192,9 @@ export async function PATCH(
       const ticketDepartment = ticket.category.department?.trim().toLocaleLowerCase("id-ID");
       const assigneeDepartment = assignee?.department?.trim().toLocaleLowerCase("id-ID");
       const hasEligibleRole =
-        assignee?.role === "AGENT" || assignee?.role === "SUPERVISOR";
+        assignee?.role === "ADMIN" ||
+        assignee?.role === "AGENT" ||
+        assignee?.role === "SUPERVISOR";
 
       if (
         !assignee ||
@@ -202,7 +204,7 @@ export async function PATCH(
         assigneeDepartment !== ticketDepartment
       ) {
         return NextResponse.json(
-          { error: "Assignee harus Staff atau Supervisor aktif dari divisi tujuan tiket" },
+          { error: "Assignee harus pengguna aktif dari divisi tujuan tiket" },
           { status: 400 },
         );
       }

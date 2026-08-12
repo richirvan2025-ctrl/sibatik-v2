@@ -833,7 +833,9 @@ function AssigneeSelect({
     return () => controller.abort();
   }, [categoryDept]);
 
-  const agents = assignees.filter((a) => a.role === "AGENT");
+  const staff = assignees.filter(
+    (a) => a.role === "AGENT" || a.role === "ADMIN",
+  );
   const supervisors = assignees.filter((a) => a.role === "SUPERVISOR");
   const selectedName = assignees.find((a) => a.id === currentId)?.name || currentName;
 
@@ -849,12 +851,12 @@ function AssigneeSelect({
       </SelectTrigger>
       <SelectContent className="min-w-[var(--radix-select-trigger-width)] !w-auto">
         <SelectItem value="">Unassign</SelectItem>
-        {agents.length > 0 && (
+        {staff.length > 0 && (
           <>
             <div className="px-2 py-1.5 text-[10px] font-bold uppercase tracking-wider text-[#94A3B8]">
               Staff
             </div>
-            {agents.map((t) => (
+            {staff.map((t) => (
               <SelectItem key={t.id} value={t.id}>
                 {t.name}
                 {t.department && (

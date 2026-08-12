@@ -32,7 +32,7 @@ export async function GET(req: NextRequest) {
       where: {
         isActive: true,
         department: { in: departments },
-        role: { in: ["AGENT", "SUPERVISOR"] },
+        role: { in: ["ADMIN", "AGENT", "SUPERVISOR"] },
       },
       select: {
         id: true,
