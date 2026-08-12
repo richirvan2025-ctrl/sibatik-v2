@@ -87,10 +87,18 @@ const rolePresentation = {
 function toDisplayName(name?: string | null) {
   if (!name?.trim()) return "Pengguna";
 
-  return name
+  const words = name
     .trim()
-    .split(/\s+/)
-    .slice(0, 2)
+    .split(/\s+/);
+  const startsWithBalineseTitle = ["I", "NI"].includes(
+    words[0].toLocaleUpperCase("id-ID")
+  );
+  const displayWords = words.slice(
+    startsWithBalineseTitle ? 1 : 0,
+    startsWithBalineseTitle ? 3 : 2
+  );
+
+  return (displayWords.length > 0 ? displayWords : words.slice(0, 2))
     .map(
       (word) =>
         word.charAt(0).toLocaleUpperCase("id-ID") +
