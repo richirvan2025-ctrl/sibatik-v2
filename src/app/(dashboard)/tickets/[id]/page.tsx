@@ -154,7 +154,11 @@ export default function TicketDetailPage() {
   const isSupervisor = role === "SUPERVISOR";
   const isExecutive = role === "EXECUTIVE";
   const canManage = isAdmin || isAgent || isSupervisor;
-  const canComment = !isExecutive;
+  const isTicketParticipant =
+    ticket?.createdBy.id === userId ||
+    ticket?.onBehalfOf?.id === userId ||
+    ticket?.assignedTo?.id === userId;
+  const canComment = !isExecutive || isTicketParticipant;
 
   const fetchTicket = useCallback(
     async (silent = false) => {
