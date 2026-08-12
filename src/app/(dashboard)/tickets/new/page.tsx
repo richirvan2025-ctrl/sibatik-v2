@@ -1052,7 +1052,7 @@ export default function NewTicketPage() {
 
             </FormSection>
 
-            <div className="sticky bottom-0 z-20 -mx-5 -mb-5 flex flex-col-reverse gap-3 border-t border-[#E4E9F1] bg-white/95 px-5 py-5 shadow-[0_-10px_26px_rgba(29,43,76,0.08)] backdrop-blur-sm sm:flex-row sm:justify-end md:-mx-6 md:-mb-6 md:px-6">
+            <div className="sticky bottom-0 z-20 -mx-5 -mb-5 flex flex-col-reverse gap-3 border-t border-[#E4E9F1] bg-white/95 px-5 py-5 backdrop-blur-sm sm:flex-row sm:justify-end md:-mx-6 md:-mb-6 md:px-6">
               <Button
                 type="button"
                 variant="outline"
