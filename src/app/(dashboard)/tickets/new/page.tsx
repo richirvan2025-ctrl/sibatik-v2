@@ -125,7 +125,7 @@ function FormSection({
           className="absolute bottom-[-24px] left-[17px] top-10 hidden w-px bg-[#DCE3ED] sm:block"
         />
       )}
-      <div className="mt-4 min-w-0 sm:ml-[56px]">{children}</div>
+      <div className="mt-3 min-w-0 sm:ml-[56px]">{children}</div>
     </section>
   );
 }
@@ -470,7 +470,7 @@ export default function NewTicketPage() {
             </Alert>
           )}
 
-          <form onSubmit={handleSubmit} noValidate className="space-y-6">
+          <form onSubmit={handleSubmit} noValidate className="space-y-4">
             <FormSection number={1} title="Detail Permintaan">
               <div className="space-y-4">
             {canCreateOnBehalf && (
