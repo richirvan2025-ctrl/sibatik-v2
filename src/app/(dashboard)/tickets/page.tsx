@@ -291,7 +291,11 @@ export default function TicketsPage() {
           });
 
           return (
-            <Link key={ticket.id} href={`/tickets/${ticket.id}`}>
+            <Link
+              key={ticket.id}
+              href={`/tickets/${ticket.id}`}
+              className="block"
+            >
               <Card className="group cursor-pointer overflow-hidden py-0 transition-all duration-200 hover:-translate-y-0.5 hover:border-[#CFC4F6] hover:shadow-[0_10px_26px_rgba(29,43,76,0.09)]">
                 <div className="absolute left-0 top-0 h-full w-1 bg-[#7047EB] opacity-0 transition-opacity group-hover:opacity-100" />
                 <CardContent className="p-4 md:p-5">
