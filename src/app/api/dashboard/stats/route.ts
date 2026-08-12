@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
+import type { Prisma } from "@prisma/client";
 
 export async function GET() {
   try {
@@ -11,8 +12,10 @@ export async function GET() {
 
     const userId = session.user.id;
     const role = session.user.role;
+    const now = new Date();
+    const dueSoonThreshold = new Date(now.getTime() + 24 * 60 * 60 * 1000);
 
-    let baseWhere: any = {};
+    let baseWhere: Prisma.TicketWhereInput = {};
     if (role === "ADMIN" || role === "EXECUTIVE") {
       // Management sees all tickets.
     } else if (role === "AGENT") {
@@ -38,6 +41,9 @@ export async function GET() {
       resolved,
       closed,
       slaBreached,
+      dueSoon,
+      escalated,
+      oldestUnhandled,
       avgResolutionTime,
     ] = await Promise.all([
       prisma.ticket.count({ where: baseWhere }),
@@ -46,6 +52,24 @@ export async function GET() {
       prisma.ticket.count({ where: { ...baseWhere, status: "RESOLVED" } }),
       prisma.ticket.count({ where: { ...baseWhere, status: "CLOSED" } }),
       prisma.ticket.count({ where: { ...baseWhere, slaBreached: true } }),
+      prisma.ticket.count({
+        where: {
+          ...baseWhere,
+          status: { in: ["OPEN", "IN_PROGRESS", "REOPENED", "ESCALATED"] },
+          deadline: { gte: now, lte: dueSoonThreshold },
+        },
+      }),
+      prisma.ticket.count({ where: { ...baseWhere, status: "ESCALATED" } }),
+      prisma.ticket.findFirst({
+        where: { ...baseWhere, status: "OPEN", assignedToId: null },
+        orderBy: { createdAt: "asc" },
+        select: {
+          id: true,
+          ticketNumber: true,
+          title: true,
+          createdAt: true,
+        },
+      }),
       prisma.ticket.findMany({
         where: { ...baseWhere, resolvedAt: { not: null } },
         select: { createdAt: true, resolvedAt: true },
@@ -70,6 +94,22 @@ export async function GET() {
       resolved,
       closed,
       slaBreached,
+      dueSoon,
+      escalated,
+      oldestUnhandled: oldestUnhandled
+        ? {
+            id: oldestUnhandled.id,
+            ticketNumber: oldestUnhandled.ticketNumber,
+            title: oldestUnhandled.title,
+            ageDays: Math.max(
+              0,
+              Math.floor(
+                (now.getTime() - oldestUnhandled.createdAt.getTime()) /
+                  (24 * 60 * 60 * 1000),
+              ),
+            ),
+          }
+        : null,
       avgResolutionHours,
     });
   } catch (error) {

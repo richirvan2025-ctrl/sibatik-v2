@@ -14,6 +14,7 @@ import {
   ArrowRight,
   BarChart3,
   BookOpen,
+  CalendarClock,
   CalendarDays,
   CheckCircle2,
   Clock3,
@@ -21,7 +22,10 @@ import {
   Plus,
   Settings2,
   ShieldCheck,
+  ShieldAlert,
+  Siren,
   Ticket,
+  TimerReset,
   TrendingUp,
   Users,
 } from "lucide-react";
@@ -32,6 +36,15 @@ interface Stats {
   inProgress: number;
   resolved: number;
   closed: number;
+  slaBreached: number;
+  dueSoon: number;
+  escalated: number;
+  oldestUnhandled: {
+    id: string;
+    ticketNumber: string;
+    title: string;
+    ageDays: number;
+  } | null;
   avgResolutionHours: number;
 }
 
@@ -47,7 +60,7 @@ const statCards = [
   },
   {
     key: "open" as const,
-    label: "Open",
+    label: "Terbuka",
     helper: "Menunggu tindak lanjut",
     icon: AlertCircle,
     color: "bg-[#268EDB]",
@@ -56,7 +69,7 @@ const statCards = [
   },
   {
     key: "inProgress" as const,
-    label: "In Progress",
+    label: "Dalam Proses",
     helper: "Sedang ditangani",
     icon: Clock3,
     color: "bg-[#F4AB32]",
@@ -82,7 +95,7 @@ const quickActions = [
     icon: Plus,
   },
   {
-    label: "Knowledge Base",
+    label: "Pusat Pengetahuan",
     description: "Temukan panduan dan solusi mandiri",
     href: "/kb",
     icon: BookOpen,
@@ -94,6 +107,14 @@ const quickActions = [
     icon: Ticket,
   },
 ];
+
+const roleLabels: Record<string, string> = {
+  ADMIN: "Administrator",
+  EXECUTIVE: "Eksekutif",
+  SUPERVISOR: "Supervisor",
+  AGENT: "Teknisi",
+  USER: "Pengguna",
+};
 
 export default function DashboardPage() {
   const { data: session } = useSession();
@@ -174,11 +195,7 @@ export default function DashboardPage() {
     month: "long",
     year: "numeric",
   }).format(new Date());
-  const activeTickets = stats.open + stats.inProgress;
-  const completedTickets = stats.resolved + stats.closed;
-  const metricBase = Math.max(stats.total, activeTickets + completedTickets, 1);
-  const activeRate = Math.round((activeTickets / metricBase) * 100);
-  const completionRate = Math.round((completedTickets / metricBase) * 100);
+  const hasResolutionData = stats.resolved + stats.closed > 0;
 
   return (
     <div className="space-y-5 md:space-y-6">
@@ -188,7 +205,7 @@ export default function DashboardPage() {
             <div className="mb-3 flex flex-wrap items-center gap-2">
               <Badge className="border border-white/15 bg-white/10 text-white shadow-none">
                 <ShieldCheck className="mr-1 h-3.5 w-3.5" />
-                {role || "USER"}
+                {roleLabels[role || "USER"] || "Pengguna"}
               </Badge>
               <span className="inline-flex items-center gap-1.5 text-xs font-medium text-[var(--brand-header-muted)]">
                 <span className="h-2 w-2 rounded-full bg-[#38C793]" />
@@ -261,8 +278,19 @@ export default function DashboardPage() {
               </div>
               <div>
                 <p className="text-[10px] font-bold uppercase tracking-[0.08em] text-[#71809A]">Rata-rata Resolusi</p>
-                <p className="mt-0.5 text-xl font-bold text-[#18233E]">{stats.avgResolutionHours}<span className="ml-1 text-xs font-semibold text-[#7B879D]">jam</span></p>
-                <p className="text-xs text-[#7B879D]">Waktu penyelesaian tiket</p>
+                {hasResolutionData ? (
+                  <p className="mt-0.5 text-xl font-bold text-[#18233E]">
+                    {stats.avgResolutionHours}
+                    <span className="ml-1 text-xs font-semibold text-[#7B879D]">jam</span>
+                  </p>
+                ) : (
+                  <p className="mt-0.5 text-base font-bold text-[#44516A]">Belum ada data</p>
+                )}
+                <p className="text-xs text-[#7B879D]">
+                  {hasResolutionData
+                    ? "Waktu penyelesaian tiket"
+                    : "Belum ada tiket yang diselesaikan"}
+                </p>
               </div>
             </CardContent>
           </Card>
@@ -323,80 +351,103 @@ export default function DashboardPage() {
           <CardHeader className="pb-2">
             <div className="flex items-center gap-3">
               <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-[#102B50] text-white">
-                <BarChart3 className="h-5 w-5" />
+                <ShieldAlert className="h-5 w-5" />
               </div>
               <div>
-                <CardTitle className="text-[17px] text-[#14203B]">Performance Overview</CardTitle>
-                <p className="mt-1 text-xs text-[#71809A]">Ringkasan kondisi layanan saat ini</p>
+                <CardTitle className="text-[17px] text-[#14203B]">Perhatian Operasional</CardTitle>
+                <p className="mt-1 text-xs text-[#71809A]">Prioritas yang membutuhkan tindak lanjut</p>
               </div>
             </div>
           </CardHeader>
           <CardContent className="pb-5">
-            <div className="grid gap-3">
-              <div className="rounded-xl border border-[#DCE6F2] bg-white p-3.5 shadow-[0_1px_2px_rgba(16,24,40,0.03)]">
-                <div className="flex items-center justify-between gap-3">
-                  <div className="flex items-center gap-2.5">
-                    <span className="h-2.5 w-2.5 rounded-full bg-[#268EDB] shadow-[0_0_0_4px_rgba(38,142,219,0.12)]" />
-                    <div>
-                      <p className="text-sm font-bold text-[#17223D]">Tiket aktif</p>
-                      <p className="text-[11px] text-[#71809A]">Open dan sedang ditangani</p>
-                    </div>
-                  </div>
-                  <span className="rounded-full bg-[#EAF4FC] px-2.5 py-1 text-sm font-extrabold text-[#176FAF]">{activeTickets}</span>
-                </div>
-                <div
-                  className="mt-3 h-2 overflow-hidden rounded-full bg-[#EAF4FC]"
-                  role="progressbar"
-                  aria-label="Proporsi tiket aktif"
-                  aria-valuemin={0}
-                  aria-valuemax={100}
-                  aria-valuenow={activeRate}
-                >
-                  <div
-                    className="h-full rounded-full bg-[#268EDB] transition-[width] duration-500"
-                    style={{ width: `${activeRate}%` }}
-                  />
-                </div>
-                <p className="mt-1.5 text-right text-[11px] font-semibold text-[#71809A]">{activeRate}% dari total tiket</p>
-              </div>
-
-              <div className="rounded-xl border border-[#D9ECE4] bg-white p-3.5 shadow-[0_1px_2px_rgba(16,24,40,0.03)]">
-                <div className="flex items-center justify-between gap-3">
-                  <div className="flex items-center gap-2.5">
-                    <span className="h-2.5 w-2.5 rounded-full bg-[#24AE78] shadow-[0_0_0_4px_rgba(36,174,120,0.12)]" />
-                    <div>
-                      <p className="text-sm font-bold text-[#17223D]">Tiket selesai</p>
-                      <p className="text-[11px] text-[#71809A]">Resolved dan ditutup</p>
-                    </div>
-                  </div>
-                  <span className="rounded-full bg-[#EAF8F2] px-2.5 py-1 text-sm font-extrabold text-[#147957]">{completedTickets}</span>
-                </div>
-                <div
-                  className="mt-3 h-2 overflow-hidden rounded-full bg-[#EAF8F2]"
-                  role="progressbar"
-                  aria-label="Proporsi tiket selesai"
-                  aria-valuemin={0}
-                  aria-valuemax={100}
-                  aria-valuenow={completionRate}
-                >
-                  <div
-                    className="h-full rounded-full bg-[#24AE78] transition-[width] duration-500"
-                    style={{ width: `${completionRate}%` }}
-                  />
-                </div>
-                <p className="mt-1.5 text-right text-[11px] font-semibold text-[#71809A]">{completionRate}% dari total tiket</p>
-              </div>
-
-              <div className="flex items-center justify-between gap-3 rounded-xl border border-[#CDE9DD] bg-[#F0FAF6] px-3.5 py-3">
-                <div>
-                  <p className="text-sm font-bold text-[#17223D]">Status layanan</p>
-                  <p className="mt-0.5 text-[11px] text-[#5F7F72]">Sistem siap menerima tiket</p>
-                </div>
-                <span className="inline-flex items-center gap-2 rounded-full border border-[#BDE4D4] bg-white px-2.5 py-1 text-xs font-extrabold text-[#147957] shadow-sm">
-                  <span className="h-2 w-2 rounded-full bg-[#24AE78] shadow-[0_0_0_3px_rgba(36,174,120,0.14)]" />
-                  Aktif
+            <div className="grid gap-2.5">
+              <Link
+                href="/tickets"
+                className="group flex items-center gap-3 rounded-xl border border-[#F1DFC2] bg-white p-3 shadow-[0_1px_2px_rgba(16,24,40,0.03)] transition-colors hover:border-amber-300 hover:bg-amber-50/45 focus-visible:outline-none focus-visible:ring-3 focus-visible:ring-amber-200"
+              >
+                <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-amber-50 text-amber-600">
+                  <CalendarClock className="h-4.5 w-4.5" />
                 </span>
-              </div>
+                <span className="min-w-0 flex-1">
+                  <span className="block text-sm font-bold text-[#17223D]">Deadline dalam 24 jam</span>
+                  <span className="block truncate text-[11px] text-[#71809A]">
+                    {stats.dueSoon > 0
+                      ? `${stats.dueSoon} tiket segera jatuh tempo`
+                      : "Tidak ada tiket yang segera jatuh tempo"}
+                  </span>
+                </span>
+                <span className={`rounded-full px-2.5 py-1 text-xs font-extrabold ${stats.dueSoon > 0 ? "bg-amber-100 text-amber-700" : "bg-emerald-50 text-emerald-700"}`}>
+                  {stats.dueSoon}
+                </span>
+                <ArrowRight className="h-4 w-4 shrink-0 text-[#8A96AC] transition-transform group-hover:translate-x-0.5" />
+              </Link>
+
+              <Link
+                href={stats.oldestUnhandled ? `/tickets/${stats.oldestUnhandled.id}` : "/tickets?status=OPEN"}
+                className="group flex items-center gap-3 rounded-xl border border-[#DCE6F2] bg-white p-3 shadow-[0_1px_2px_rgba(16,24,40,0.03)] transition-colors hover:border-sky-300 hover:bg-sky-50/45 focus-visible:outline-none focus-visible:ring-3 focus-visible:ring-sky-200"
+              >
+                <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-sky-50 text-sky-600">
+                  <TimerReset className="h-4.5 w-4.5" />
+                </span>
+                <span className="min-w-0 flex-1">
+                  <span className="block text-sm font-bold text-[#17223D]">Belum ditangani terlama</span>
+                  <span className="block truncate text-[11px] text-[#71809A]">
+                    {stats.oldestUnhandled
+                      ? `${stats.oldestUnhandled.ticketNumber} · ${stats.oldestUnhandled.title}`
+                      : "Semua tiket terbuka sudah ditangani"}
+                  </span>
+                </span>
+                <span className={`whitespace-nowrap rounded-full px-2.5 py-1 text-xs font-extrabold ${stats.oldestUnhandled ? "bg-sky-50 text-sky-700" : "bg-emerald-50 text-emerald-700"}`}>
+                  {stats.oldestUnhandled
+                    ? stats.oldestUnhandled.ageDays === 0
+                      ? "Hari ini"
+                      : `${stats.oldestUnhandled.ageDays} hari`
+                    : "Aman"}
+                </span>
+                <ArrowRight className="h-4 w-4 shrink-0 text-[#8A96AC] transition-transform group-hover:translate-x-0.5" />
+              </Link>
+
+              <Link
+                href="/tickets?status=ESCALATED"
+                className="group flex items-center gap-3 rounded-xl border border-[#F0D8DB] bg-white p-3 shadow-[0_1px_2px_rgba(16,24,40,0.03)] transition-colors hover:border-red-300 hover:bg-red-50/45 focus-visible:outline-none focus-visible:ring-3 focus-visible:ring-red-200"
+              >
+                <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-red-50 text-red-600">
+                  <Siren className="h-4.5 w-4.5" />
+                </span>
+                <span className="min-w-0 flex-1">
+                  <span className="block text-sm font-bold text-[#17223D]">Tiket eskalasi</span>
+                  <span className="block truncate text-[11px] text-[#71809A]">
+                    {stats.escalated > 0
+                      ? `${stats.escalated} tiket membutuhkan perhatian khusus`
+                      : "Tidak ada tiket yang dieskalasi"}
+                  </span>
+                </span>
+                <span className={`rounded-full px-2.5 py-1 text-xs font-extrabold ${stats.escalated > 0 ? "bg-red-50 text-red-700" : "bg-emerald-50 text-emerald-700"}`}>
+                  {stats.escalated}
+                </span>
+                <ArrowRight className="h-4 w-4 shrink-0 text-[#8A96AC] transition-transform group-hover:translate-x-0.5" />
+              </Link>
+
+              <Link
+                href="/tickets"
+                className="group flex items-center gap-3 rounded-xl border border-[#E3DCF6] bg-white p-3 shadow-[0_1px_2px_rgba(16,24,40,0.03)] transition-colors hover:border-violet-300 hover:bg-violet-50/45 focus-visible:outline-none focus-visible:ring-3 focus-visible:ring-violet-200"
+              >
+                <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-violet-50 text-violet-600">
+                  <ShieldAlert className="h-4.5 w-4.5" />
+                </span>
+                <span className="min-w-0 flex-1">
+                  <span className="block text-sm font-bold text-[#17223D]">Pelanggaran SLA</span>
+                  <span className="block truncate text-[11px] text-[#71809A]">
+                    {stats.slaBreached > 0
+                      ? `${stats.slaBreached} tiket melewati target layanan`
+                      : "Seluruh tiket masih dalam target layanan"}
+                  </span>
+                </span>
+                <span className={`rounded-full px-2.5 py-1 text-xs font-extrabold ${stats.slaBreached > 0 ? "bg-violet-50 text-violet-700" : "bg-emerald-50 text-emerald-700"}`}>
+                  {stats.slaBreached}
+                </span>
+                <ArrowRight className="h-4 w-4 shrink-0 text-[#8A96AC] transition-transform group-hover:translate-x-0.5" />
+              </Link>
             </div>
           </CardContent>
         </Card>
@@ -407,13 +458,13 @@ export default function DashboardPage() {
           <CardHeader className="flex-row items-center justify-between pb-2">
             <CardTitle className="flex items-center gap-2 text-[17px] text-[#14203B]">
               <Users className="h-5 w-5 text-[#7047EB]" />
-              Performa Agent
+              Performa Teknisi
             </CardTitle>
             <span className="text-xs text-[#71809A]">Bulan {new Date().toLocaleString("id-ID", { month: "long", year: "numeric" })}</span>
           </CardHeader>
           <CardContent className="pb-5">
             {agentPerformance.length === 0 ? (
-              <div className="flex h-36 items-center justify-center rounded-xl border border-dashed border-[#D8E0EC] bg-[#F8FAFD] text-sm text-[#7A879D]">Belum ada data agent bulan ini</div>
+              <div className="flex h-36 items-center justify-center rounded-xl border border-dashed border-[#D8E0EC] bg-[#F8FAFD] text-sm text-[#7A879D]">Belum ada data teknisi bulan ini</div>
             ) : (
               <AgentPerformanceChart data={agentPerformance} />
             )}
