@@ -345,11 +345,22 @@ export default function TicketDetailPage() {
                 : "Tanpa deadline"}
             </p>
           </div>
-          <div className="flex min-h-[60px] items-center gap-3 border-t border-[#E2E8F0] px-5 py-2 sm:border-l xl:border-t-0">
+          <div className="flex min-h-[60px] items-center gap-3 border-t border-[#E2E8F0] px-3 py-2 sm:border-l xl:border-t-0">
             <User className="h-5 w-5 shrink-0 text-[#64748B]" aria-hidden="true" />
-            <p className="truncate text-sm font-semibold text-[#475569]">
-              {ticket.assignedTo?.name || "Belum di-assign"}
-            </p>
+            {canManage && ticket.status !== "CLOSED" ? (
+              <div className="min-w-0 flex-1">
+                <AssigneeSelect
+                  currentId={ticket.assignedTo?.id}
+                  currentName={ticket.assignedTo?.name}
+                  onAssign={handleAssign}
+                  categoryDept={ticket.category.department}
+                />
+              </div>
+            ) : (
+              <p className="truncate text-sm font-semibold text-[#475569]">
+                {ticket.assignedTo?.name || "Belum di-assign"}
+              </p>
+            )}
           </div>
         </section>
       </header>
@@ -754,19 +765,6 @@ export default function TicketDetailPage() {
                   </div>
                 )}
 
-                {(isAdmin || isAgent || isSupervisor) && (
-                  <div className="space-y-2">
-                    <Label className="text-[11px] font-semibold text-[#64748B] uppercase tracking-wider">
-                      Assign ke
-                    </Label>
-                    <AssigneeSelect
-                      currentId={ticket.assignedTo?.id}
-                      currentName={ticket.assignedTo?.name}
-                      onAssign={handleAssign}
-                      categoryDept={ticket.category.department}
-                    />
-                  </div>
-                )}
               </CardContent>
             </Card>
           )}
@@ -844,39 +842,65 @@ function AssigneeSelect({
       value={currentId || ""}
       onValueChange={(value) => onAssign(value || "")}
     >
-      <SelectTrigger className="h-10 border-[#E2E8F0] bg-[#F8FAFC] rounded-xl text-sm focus:bg-white focus:border-[#7C3AED] w-full">
+      <SelectTrigger
+        aria-label="Pilih assignee"
+        className="h-9 min-w-0 w-full rounded-lg border-[#D9E1EB] bg-[#F8FAFC] px-2.5 text-sm font-semibold text-[#475569] shadow-none transition-colors hover:border-[#B8A9F2] hover:bg-[#F4F1FF] focus:bg-white focus:border-[#7C3AED]"
+      >
         <SelectValue placeholder="Pilih assignee">
           {selectedName || (currentId ? currentId : "Pilih assignee")}
         </SelectValue>
       </SelectTrigger>
-      <SelectContent className="min-w-[var(--radix-select-trigger-width)] !w-auto">
-        <SelectItem value="">Unassign</SelectItem>
+      <SelectContent
+        align="end"
+        alignItemWithTrigger={false}
+        sideOffset={8}
+        className="max-h-80 w-[360px] max-w-[calc(100vw-24px)] p-1.5"
+      >
+        <SelectItem value="" className="py-2.5 text-[#64748B]">
+          Belum di-assign
+        </SelectItem>
         {staff.length > 0 && (
           <>
-            <div className="px-2 py-1.5 text-[10px] font-bold uppercase tracking-wider text-[#94A3B8]">
+            <div className="px-2.5 pb-1 pt-2 text-[10px] font-bold uppercase tracking-wider text-[#94A3B8]">
               Staff
             </div>
             {staff.map((t) => (
-              <SelectItem key={t.id} value={t.id}>
-                {t.name}
-                {t.department && (
-                  <span className="ml-1 text-[#94A3B8]">({t.department})</span>
-                )}
+              <SelectItem
+                key={t.id}
+                value={t.id}
+                className="py-2.5 [&>span:first-child]:min-w-0 [&>span:first-child]:shrink [&>span:first-child]:whitespace-normal"
+              >
+                <span className="min-w-0">
+                  <span className="block truncate font-semibold text-[#334155]">{t.name}</span>
+                  {t.department && (
+                    <span className="mt-0.5 block truncate text-[11px] font-normal text-[#94A3B8]">
+                      {t.department}
+                    </span>
+                  )}
+                </span>
               </SelectItem>
             ))}
           </>
         )}
         {supervisors.length > 0 && (
           <>
-            <div className="px-2 py-1.5 text-[10px] font-bold uppercase tracking-wider text-[#94A3B8]">
+            <div className="px-2.5 pb-1 pt-2 text-[10px] font-bold uppercase tracking-wider text-[#94A3B8]">
               Supervisor
             </div>
             {supervisors.map((d) => (
-              <SelectItem key={d.id} value={d.id}>
-                {d.name}
-                {d.department && (
-                  <span className="ml-1 text-[#94A3B8]">({d.department})</span>
-                )}
+              <SelectItem
+                key={d.id}
+                value={d.id}
+                className="py-2.5 [&>span:first-child]:min-w-0 [&>span:first-child]:shrink [&>span:first-child]:whitespace-normal"
+              >
+                <span className="min-w-0">
+                  <span className="block truncate font-semibold text-[#334155]">{d.name}</span>
+                  {d.department && (
+                    <span className="mt-0.5 block truncate text-[11px] font-normal text-[#94A3B8]">
+                      {d.department}
+                    </span>
+                  )}
+                </span>
               </SelectItem>
             ))}
           </>
