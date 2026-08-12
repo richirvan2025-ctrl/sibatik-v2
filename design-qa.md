@@ -138,3 +138,37 @@ Focused comparison was not needed because the requested change affects only the 
 3. Post-fix Chrome evidence confirms correct alignment, readable wrapping, unchanged content, and no desktop or mobile overflow.
 
 final result: passed
+
+## Ticket detail refinement — Compact operational summary
+
+- Route: `https://sibatik.idbbali.ac.id/tickets/cmsoft6ag0001jphojcoiyvnn`
+- Source visual truth: `C:/Users/Lenovo/Downloads/Screenshot 2026-08-12 132429.png` plus the user-requested slimmer-height override.
+- Implementation screenshot: `C:/Users/Lenovo/Documents/Codex/2026-08-11/ssh/work/ticket-detail-redesign/qa/prod-compact-summary-desktop.png`
+- Focused implementation crop: `C:/Users/Lenovo/Documents/Codex/2026-08-11/ssh/work/ticket-detail-redesign/qa/prod-compact-summary-focused.png`
+- Focused comparison: `C:/Users/Lenovo/Documents/Codex/2026-08-11/ssh/work/ticket-detail-redesign/qa/reference-vs-compact-summary.png`
+- Mobile screenshot: `C:/Users/Lenovo/Documents/Codex/2026-08-11/ssh/work/ticket-detail-redesign/qa/prod-compact-summary-mobile.png`
+- Desktop implementation: 1487 × 1058 px at 1487 × 1058 CSS px, device pixel ratio 1.
+- Mobile viewport: 390 × 844 CSS px, device pixel ratio 1.
+- State: authenticated executive user; ticket TKT-2026-00001; production build.
+
+### Findings
+
+No actionable P0, P1, or P2 issues remain. The operational summary is reduced from 80 px overall height to 62 px, with four 60 px internal cells. Icon size, text size, horizontal padding, separators, semantic colors, and content remain unchanged.
+
+- Fonts and typography: passed — every label remains vertically centered and fully readable.
+- Spacing and layout rhythm: passed — the strip is 18 px slimmer and releases vertical space without feeling cramped.
+- Colors and visual tokens: passed — border, shadow, background, and semantic state colors are unchanged.
+- Image quality and asset fidelity: passed — no image assets are affected.
+- Copy and content: passed — all four operational values remain intact.
+- Responsiveness: passed — mobile cells are 60 px each, the complete summary is 242 px high, and no horizontal overflow occurs.
+- Runtime: passed — expected values are visible and no SIBATIK application console errors were observed.
+
+The focused crop is the primary evidence because the requested change affects only this horizontal summary component; the desktop full view verifies its surrounding rhythm.
+
+### Comparison history
+
+1. User reference showed an 80 px summary component and requested a slimmer treatment.
+2. Each summary cell was reduced from 78 px minimum height to 60 px and vertical padding from 12 px to 8 px.
+3. Post-fix Chrome evidence confirms a 62 px outer height, exact equal-width cells, centered content, and stable desktop/mobile behavior.
+
+final result: passed
