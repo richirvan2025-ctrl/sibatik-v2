@@ -122,6 +122,13 @@ const priorityConfig: Record<
 const cardClass =
   "gap-0 overflow-hidden rounded-2xl border border-[#E2E8F0] bg-white py-0 shadow-[0_8px_30px_rgba(15,23,42,0.04)]";
 
+const periodLabels: Record<string, string> = {
+  "7": "7 hari terakhir",
+  "30": "30 hari terakhir",
+  "90": "90 hari terakhir",
+  custom: "Rentang khusus",
+};
+
 const inputDate = (date: Date) => date.toISOString().slice(0, 10);
 
 function initialFrom() {
@@ -136,6 +143,15 @@ function formatHours(value: number | null) {
 
 function formatPercent(value: number | null) {
   return value === null ? "Belum ada data" : `${value}%`;
+}
+
+function formatIsoDay(value: string) {
+  const [year, month, day] = value.slice(0, 10).split("-").map(Number);
+  return new Date(year, month - 1, day).toLocaleDateString("id-ID", {
+    day: "numeric",
+    month: "short",
+    year: "numeric",
+  });
 }
 
 function csvCell(value: string | number | null) {
@@ -267,16 +283,8 @@ export default function ReportsPage() {
     );
   }
 
-  const dateFrom = new Date(data.meta.from).toLocaleDateString("id-ID", {
-    day: "numeric",
-    month: "short",
-    year: "numeric",
-  });
-  const dateTo = new Date(data.meta.to).toLocaleDateString("id-ID", {
-    day: "numeric",
-    month: "short",
-    year: "numeric",
-  });
+  const dateFrom = formatIsoDay(data.meta.from);
+  const dateTo = formatIsoDay(data.meta.to);
   const maxDaily = Math.max(
     ...data.dailyTrends.map((item) => Math.max(item.created, item.resolved)),
     1,
@@ -339,7 +347,7 @@ export default function ReportsPage() {
                 onValueChange={(value) => value && setPeriod(value)}
               >
                 <SelectTrigger className="h-10 bg-[#F8FAFC]" aria-label="Periode laporan">
-                  <SelectValue />
+                  <SelectValue>{periodLabels[period]}</SelectValue>
                 </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="7">7 hari terakhir</SelectItem>
