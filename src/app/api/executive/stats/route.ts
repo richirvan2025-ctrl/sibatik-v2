@@ -21,7 +21,6 @@ export async function GET() {
       inProgressTickets,
       resolvedTickets,
       closedTickets,
-      slaBreached,
       allParentCategories,
       urgentTickets,
       recentTickets,
@@ -31,7 +30,6 @@ export async function GET() {
       prisma.ticket.count({ where: { status: "IN_PROGRESS" } }),
       prisma.ticket.count({ where: { status: "RESOLVED" } }),
       prisma.ticket.count({ where: { status: "CLOSED" } }),
-      prisma.ticket.count({ where: { slaBreached: true } }),
       prisma.category.findMany({
         where: { parentId: null, isActive: true },
         select: { id: true, name: true, department: true },
@@ -42,7 +40,13 @@ export async function GET() {
           status: { in: ["OPEN", "IN_PROGRESS"] },
           priority: { in: ["URGENT", "HIGH"] },
         },
-        include: {
+        select: {
+          id: true,
+          ticketNumber: true,
+          title: true,
+          status: true,
+          priority: true,
+          createdAt: true,
           category: { select: { name: true, department: true } },
         },
         orderBy: [{ priority: "desc" }, { createdAt: "asc" }],
@@ -53,14 +57,6 @@ export async function GET() {
         select: { createdAt: true, resolvedAt: true, status: true },
       }),
     ]);
-
-    // SLA compliance %
-    const resolvedAndClosed = resolvedTickets + closedTickets;
-    const slaCompliant = resolvedAndClosed - slaBreached;
-    const slaComplianceRate =
-      resolvedAndClosed > 0
-        ? Math.round((slaCompliant / resolvedAndClosed) * 100)
-        : 100;
 
     // Tiket per divisi (by parent category department)
     const deptStats = await Promise.all(
@@ -73,12 +69,11 @@ export async function GET() {
         });
         const ids = catIds.map((c) => c.id);
 
-        const [total, open, inProgress, resolved, breached] = await Promise.all([
+        const [total, open, inProgress, resolved] = await Promise.all([
           prisma.ticket.count({ where: { categoryId: { in: ids } } }),
           prisma.ticket.count({ where: { categoryId: { in: ids }, status: "OPEN" } }),
           prisma.ticket.count({ where: { categoryId: { in: ids }, status: "IN_PROGRESS" } }),
           prisma.ticket.count({ where: { categoryId: { in: ids }, status: { in: ["RESOLVED", "CLOSED"] } } }),
-          prisma.ticket.count({ where: { categoryId: { in: ids }, slaBreached: true } }),
         ]);
 
         return {
@@ -87,7 +82,6 @@ export async function GET() {
           open,
           inProgress,
           resolved,
-          slaBreached: breached,
         };
       })
     );
@@ -120,16 +114,14 @@ export async function GET() {
         inProgressTickets,
         resolvedTickets,
         closedTickets,
-        slaBreached,
-        slaComplianceRate,
       },
       deptStats: deptStats.filter((d) => d.total > 0),
       urgentTickets: urgentTickets.map((t) => ({
         id: t.id,
-        ticketNumber: (t as any).ticketNumber,
-        title: (t as any).title,
+        ticketNumber: t.ticketNumber,
+        title: t.title,
         status: t.status,
-        priority: (t as any).priority,
+        priority: t.priority,
         department: t.category.department || t.category.name,
         createdAt: t.createdAt,
       })),

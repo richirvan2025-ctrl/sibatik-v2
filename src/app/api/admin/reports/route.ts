@@ -125,7 +125,6 @@ export async function GET(req: NextRequest) {
           createdAt: true,
           resolvedAt: true,
           firstResponseAt: true,
-          slaBreached: true,
           rating: true,
           assignedToId: true,
           assignedTo: { select: { name: true } },
@@ -151,7 +150,6 @@ export async function GET(req: NextRequest) {
           createdAt: true,
           deadline: true,
           assignedToId: true,
-          slaBreached: true,
         },
       }),
     ]);
@@ -188,10 +186,6 @@ export async function GET(req: NextRequest) {
           (ticket.resolvedAt!.getTime() - ticket.createdAt.getTime()) /
           (60 * 60 * 1000),
       );
-    const slaCompliant = completedTickets.filter(
-      (ticket) => !ticket.slaBreached,
-    ).length;
-
     const categoryMap = new Map(categories.map((category) => [category.id, category.name]));
     const normalizedStatusCounts = new Map<string, number>();
     statusCounts.forEach((item) => {
@@ -308,8 +302,6 @@ export async function GET(req: NextRequest) {
         completionRate: percentage(completedTickets.length, totalTickets),
         medianResponseHours: median(responseHours),
         medianResolutionHours: median(resolutionHours),
-        slaComplianceRate: percentage(slaCompliant, completedTickets.length),
-        slaCompliant,
         previous: {
           totalTickets: previousTickets.length,
           activeTickets: previousActive,
@@ -332,7 +324,6 @@ export async function GET(req: NextRequest) {
             ticket.deadline <= dueSoonLimit,
         ).length,
         unassigned: activeSnapshot.filter((ticket) => !ticket.assignedToId).length,
-        slaBreached: activeSnapshot.filter((ticket) => ticket.slaBreached).length,
         highPriority: activeSnapshot.filter((ticket) =>
           ["URGENT", "HIGH"].includes(ticket.priority),
         ).length,

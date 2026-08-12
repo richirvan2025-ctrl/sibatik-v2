@@ -59,7 +59,6 @@ const attentionLabels: Record<string, string> = {
   overdue: "Deadline terlewat",
   due24: "Deadline kurang dari 24 jam",
   unassigned: "Belum ditugaskan",
-  sla: "Pelanggaran SLA aktif",
   high: "Prioritas tinggi dan mendesak",
 };
 

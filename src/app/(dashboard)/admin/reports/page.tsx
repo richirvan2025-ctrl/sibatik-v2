@@ -27,8 +27,6 @@ import {
   Layers3,
   Printer,
   RefreshCw,
-  ShieldAlert,
-  ShieldCheck,
   Star,
   Target,
   Ticket,
@@ -64,8 +62,6 @@ interface ReportData {
     completionRate: number | null;
     medianResponseHours: number | null;
     medianResolutionHours: number | null;
-    slaComplianceRate: number | null;
-    slaCompliant: number;
     previous: {
       totalTickets: number;
       activeTickets: number;
@@ -81,7 +77,6 @@ interface ReportData {
     overdue: number;
     dueSoon: number;
     unassigned: number;
-    slaBreached: number;
     highPriority: number;
   };
   backlogAge: { key: string; label: string; count: number }[];
@@ -213,13 +208,11 @@ export default function ReportsPage() {
       ["Tingkat penyelesaian", data.summary.completionRate],
       ["Median respons pertama (jam)", data.summary.medianResponseHours],
       ["Median resolusi (jam)", data.summary.medianResolutionHours],
-      ["Kepatuhan SLA (%)", data.summary.slaComplianceRate],
       [],
       ["Perhatian operasional", "Jumlah"],
       ["Deadline terlewat", data.attention.overdue],
       ["Deadline <24 jam", data.attention.dueSoon],
       ["Belum ditugaskan", data.attention.unassigned],
-      ["Pelanggaran SLA", data.attention.slaBreached],
       ["Prioritas tinggi/mendesak", data.attention.highPriority],
       [],
       [
@@ -310,7 +303,7 @@ export default function ReportsPage() {
             Laporan Layanan
           </h1>
           <p className="mt-1 max-w-2xl text-sm text-[#64748B]">
-            Prioritaskan tindak lanjut, pantau SLA, dan evaluasi performa Staff
+            Prioritaskan tindak lanjut dan evaluasi performa Staff
             dalam satu tampilan.
           </p>
         </div>
@@ -434,7 +427,7 @@ export default function ReportsPage() {
             {data.meta.label}
           </Badge>
         </div>
-        <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-6">
+        <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-5">
           <StatCard
             label="Total tiket"
             value={String(data.summary.totalTickets)}
@@ -484,16 +477,6 @@ export default function ReportsPage() {
             accent="bg-emerald-500"
             href={`/tickets?status=COMPLETED&${ticketPeriodQuery}`}
           />
-          <StatCard
-            label="Kepatuhan SLA"
-            value={formatPercent(data.summary.slaComplianceRate)}
-            helper={`${data.summary.slaCompliant} tiket memenuhi SLA`}
-            icon={ShieldCheck}
-            iconClass="bg-teal-50 text-teal-600"
-            accent="bg-teal-500"
-            progress={data.summary.slaComplianceRate}
-            href={`/tickets?status=COMPLETED&${ticketPeriodQuery}`}
-          />
         </div>
       </section>
 
@@ -506,7 +489,7 @@ export default function ReportsPage() {
             Kondisi tiket aktif saat ini, di luar filter periode laporan.
           </p>
         </div>
-        <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5">
+        <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
           <AttentionCard
             label="Deadline terlewat"
             value={data.attention.overdue}
@@ -530,14 +513,6 @@ export default function ReportsPage() {
             icon={UserRoundX}
             tone="sky"
             href="/tickets?attention=unassigned"
-          />
-          <AttentionCard
-            label="Pelanggaran SLA"
-            value={data.attention.slaBreached}
-            helper="SLA tiket aktif terlewati"
-            icon={ShieldAlert}
-            tone="violet"
-            href="/tickets?attention=sla"
           />
           <AttentionCard
             label="Prioritas tinggi"
@@ -960,7 +935,6 @@ const attentionTones = {
   red: "border-red-200 bg-red-50 text-red-700",
   amber: "border-amber-200 bg-amber-50 text-amber-700",
   sky: "border-sky-200 bg-sky-50 text-sky-700",
-  violet: "border-violet-200 bg-violet-50 text-violet-700",
   orange: "border-orange-200 bg-orange-50 text-orange-700",
 };
 

@@ -40,7 +40,6 @@ export async function GET() {
       inProgress,
       resolved,
       closed,
-      slaBreached,
       dueSoon,
       oldestUnhandled,
       avgResolutionTime,
@@ -50,7 +49,6 @@ export async function GET() {
       prisma.ticket.count({ where: { ...baseWhere, status: "IN_PROGRESS" } }),
       prisma.ticket.count({ where: { ...baseWhere, status: "RESOLVED" } }),
       prisma.ticket.count({ where: { ...baseWhere, status: "CLOSED" } }),
-      prisma.ticket.count({ where: { ...baseWhere, slaBreached: true } }),
       prisma.ticket.count({
         where: {
           ...baseWhere,
@@ -91,7 +89,6 @@ export async function GET() {
       inProgress,
       resolved,
       closed,
-      slaBreached,
       dueSoon,
       oldestUnhandled: oldestUnhandled
         ? {

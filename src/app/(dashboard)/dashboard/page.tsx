@@ -35,7 +35,6 @@ interface Stats {
   inProgress: number;
   resolved: number;
   closed: number;
-  slaBreached: number;
   dueSoon: number;
   oldestUnhandled: {
     id: string;
@@ -186,7 +185,7 @@ export default function DashboardPage() {
         },
         {
           label: "Laporan layanan",
-          description: "Lihat analitik, SLA, dan performa layanan",
+          description: "Lihat analitik dan performa layanan",
           href: "/executive/reports",
           icon: BarChart3,
         },
@@ -409,26 +408,6 @@ export default function DashboardPage() {
                 <ArrowRight className="h-4 w-4 shrink-0 text-[#8A96AC] transition-transform group-hover:translate-x-0.5" />
               </Link>
 
-              <Link
-                href="/tickets"
-                className="group flex min-w-0 items-center gap-3 rounded-xl border border-[#E3DCF6] bg-white p-3 shadow-none transition-[transform,box-shadow,border-color,background-color] duration-200 hover:-translate-y-0.5 hover:border-violet-300 hover:bg-violet-50/45 hover:shadow-[var(--shadow-raised)] active:translate-y-0 focus-visible:outline-none focus-visible:ring-3 focus-visible:ring-violet-200 motion-reduce:transform-none motion-reduce:transition-none"
-              >
-                <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-violet-50 text-violet-600">
-                  <ShieldAlert className="h-4.5 w-4.5" />
-                </span>
-                <span className="min-w-0 flex-1">
-                  <span className="block text-sm font-bold text-[#17223D]">Pelanggaran SLA</span>
-                  <span className="block truncate text-[11px] text-[#71809A]">
-                    {stats.slaBreached > 0
-                      ? `${stats.slaBreached} tiket melewati target layanan`
-                      : "Seluruh tiket masih dalam target layanan"}
-                  </span>
-                </span>
-                <span className={`rounded-full px-2.5 py-1 text-xs font-extrabold ${stats.slaBreached > 0 ? "bg-violet-50 text-violet-700" : "bg-emerald-50 text-emerald-700"}`}>
-                  {stats.slaBreached}
-                </span>
-                <ArrowRight className="h-4 w-4 shrink-0 text-[#8A96AC] transition-transform group-hover:translate-x-0.5" />
-              </Link>
             </div>
           </CardContent>
         </Card>
