@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect, useRef } from "react";
+import { useRouter } from "next/navigation";
 import { Bell, Ticket, CheckCheck, X } from "lucide-react";
 
 interface NotificationItem {
@@ -9,6 +10,7 @@ interface NotificationItem {
   message: string;
   isRead: boolean;
   createdAt: string;
+  ticketId: string;
   ticket: {
     ticketNumber: string;
     title: string;
@@ -27,6 +29,7 @@ function timeAgo(dateStr: string) {
 }
 
 export function NotificationBell({ tone = "light" }: { tone?: "light" | "dark" }) {
+  const router = useRouter();
   const [open, setOpen] = useState(false);
   const [notifications, setNotifications] = useState<NotificationItem[]>([]);
   const [unreadCount, setUnreadCount] = useState(0);
@@ -85,6 +88,14 @@ export function NotificationBell({ tone = "light" }: { tone?: "light" | "dark" }
     setUnreadCount(0);
   };
 
+  const openNotification = (notification: NotificationItem) => {
+    setOpen(false);
+    if (!notification.isRead) {
+      void markAsRead(notification.id);
+    }
+    router.push(`/tickets/${notification.ticketId}`);
+  };
+
   return (
     <div className="relative" ref={ref}>
       {/* Bell Button */}
@@ -96,7 +107,9 @@ export function NotificationBell({ tone = "light" }: { tone?: "light" | "dark" }
             ? "border-[#8FC5D1]/45 bg-[#033B59]/70 text-white hover:border-[#B6D7DE]/65 hover:bg-[#0A5875] focus-visible:ring-white/25"
             : "border-[#DCE4EF] bg-white text-[#637089] hover:border-[#C9BCF8] hover:bg-[#F5F2FF] hover:text-[#7047EB] focus-visible:ring-[#7047EB]/20"
         }`}
-        aria-label="Buka notifikasi"
+        aria-label={open ? "Tutup notifikasi" : "Buka notifikasi"}
+        aria-expanded={open}
+        aria-haspopup="dialog"
       >
         <Bell className="h-4 w-4" />
         {unreadCount > 0 && (
@@ -114,7 +127,11 @@ export function NotificationBell({ tone = "light" }: { tone?: "light" | "dark" }
 
       {/* Dropdown */}
       {open && (
-        <div className="absolute right-0 top-12 z-50 w-[min(360px,calc(100vw-2rem))] overflow-hidden rounded-[14px] border border-[#DCE4EF] bg-white shadow-[0_18px_50px_rgba(11,29,58,0.18)]">
+        <div
+          role="dialog"
+          aria-label="Daftar notifikasi"
+          className="fixed inset-x-4 top-[calc(50px+env(safe-area-inset-top)+8px)] z-50 overflow-hidden rounded-[14px] border border-[#DCE4EF] bg-white shadow-[0_18px_50px_rgba(11,29,58,0.18)] sm:absolute sm:inset-x-auto sm:right-0 sm:top-12 sm:w-[min(360px,calc(100vw-2rem))]"
+        >
           {/* Header */}
           <div className="flex items-center justify-between border-b border-[#E2E8F0] px-4 py-3">
             <div className="flex items-center gap-2">
@@ -161,7 +178,7 @@ export function NotificationBell({ tone = "light" }: { tone?: "light" | "dark" }
                 <button
                   key={n.id}
                   type="button"
-                  onClick={() => !n.isRead && markAsRead(n.id)}
+                  onClick={() => openNotification(n)}
                   className={`w-full text-left px-4 py-3 hover:bg-[#F8FAFC] transition-colors ${
                     !n.isRead ? "bg-blue-50/60" : ""
                   }`}

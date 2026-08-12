@@ -170,7 +170,7 @@
 
   .sibatik-header-batik {
     isolation: isolate;
-    overflow: hidden;
+    overflow: visible;
     position: relative;
   }
 
