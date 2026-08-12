@@ -360,10 +360,10 @@ export default function DashboardPage() {
             </div>
           </CardHeader>
           <CardContent className="pb-0">
-            <div className="grid gap-2.5">
+            <div className="grid min-w-0 gap-2.5">
               <Link
                 href="/tickets"
-                className="group flex items-center gap-3 rounded-xl border border-[#F1DFC2] bg-white p-3 shadow-[0_1px_2px_rgba(16,24,40,0.03)] transition-colors hover:border-amber-300 hover:bg-amber-50/45 focus-visible:outline-none focus-visible:ring-3 focus-visible:ring-amber-200"
+                className="group flex min-w-0 items-center gap-3 rounded-xl border border-[#F1DFC2] bg-white p-3 shadow-[0_1px_2px_rgba(16,24,40,0.03)] transition-colors hover:border-amber-300 hover:bg-amber-50/45 focus-visible:outline-none focus-visible:ring-3 focus-visible:ring-amber-200"
               >
                 <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-amber-50 text-amber-600">
                   <CalendarClock className="h-4.5 w-4.5" />
@@ -384,7 +384,7 @@ export default function DashboardPage() {
 
               <Link
                 href={stats.oldestUnhandled ? `/tickets/${stats.oldestUnhandled.id}` : "/tickets?status=OPEN"}
-                className="group flex items-center gap-3 rounded-xl border border-[#DCE6F2] bg-white p-3 shadow-[0_1px_2px_rgba(16,24,40,0.03)] transition-colors hover:border-sky-300 hover:bg-sky-50/45 focus-visible:outline-none focus-visible:ring-3 focus-visible:ring-sky-200"
+                className="group flex min-w-0 items-center gap-3 rounded-xl border border-[#DCE6F2] bg-white p-3 shadow-[0_1px_2px_rgba(16,24,40,0.03)] transition-colors hover:border-sky-300 hover:bg-sky-50/45 focus-visible:outline-none focus-visible:ring-3 focus-visible:ring-sky-200"
               >
                 <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-sky-50 text-sky-600">
                   <TimerReset className="h-4.5 w-4.5" />
@@ -409,7 +409,7 @@ export default function DashboardPage() {
 
               <Link
                 href="/tickets?status=ESCALATED"
-                className="group flex items-center gap-3 rounded-xl border border-[#F0D8DB] bg-white p-3 shadow-[0_1px_2px_rgba(16,24,40,0.03)] transition-colors hover:border-red-300 hover:bg-red-50/45 focus-visible:outline-none focus-visible:ring-3 focus-visible:ring-red-200"
+                className="group flex min-w-0 items-center gap-3 rounded-xl border border-[#F0D8DB] bg-white p-3 shadow-[0_1px_2px_rgba(16,24,40,0.03)] transition-colors hover:border-red-300 hover:bg-red-50/45 focus-visible:outline-none focus-visible:ring-3 focus-visible:ring-red-200"
               >
                 <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-red-50 text-red-600">
                   <Siren className="h-4.5 w-4.5" />
@@ -430,7 +430,7 @@ export default function DashboardPage() {
 
               <Link
                 href="/tickets"
-                className="group flex items-center gap-3 rounded-xl border border-[#E3DCF6] bg-white p-3 shadow-[0_1px_2px_rgba(16,24,40,0.03)] transition-colors hover:border-violet-300 hover:bg-violet-50/45 focus-visible:outline-none focus-visible:ring-3 focus-visible:ring-violet-200"
+                className="group flex min-w-0 items-center gap-3 rounded-xl border border-[#E3DCF6] bg-white p-3 shadow-[0_1px_2px_rgba(16,24,40,0.03)] transition-colors hover:border-violet-300 hover:bg-violet-50/45 focus-visible:outline-none focus-visible:ring-3 focus-visible:ring-violet-200"
               >
                 <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-violet-50 text-violet-600">
                   <ShieldAlert className="h-4.5 w-4.5" />
