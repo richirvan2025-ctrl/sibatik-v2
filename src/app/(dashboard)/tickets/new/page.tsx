@@ -438,16 +438,16 @@ export default function NewTicketPage() {
 
   return (
     <div className="mx-auto max-w-[1056px] space-y-4">
-      <header className="px-1 pt-1">
+      <header className="relative px-1 pt-1 sm:px-6">
         <button
           type="button"
-          className="inline-flex items-center gap-1.5 text-[13px] font-semibold text-[#64748B] transition-colors hover:text-[#44516A] focus-visible:outline-none focus-visible:ring-3 focus-visible:ring-[#7047EB]/15"
+          className="mb-3 inline-flex items-center gap-1.5 text-[13px] font-semibold text-[#64748B] transition-colors hover:text-[#44516A] focus-visible:outline-none focus-visible:ring-3 focus-visible:ring-[#7047EB]/15 sm:absolute sm:right-full sm:top-1 sm:mr-3 sm:mb-0"
           onClick={() => router.push("/tickets")}
         >
           <ArrowLeft className="h-4 w-4" />
           Kembali
         </button>
-        <div className="mt-3">
+        <div>
           <h1 className="text-[28px] font-bold tracking-[-0.03em] text-[#17223D] md:text-[30px]">
             Buat Tiket Baru
           </h1>
@@ -895,7 +895,7 @@ export default function NewTicketPage() {
                   clearFieldError("description");
                 }}
                 rows={4}
-                className={`min-h-28 scroll-mt-24 resize-none border-[#E2E8F0] bg-white text-sm focus-visible:border-[#7047EB] focus-visible:ring-3 focus-visible:ring-[#7047EB]/15 ${fieldErrors.description ? "border-red-400 focus-visible:border-red-500 focus-visible:ring-red-500/15" : ""}`}
+                className={`min-h-24 scroll-mt-24 resize-none border-[#E2E8F0] bg-white text-sm focus-visible:border-[#7047EB] focus-visible:ring-3 focus-visible:ring-[#7047EB]/15 ${fieldErrors.description ? "border-red-400 focus-visible:border-red-500 focus-visible:ring-red-500/15" : ""}`}
                 required
               />
               {fieldErrors.description ? (
