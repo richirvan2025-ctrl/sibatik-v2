@@ -57,7 +57,6 @@ const navigation = {
     { name: "Tiket Divisi", href: "/tickets?scope=department", icon: Building2 },
     { name: "Tiket Saya", href: "/tickets", icon: Ticket },
     { name: "Buat Tiket", href: "/tickets/new", icon: PlusCircle },
-    { name: "Knowledge Base", href: "/kb", icon: BookOpen },
   ],
   EXECUTIVE: [
     { name: "Dashboard", href: "/dashboard", icon: Crown },
