@@ -345,22 +345,11 @@ export default function TicketDetailPage() {
                 : "Tanpa deadline"}
             </p>
           </div>
-          <div className="flex min-h-[60px] items-center gap-3 border-t border-[#E2E8F0] px-3 py-2 sm:border-l xl:border-t-0">
+          <div className="flex min-h-[60px] items-center gap-3 border-t border-[#E2E8F0] px-5 py-2 sm:border-l xl:border-t-0">
             <User className="h-5 w-5 shrink-0 text-[#64748B]" aria-hidden="true" />
-            {canManage && ticket.status !== "CLOSED" ? (
-              <div className="min-w-0 flex-1">
-                <AssigneeSelect
-                  currentId={ticket.assignedTo?.id}
-                  currentName={ticket.assignedTo?.name}
-                  onAssign={handleAssign}
-                  categoryDept={ticket.category.department}
-                />
-              </div>
-            ) : (
-              <p className="truncate text-sm font-semibold text-[#475569]">
-                {ticket.assignedTo?.name || "Belum di-assign"}
-              </p>
-            )}
+            <p className="truncate text-sm font-semibold text-[#475569]">
+              {ticket.assignedTo?.name || "Belum di-assign"}
+            </p>
           </div>
         </section>
       </header>
@@ -615,9 +604,9 @@ export default function TicketDetailPage() {
         </main>
 
         {/* Sidebar Info */}
-        <aside className="space-y-4 lg:sticky lg:top-4" aria-label="Informasi dan aksi tiket">
+        <aside className="flex flex-col gap-4 lg:sticky lg:top-4" aria-label="Informasi dan aksi tiket">
           {/* Ticket Info */}
-          <Card variant="surface" className="gap-0 overflow-hidden rounded-xl border border-[#DCE3EC] bg-white py-0 lg:min-h-[590px]">
+          <Card variant="surface" className="order-2 gap-0 overflow-hidden rounded-xl border border-[#DCE3EC] bg-white py-0 lg:min-h-[590px]">
             <CardHeader className="border-b border-[#E2E8F0] px-5 py-4">
               <CardTitle className="flex items-center gap-2.5 text-base font-semibold text-[#17233A]">
                 <Info className="h-[18px] w-[18px] text-[#334155]" aria-hidden="true" />
@@ -691,7 +680,7 @@ export default function TicketDetailPage() {
 
           {/* Actions */}
           {canManage && (
-            <Card variant="surface" className="gap-0 overflow-hidden rounded-xl border border-[#DCE3EC] bg-white py-0">
+            <Card variant="surface" className="order-1 gap-0 overflow-hidden rounded-xl border border-[#DCE3EC] bg-white py-0">
               <CardHeader className="border-b border-[#E2E8F0] px-5 py-4">
                 <CardTitle className="text-sm font-semibold text-[#1E293B]">
                   Aksi
@@ -764,6 +753,18 @@ export default function TicketDetailPage() {
                     </Select>
                   </div>
                 )}
+
+                <div className="space-y-2">
+                  <Label className="text-[11px] font-semibold text-[#64748B] uppercase tracking-wider">
+                    Assign ke
+                  </Label>
+                  <AssigneeSelect
+                    currentId={ticket.assignedTo?.id}
+                    currentName={ticket.assignedTo?.name}
+                    onAssign={handleAssign}
+                    categoryDept={ticket.category.department}
+                  />
+                </div>
 
               </CardContent>
             </Card>
