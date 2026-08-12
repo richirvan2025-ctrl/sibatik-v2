@@ -117,6 +117,13 @@ export async function PATCH(
       return NextResponse.json({ error: "Ticket not found" }, { status: 404 });
     }
 
+    if (ticket.status === "CLOSED" && validated.assignedToId !== undefined) {
+      return NextResponse.json(
+        { error: "Tiket yang telah ditutup tidak dapat di-assign" },
+        { status: 400 },
+      );
+    }
+
     // Check permissions for update
     // SUPERVISOR: bisa assign ke siapapun di divisinya + update status
     // AGENT: hanya bisa self-assign + update status (tidak bisa assign ke orang lain)

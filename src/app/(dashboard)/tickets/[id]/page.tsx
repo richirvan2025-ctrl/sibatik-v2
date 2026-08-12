@@ -686,7 +686,7 @@ export default function TicketDetailPage() {
                   Aksi
                 </CardTitle>
               </CardHeader>
-              <CardContent className="px-5 pb-5 space-y-4">
+              <CardContent className="space-y-4 px-5 pb-5 pt-4">
                 {ticket.status === "CLOSED" ? (
                   // Locked state - show reopen button
                   <div className="space-y-3">
@@ -754,17 +754,19 @@ export default function TicketDetailPage() {
                   </div>
                 )}
 
-                <div className="space-y-2">
-                  <Label className="text-[11px] font-semibold text-[#64748B] uppercase tracking-wider">
-                    Assign ke
-                  </Label>
-                  <AssigneeSelect
-                    currentId={ticket.assignedTo?.id}
-                    currentName={ticket.assignedTo?.name}
-                    onAssign={handleAssign}
-                    categoryDept={ticket.category.department}
-                  />
-                </div>
+                {ticket.status !== "CLOSED" && (
+                  <div className="space-y-2">
+                    <Label className="text-[11px] font-semibold text-[#64748B] uppercase tracking-wider">
+                      Assign ke
+                    </Label>
+                    <AssigneeSelect
+                      currentId={ticket.assignedTo?.id}
+                      currentName={ticket.assignedTo?.name}
+                      onAssign={handleAssign}
+                      categoryDept={ticket.category.department}
+                    />
+                  </div>
+                )}
 
               </CardContent>
             </Card>
