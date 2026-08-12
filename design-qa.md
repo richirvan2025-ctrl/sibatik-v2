@@ -48,6 +48,44 @@ No open P0, P1, or P2 visual defects remain.
 
 final result: passed
 
+## Ticket detail redesign — Operational Brief
+
+- Route: `https://sibatik.idbbali.ac.id/tickets/cmsoft6ag0001jphojcoiyvnn`
+- Selected reference: `C:/Users/Lenovo/.codex/generated_images/019fefc8-9c46-7210-af65-fffb5c72dbda/exec-c624e3ec-a698-47c7-a55b-ca66c3e0710c.png`
+- Production screenshot: `C:/Users/Lenovo/Documents/Codex/2026-08-11/ssh/work/ticket-detail-redesign/qa/prod-final-desktop.png`
+- Side-by-side comparison: `C:/Users/Lenovo/Documents/Codex/2026-08-11/ssh/work/ticket-detail-redesign/qa/reference-vs-production-final.png`
+- Desktop viewport: 1487 × 1058 CSS px
+- Mobile viewport: 390 × 844 CSS px
+- State: authenticated executive user; ticket TKT-2026-00001; production build
+
+### Comparison result
+
+The production page matches the selected Operational Brief direction: a quiet back action, prominent ticket number and title, a single four-part operational summary, a wide content column, and a structured information panel. The previous decorative purple and cyan top bars were removed. Borders and shadows are intentionally restrained, with semantic blue, orange, and red used only for operational status.
+
+The final same-viewport side-by-side comparison confirms the content width, vertical rhythm, summary proportions, two-column balance, information panel height, typography hierarchy, empty-comment state, and preserved SIBATIK shell. Exact production content remains unchanged.
+
+### Required surfaces
+
+- Typography: passed — title, ticket number, section headings, labels, and values have clear hierarchy and readable wrapping.
+- Spacing/layout: passed — desktop composition fits the selected reference proportions; no horizontal overflow at 1487 px or 390 px.
+- Colors/borders/shadows: passed — neutral cards and borders use restrained shadows; status and deadline colors remain semantic.
+- Image assets: passed — existing SIBATIK logo and Bali batik header asset are preserved without modification.
+- Copy/content: passed — title, description, category, author, assignee, created date, deadline, status, and priority match the ticket data.
+- Icons: passed — the existing Lucide icon system is used consistently; no placeholder or handcrafted icons were added.
+- Responsiveness: passed — the four-part summary and ticket cards stack cleanly at 390 × 844 with 358 px card widths and no clipping.
+- Accessibility: passed — page hierarchy uses header/main/aside landmarks, the summary has an accessible label, decorative icons are hidden, and the back action remains keyboard accessible.
+
+### Interaction and runtime checks
+
+- The `Kembali` action was clicked in Chrome, navigated to the ticket list, and the ticket route was reopened successfully.
+- All expected ticket values were verified as visible in the production DOM.
+- The production build and TypeScript checks passed.
+- ESLint reported no errors; one pre-existing `next/no-img-element` warning remains for attachment previews.
+- No SIBATIK application console errors were observed. Reported messages originated from an unrelated Chrome extension listener.
+- No open P0, P1, or P2 visual defects remain.
+
+final result: passed
+
 ## Header parity update — Siprodi reference
 
 - Reference route: `https://siprodi.idbbali.ac.id/umum/dashboard.php`
