@@ -42,7 +42,6 @@ export async function GET() {
       closed,
       slaBreached,
       dueSoon,
-      escalated,
       oldestUnhandled,
       avgResolutionTime,
     ] = await Promise.all([
@@ -59,7 +58,6 @@ export async function GET() {
           deadline: { gte: now, lte: dueSoonThreshold },
         },
       }),
-      prisma.ticket.count({ where: { ...baseWhere, status: "ESCALATED" } }),
       prisma.ticket.findFirst({
         where: { ...baseWhere, status: "OPEN", assignedToId: null },
         orderBy: { createdAt: "asc" },
@@ -95,7 +93,6 @@ export async function GET() {
       closed,
       slaBreached,
       dueSoon,
-      escalated,
       oldestUnhandled: oldestUnhandled
         ? {
             id: oldestUnhandled.id,

@@ -193,6 +193,14 @@ export async function GET(req: NextRequest) {
     ).length;
 
     const categoryMap = new Map(categories.map((category) => [category.id, category.name]));
+    const normalizedStatusCounts = new Map<string, number>();
+    statusCounts.forEach((item) => {
+      const status = item.status === "ESCALATED" ? "IN_PROGRESS" : item.status;
+      normalizedStatusCounts.set(
+        status,
+        (normalizedStatusCounts.get(status) || 0) + item._count.id,
+      );
+    });
 
     const staffMap = new Map<
       string,
@@ -203,7 +211,6 @@ export async function GET(req: NextRequest) {
         responseHours: number[];
         resolutionHours: number[];
         ratings: number[];
-        escalationCount: number;
       }
     >();
 
@@ -216,7 +223,6 @@ export async function GET(req: NextRequest) {
         responseHours: [],
         resolutionHours: [],
         ratings: [],
-        escalationCount: 0,
       };
       existing.totalAssigned += 1;
       if (
@@ -226,7 +232,6 @@ export async function GET(req: NextRequest) {
       ) {
         existing.resolvedCount += 1;
       }
-      if (ticket.status === "ESCALATED") existing.escalationCount += 1;
       if (ticket.firstResponseAt) {
         existing.responseHours.push(
           (ticket.firstResponseAt.getTime() - ticket.createdAt.getTime()) /
@@ -328,15 +333,14 @@ export async function GET(req: NextRequest) {
         ).length,
         unassigned: activeSnapshot.filter((ticket) => !ticket.assignedToId).length,
         slaBreached: activeSnapshot.filter((ticket) => ticket.slaBreached).length,
-        escalated: activeSnapshot.filter((ticket) => ticket.status === "ESCALATED").length,
         highPriority: activeSnapshot.filter((ticket) =>
           ["URGENT", "HIGH"].includes(ticket.priority),
         ).length,
       },
       backlogAge,
-      statusCounts: statusCounts.map((item) => ({
-        status: item.status,
-        count: item._count.id,
+      statusCounts: [...normalizedStatusCounts].map(([status, count]) => ({
+        status,
+        count,
       })),
       priorityCounts: priorityCounts.map((item) => ({
         priority: item.priority,
@@ -361,7 +365,6 @@ export async function GET(req: NextRequest) {
                     10,
                 ) / 10
               : null,
-          escalationCount: staff.escalationCount,
         }))
         .sort(
           (a, b) =>

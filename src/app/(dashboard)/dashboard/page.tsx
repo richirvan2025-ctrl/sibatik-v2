@@ -23,7 +23,6 @@ import {
   Settings2,
   ShieldCheck,
   ShieldAlert,
-  Siren,
   Ticket,
   TimerReset,
   TrendingUp,
@@ -38,7 +37,6 @@ interface Stats {
   closed: number;
   slaBreached: number;
   dueSoon: number;
-  escalated: number;
   oldestUnhandled: {
     id: string;
     ticketNumber: string;
@@ -407,27 +405,6 @@ export default function DashboardPage() {
                       ? "Hari ini"
                       : `${stats.oldestUnhandled.ageDays} hari`
                     : "Aman"}
-                </span>
-                <ArrowRight className="h-4 w-4 shrink-0 text-[#8A96AC] transition-transform group-hover:translate-x-0.5" />
-              </Link>
-
-              <Link
-                href="/tickets?status=ESCALATED"
-                className="group flex min-w-0 items-center gap-3 rounded-xl border border-[#F0D8DB] bg-white p-3 shadow-none transition-[transform,box-shadow,border-color,background-color] duration-200 hover:-translate-y-0.5 hover:border-red-300 hover:bg-red-50/45 hover:shadow-[var(--shadow-raised)] active:translate-y-0 focus-visible:outline-none focus-visible:ring-3 focus-visible:ring-red-200 motion-reduce:transform-none motion-reduce:transition-none"
-              >
-                <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-red-50 text-red-600">
-                  <Siren className="h-4.5 w-4.5" />
-                </span>
-                <span className="min-w-0 flex-1">
-                  <span className="block text-sm font-bold text-[#17223D]">Tiket eskalasi</span>
-                  <span className="block truncate text-[11px] text-[#71809A]">
-                    {stats.escalated > 0
-                      ? `${stats.escalated} tiket membutuhkan perhatian khusus`
-                      : "Tidak ada tiket yang dieskalasi"}
-                  </span>
-                </span>
-                <span className={`rounded-full px-2.5 py-1 text-xs font-extrabold ${stats.escalated > 0 ? "bg-red-50 text-red-700" : "bg-emerald-50 text-emerald-700"}`}>
-                  {stats.escalated}
                 </span>
                 <ArrowRight className="h-4 w-4 shrink-0 text-[#8A96AC] transition-transform group-hover:translate-x-0.5" />
               </Link>

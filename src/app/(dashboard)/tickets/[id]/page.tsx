@@ -91,7 +91,7 @@ const statusConfig: Record<string, { bg: string; text: string; dot: string; labe
   IN_PROGRESS: { bg: "bg-amber-50", text: "text-amber-700", dot: "bg-amber-500", label: "In Progress" },
   RESOLVED: { bg: "bg-emerald-50", text: "text-emerald-700", dot: "bg-emerald-500", label: "Resolved" },
   CLOSED: { bg: "bg-slate-100", text: "text-slate-600", dot: "bg-slate-400", label: "Closed" },
-  ESCALATED: { bg: "bg-red-50", text: "text-red-700", dot: "bg-red-500", label: "Escalated" },
+  ESCALATED: { bg: "bg-amber-50", text: "text-amber-700", dot: "bg-amber-500", label: "Dalam Proses" },
 };
 
 const priorityConfig: Record<string, { bg: string; text: string; border: string }> = {
@@ -749,7 +749,6 @@ export default function TicketDetailPage() {
                         {(isAdmin || ticket.createdBy.id === userId || ticket.onBehalfOf?.id === userId) && (
                           <SelectItem value="CLOSED">Closed</SelectItem>
                         )}
-                        <SelectItem value="ESCALATED">Escalated</SelectItem>
                       </SelectContent>
                     </Select>
                   </div>

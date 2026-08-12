@@ -43,7 +43,7 @@ const statusConfig: Record<string, { bg: string; text: string; dot: string; labe
   IN_PROGRESS: { bg: "bg-amber-50", text: "text-amber-700", dot: "bg-amber-500", label: "Dalam Proses" },
   RESOLVED: { bg: "bg-emerald-50", text: "text-emerald-700", dot: "bg-emerald-500", label: "Selesai" },
   CLOSED: { bg: "bg-slate-100", text: "text-slate-600", dot: "bg-slate-400", label: "Ditutup" },
-  ESCALATED: { bg: "bg-red-50", text: "text-red-700", dot: "bg-red-500", label: "Eskalasi" },
+  ESCALATED: { bg: "bg-amber-50", text: "text-amber-700", dot: "bg-amber-500", label: "Dalam Proses" },
   REOPENED: { bg: "bg-cyan-50", text: "text-cyan-700", dot: "bg-cyan-500", label: "Dibuka Kembali" },
 };
 
@@ -60,7 +60,6 @@ const attentionLabels: Record<string, string> = {
   due24: "Deadline kurang dari 24 jam",
   unassigned: "Belum ditugaskan",
   sla: "Pelanggaran SLA aktif",
-  escalated: "Tiket eskalasi",
   high: "Prioritas tinggi dan mendesak",
 };
 
@@ -223,7 +222,6 @@ export default function TicketsPage() {
                   <SelectItem value="COMPLETED">Selesai</SelectItem>
                   <SelectItem value="RESOLVED">Selesai</SelectItem>
                   <SelectItem value="CLOSED">Ditutup</SelectItem>
-                  <SelectItem value="ESCALATED">Eskalasi</SelectItem>
                   <SelectItem value="REOPENED">Dibuka Kembali</SelectItem>
                 </SelectContent>
               </Select>

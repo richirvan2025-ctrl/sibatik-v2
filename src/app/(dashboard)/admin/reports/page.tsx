@@ -29,7 +29,6 @@ import {
   RefreshCw,
   ShieldAlert,
   ShieldCheck,
-  Siren,
   Star,
   Target,
   Ticket,
@@ -47,7 +46,6 @@ interface StaffPerformance {
   medianResponseHours: number | null;
   medianResolutionHours: number | null;
   avgRating: number | null;
-  escalationCount: number;
 }
 
 interface ReportData {
@@ -84,7 +82,6 @@ interface ReportData {
     dueSoon: number;
     unassigned: number;
     slaBreached: number;
-    escalated: number;
     highPriority: number;
   };
   backlogAge: { key: string; label: string; count: number }[];
@@ -106,7 +103,6 @@ const statusConfig: Record<string, { color: string; label: string }> = {
   IN_PROGRESS: { color: "#F59E0B", label: "Dalam Proses" },
   RESOLVED: { color: "#10B981", label: "Selesai" },
   CLOSED: { color: "#64748B", label: "Ditutup" },
-  ESCALATED: { color: "#EF4444", label: "Eskalasi" },
 };
 
 const priorityConfig: Record<
@@ -224,7 +220,6 @@ export default function ReportsPage() {
       ["Deadline <24 jam", data.attention.dueSoon],
       ["Belum ditugaskan", data.attention.unassigned],
       ["Pelanggaran SLA", data.attention.slaBreached],
-      ["Eskalasi", data.attention.escalated],
       ["Prioritas tinggi/mendesak", data.attention.highPriority],
       [],
       [
@@ -234,7 +229,6 @@ export default function ReportsPage() {
         "Median respons (jam)",
         "Median resolusi (jam)",
         "Penilaian",
-        "Eskalasi",
       ],
       ...data.staffPerformance.map((staff) => [
         staff.name,
@@ -243,7 +237,6 @@ export default function ReportsPage() {
         staff.medianResponseHours,
         staff.medianResolutionHours,
         staff.avgRating,
-        staff.escalationCount,
       ]),
     ];
     const content = rows.map((row) => row.map(csvCell).join(",")).join("\r\n");
@@ -513,7 +506,7 @@ export default function ReportsPage() {
             Kondisi tiket aktif saat ini, di luar filter periode laporan.
           </p>
         </div>
-        <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-6">
+        <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5">
           <AttentionCard
             label="Deadline terlewat"
             value={data.attention.overdue}
@@ -545,14 +538,6 @@ export default function ReportsPage() {
             icon={ShieldAlert}
             tone="violet"
             href="/tickets?attention=sla"
-          />
-          <AttentionCard
-            label="Tiket eskalasi"
-            value={data.attention.escalated}
-            helper="Membutuhkan koordinasi"
-            icon={Siren}
-            tone="rose"
-            href="/tickets?attention=escalated"
           />
           <AttentionCard
             label="Prioritas tinggi"
@@ -740,7 +725,7 @@ export default function ReportsPage() {
         <CardHeader className="px-5 pb-3 pt-5">
           <SectionHeading
             title="Detail Performa Staff"
-            subtitle="Produktivitas, kecepatan respons, kualitas, dan eskalasi"
+            subtitle="Produktivitas, kecepatan respons, dan kualitas layanan"
             icon={UsersRound}
             iconClass="bg-violet-50 text-violet-600"
           />
@@ -760,7 +745,7 @@ export default function ReportsPage() {
                 ))}
               </div>
               <div className="hidden overflow-x-auto md:block">
-                <table className="w-full min-w-[800px] text-sm">
+                <table className="w-full min-w-[700px] text-sm">
                   <thead>
                     <tr className="border-b border-[#E2E8F0]">
                       {[
@@ -770,7 +755,6 @@ export default function ReportsPage() {
                         "Median Respons",
                         "Median Resolusi",
                         "Penilaian",
-                        "Eskalasi",
                       ].map((heading, index) => (
                         <th
                           key={heading}
@@ -797,11 +781,6 @@ export default function ReportsPage() {
                               <Star className="h-3.5 w-3.5 fill-amber-400 text-amber-400" /> {staff.avgRating}
                             </span>
                           )}
-                        </td>
-                        <td className="px-3 py-3 text-center">
-                          <Badge variant="outline" className={staff.escalationCount === 0 ? "border-emerald-200 bg-emerald-50 text-emerald-700" : "border-red-200 bg-red-50 text-red-700"}>
-                            {staff.escalationCount}
-                          </Badge>
                         </td>
                       </tr>
                     ))}
@@ -982,7 +961,6 @@ const attentionTones = {
   amber: "border-amber-200 bg-amber-50 text-amber-700",
   sky: "border-sky-200 bg-sky-50 text-sky-700",
   violet: "border-violet-200 bg-violet-50 text-violet-700",
-  rose: "border-rose-200 bg-rose-50 text-rose-700",
   orange: "border-orange-200 bg-orange-50 text-orange-700",
 };
 
@@ -1092,14 +1070,9 @@ function EmptyState({
 function StaffCard({ staff }: { staff: StaffPerformance }) {
   return (
     <div className="rounded-xl border border-[#E2E8F0] bg-[#F8FAFC] p-4 shadow-[var(--shadow-inset)]">
-      <div className="flex items-start justify-between gap-3">
-        <div>
-          <p className="font-semibold text-[#1E293B]">{staff.name}</p>
-          <p className="mt-0.5 text-xs text-[#64748B]">{staff.totalAssigned} ditugaskan · {staff.resolvedCount} selesai</p>
-        </div>
-        <Badge variant="outline" className={staff.escalationCount === 0 ? "border-emerald-200 bg-emerald-50 text-emerald-700" : "border-red-200 bg-red-50 text-red-700"}>
-          {staff.escalationCount} eskalasi
-        </Badge>
+      <div>
+        <p className="font-semibold text-[#1E293B]">{staff.name}</p>
+        <p className="mt-0.5 text-xs text-[#64748B]">{staff.totalAssigned} ditugaskan · {staff.resolvedCount} selesai</p>
       </div>
       <div className="mt-4 grid grid-cols-2 gap-3 text-xs">
         <div>
