@@ -93,14 +93,20 @@ export function NotificationBell({ tone = "light" }: { tone?: "light" | "dark" }
         onClick={() => setOpen((o) => !o)}
         className={`relative flex h-10 w-10 items-center justify-center rounded-xl border shadow-[0_1px_2px_rgba(16,24,40,0.05)] transition-all duration-200 focus-visible:outline-none focus-visible:ring-3 ${
           tone === "dark"
-            ? "border-white/20 bg-white/10 text-white hover:bg-white/20 focus-visible:ring-white/25"
+            ? "border-[#8FC5D1]/45 bg-[#033B59]/70 text-white hover:border-[#B6D7DE]/65 hover:bg-[#0A5875] focus-visible:ring-white/25"
             : "border-[#DCE4EF] bg-white text-[#637089] hover:border-[#C9BCF8] hover:bg-[#F5F2FF] hover:text-[#7047EB] focus-visible:ring-[#7047EB]/20"
         }`}
         aria-label="Buka notifikasi"
       >
         <Bell className="h-4 w-4" />
         {unreadCount > 0 && (
-          <span className="absolute -top-1 -right-1 flex h-4 w-4 items-center justify-center rounded-full bg-red-500 text-[9px] font-bold text-white leading-none shadow-sm">
+          <span
+            className={`absolute -right-1 -top-1 flex h-4 min-w-4 items-center justify-center rounded-full px-1 text-[9px] font-bold leading-none text-white shadow-sm ${
+              tone === "dark"
+                ? "bg-[#7047EB] ring-2 ring-[#044C71]"
+                : "bg-red-500"
+            }`}
+          >
             {unreadCount > 9 ? "9+" : unreadCount}
           </span>
         )}

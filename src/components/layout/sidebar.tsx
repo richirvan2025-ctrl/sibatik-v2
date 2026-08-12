@@ -75,12 +75,44 @@ type NavItem = {
   beta?: boolean;
 };
 
+const rolePresentation = {
+  ADMIN: { label: "Administrator", icon: Shield, tone: "bg-[#7047EB] text-white" },
+  EXECUTIVE: { label: "Eksekutif", icon: Crown, tone: "bg-[#7047EB] text-white" },
+  SUPERVISOR: { label: "Supervisor", icon: Building2, tone: "bg-[#7047EB] text-white" },
+  AGENT: { label: "Teknisi", icon: Shield, tone: "bg-[#F47D24] text-white" },
+  USER: { label: "Pengguna", icon: Users, tone: "bg-white/12 text-[#D6E9ED]" },
+  MAHASISWA: { label: "Mahasiswa", icon: Users, tone: "bg-white/12 text-[#D6E9ED]" },
+};
+
+function toDisplayName(name?: string | null) {
+  if (!name?.trim()) return "Pengguna";
+
+  return name
+    .trim()
+    .split(/\s+/)
+    .slice(0, 2)
+    .map(
+      (word) =>
+        word.charAt(0).toLocaleUpperCase("id-ID") +
+        word.slice(1).toLocaleLowerCase("id-ID")
+    )
+    .join(" ");
+}
+
 export function Sidebar({ onClose }: { onClose?: () => void }) {
   const pathname = usePathname();
   const searchParams = useSearchParams();
   const { data: session } = useSession();
   const role = (session?.user?.role as keyof typeof navigation) || "USER";
   const items = (navigation[role] || navigation.USER) as NavItem[];
+  const displayName = toDisplayName(session?.user?.name);
+  const initials = displayName
+    .split(" ")
+    .map((word) => word.charAt(0))
+    .join("")
+    .slice(0, 2);
+  const currentRole = rolePresentation[role] || rolePresentation.USER;
+  const RoleIcon = currentRole.icon;
 
   return (
     <div className="flex h-full flex-col border-r border-[var(--sidebar-border)] bg-[var(--sidebar)] text-white shadow-[10px_0_30px_rgba(4,76,113,0.10)]">
@@ -163,34 +195,34 @@ export function Sidebar({ onClose }: { onClose?: () => void }) {
         })}
       </nav>
 
-      <div className="border-t border-white/10 p-4">
-        <div className="mb-2 rounded-[14px] border border-white/10 bg-white/[0.055] p-3.5">
-          <p className="truncate text-[13px] font-bold text-white">
-            {session?.user?.name}
-          </p>
-          <p className="mt-0.5 truncate text-[11px] text-[#B6D7DE]">
-            {session?.user?.email}
-          </p>
-          <span className="mt-2 inline-flex items-center rounded-full border border-[#8E72F1]/30 bg-[#7047EB]/20 px-2.5 py-0.5 text-[10px] font-bold uppercase tracking-wide text-[#D8CEFF]">
-            {role === "EXECUTIVE" ? (
-              <span className="flex items-center gap-1 rounded-full bg-purple-50 px-2.5 py-0.5 text-purple-700">
-                <Crown className="h-3 w-3" />
-                Eksekutif
-              </span>
-            ) : role === "SUPERVISOR" ? (
-              <span className="flex items-center gap-1 rounded-full bg-purple-50 px-2.5 py-0.5 text-[10px] font-bold uppercase tracking-wide text-purple-700">
-                <Building2 className="h-3 w-3" />
-                Supervisor
-              </span>
-            ) : role === "AGENT" ? (
-              <span className="flex items-center gap-1 rounded-full bg-orange-50 px-2.5 py-0.5 text-[10px] font-bold uppercase tracking-wide text-orange-700">
-                <Shield className="h-3 w-3" />
-                Agent
-              </span>
-            ) : (
-              <span>{role}</span>
-            )}
-          </span>
+      <div className="border-t border-white/12 px-4 py-3.5">
+        <div className="flex items-start gap-3">
+          <div
+            aria-hidden="true"
+            className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full border border-[#8FC5D1]/45 bg-[#0A4A69] text-[12px] font-extrabold tracking-[0.04em] text-white shadow-[inset_0_0_0_1px_rgba(255,255,255,0.04)]"
+          >
+            {initials}
+          </div>
+          <div className="min-w-0 flex-1 pt-0.5">
+            <p
+              className="truncate text-[13px] font-bold leading-4 text-white"
+              title={session?.user?.name || undefined}
+            >
+              {displayName}
+            </p>
+            <p className="mt-1 truncate text-[10.5px] leading-4 text-[#B6D7DE]">
+              {session?.user?.email}
+            </p>
+            <span
+              className={cn(
+                "mt-2 inline-flex items-center gap-1.5 rounded-lg px-2 py-1 text-[10px] font-bold leading-none shadow-[0_3px_10px_rgba(0,0,0,0.12)]",
+                currentRole.tone
+              )}
+            >
+              <RoleIcon className="h-3 w-3" strokeWidth={2} />
+              {currentRole.label}
+            </span>
+          </div>
         </div>
       </div>
     </div>
