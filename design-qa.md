@@ -1,56 +1,72 @@
-# SIBATIK Executive Reports — Design QA
+# SIBATIK Depth UI — Design QA
 
 ## Evidence
 
-- Source visual truth: `C:\Users\Lenovo\Documents\Codex\2026-08-11\ssh\outputs\reports-audit\01-overview.png`
-- Implementation overview: `C:\Users\Lenovo\Documents\Codex\2026-08-11\ssh\work\reports-implementation\qa\desktop-final.png`
-- Implementation details: `C:\Users\Lenovo\Documents\Codex\2026-08-11\ssh\work\reports-implementation\qa\desktop-details-final.png`
-- Mobile overview: `C:\Users\Lenovo\Documents\Codex\2026-08-11\ssh\work\reports-implementation\qa\mobile-top.png`
-- Mobile Staff cards: `C:\Users\Lenovo\Documents\Codex\2026-08-11\ssh\work\reports-implementation\qa\mobile-staff.png`
-- Side-by-side comparison: `C:\Users\Lenovo\Documents\Codex\2026-08-11\ssh\work\reports-implementation\qa\comparison.png`
+- Source visual truth:
+  - `C:\Users\Lenovo\Documents\Codex\2026-08-11\ssh\outputs\depth-audit\01-dashboard.png`
+  - `C:\Users\Lenovo\Documents\Codex\2026-08-11\ssh\outputs\depth-audit\02-ticket-form.png`
+  - `C:\Users\Lenovo\Documents\Codex\2026-08-11\ssh\outputs\depth-audit\03-ticket-detail.png`
+  - `C:\Users\Lenovo\Documents\Codex\2026-08-11\ssh\outputs\depth-audit\04-reports.png`
+- Browser-rendered production implementation:
+  - `C:\Users\Lenovo\Documents\Codex\2026-08-11\ssh\work\depth-implementation\qa\desktop-dashboard.png`
+  - `C:\Users\Lenovo\Documents\Codex\2026-08-11\ssh\work\depth-implementation\qa\desktop-form.png`
+  - `C:\Users\Lenovo\Documents\Codex\2026-08-11\ssh\work\depth-implementation\qa\desktop-detail.png`
+  - `C:\Users\Lenovo\Documents\Codex\2026-08-11\ssh\work\depth-implementation\qa\desktop-reports.png`
+  - `C:\Users\Lenovo\Documents\Codex\2026-08-11\ssh\work\depth-implementation\qa\mobile-dashboard.png`
+  - `C:\Users\Lenovo\Documents\Codex\2026-08-11\ssh\work\depth-implementation\qa\mobile-form.png`
+  - `C:\Users\Lenovo\Documents\Codex\2026-08-11\ssh\work\depth-implementation\qa\mobile-detail.png`
+  - `C:\Users\Lenovo\Documents\Codex\2026-08-11\ssh\work\depth-implementation\qa\mobile-reports.png`
+- Side-by-side comparisons:
+  - `C:\Users\Lenovo\Documents\Codex\2026-08-11\ssh\work\depth-implementation\qa\compare-dashboard.png`
+  - `C:\Users\Lenovo\Documents\Codex\2026-08-11\ssh\work\depth-implementation\qa\compare-form.png`
+  - `C:\Users\Lenovo\Documents\Codex\2026-08-11\ssh\work\depth-implementation\qa\compare-detail.png`
+  - `C:\Users\Lenovo\Documents\Codex\2026-08-11\ssh\work\depth-implementation\qa\compare-reports.png`
 - Desktop source and implementation: 1440 × 1024 pixels at 1440 × 1024 CSS px, DPR 1.
 - Mobile implementation: 390 × 844 pixels at 390 × 844 CSS px, DPR 1.
-- State: authenticated Executive user, production data, default 30-day reporting period.
+- Comparison canvases: 2880 × 1068 pixels; both sides remain native 1440 × 1024 captures with a 44 px label row and no density resampling.
+- State: authenticated Executive user, production data, light theme. Dynamic ticket comments and operational values changed between the audit and implementation captures; these content differences were excluded from visual-fidelity findings.
 
 ## Full-view comparison evidence
 
-The source and implementation are combined in `comparison.png` at matching 1440 × 1024 viewports. The production implementation preserves the SIBATIK header, sidebar, typography family, light operational canvas, card radius, border treatment, icon family, and restrained semantic palette. The intentional product additions are the period/action toolbar, six KPI cards, and operational-attention section. These additions retain the source page's compact information density and alignment system while providing real controls and drill-down links.
+All four source captures and production captures were combined side by side at the same viewport. The implementation preserves the existing SIBATIK shell, proportions, Bali pattern, Plus Jakarta Sans typography, radii, spacing, semantic palette, and content density. The intended differences are limited to elevation hierarchy: stronger primary summary surfaces, inset controls and plot areas, raised interactive states, and lighter mobile shadows.
 
 ## Focused comparison evidence
 
-Focused evidence was required because the full view cannot clearly show detailed labels and responsive behavior:
-
-- `desktop-details-final.png` confirms the weekly 30-day trend, statistically safe Top Staff empty state, localized Staff performance table, null-state wording, and category breakdown.
-- `mobile-top.png` confirms the toolbar, summary hierarchy, touch targets, and single-column cards at 390 px.
-- `mobile-staff.png` confirms the desktop table is replaced by a readable Staff card and that categories remain within the viewport.
+Separate focused crops were not required. The change is an elevation-system pass rather than an icon, illustration, typography, or fine-asset fidelity change; the native-resolution full-screen pairs clearly expose every affected region. Interaction-specific evidence is recorded below, including computed focus, inset, raised, overlay, sticky, and responsive states.
 
 ## Findings
 
 - No remaining P0, P1, or P2 findings.
-- Typography: passed. Segoe UI Variable hierarchy, weights, line heights, and small-text contrast are consistent with the existing SIBATIK shell; long Staff names have sufficient width on desktop and a stacked layout on mobile.
-- Spacing and layout: passed. Desktop and mobile have no page-level horizontal overflow. The 30-day trend is grouped into five weekly buckets so it no longer exposes an unnecessary horizontal scrollbar.
-- Colors and tokens: passed. Existing navy, purple, cyan, emerald, amber, and red semantic tokens are preserved without introducing a competing visual language.
-- Image and asset fidelity: passed. Existing SIBATIK logo and Balinese header pattern remain unchanged; all new icons use the existing Lucide icon family, with no placeholder or handcrafted asset substitution.
-- Copy and content: passed. Status and priority labels are Indonesian; all visible “Teknisi” terminology was changed to “Staff”; missing measurements use “Belum ada data” instead of a misleading zero.
-- Accessibility: passed. Controls have accessible labels, charts expose semantic summaries and bucket labels, progress indicators expose values, cards are keyboard-focusable links, and small text uses darker contrast tokens.
+- Typography: passed. Plus Jakarta Sans, weights, line heights, wrapping, hierarchy, and compact labels remain unchanged. The font is now self-hosted from the application's existing cached font file to remove a failing Google build dependency without changing visual output.
+- Spacing and layout: passed. No component proportions, page grids, or section rhythms regressed. Dashboard panels, the form card, detail grid, and report sections retain their original footprint.
+- Colors and tokens: passed. Navy, purple, cyan, emerald, amber, and red remain semantic accents. The new inset, surface, raised, and overlay tokens use restrained neutral/navy shadows rather than colored glow at rest.
+- Image and asset fidelity: passed. The existing SIBATIK logo and Bali header pattern are unchanged; no new decorative imagery, custom SVG, placeholder, or CSS illustration was introduced.
+- Copy and content: passed. Existing Indonesian UI copy is unchanged. The report retains “Staff”; no “Teknisi” terminology was reintroduced.
+- Accessibility: passed. Input focus has a visible purple border and 3 px translucent ring, keyboard focus classes remain present, raised motion is capped at 2 px, reduced-motion output is included in the compiled stylesheet, and mobile shadows are reduced by approximately 25%.
 
 ## Interaction verification
 
-- 7-day period: passed; report dates, summary badge, drill-down query, and daily trend update.
-- 90-day period: passed; trend changes to weekly aggregation.
-- Custom range: custom mode, labeled start/end inputs, min/max constraints, and period-aware API implementation verified; the Chrome automation surface could not reliably type into the native date control, so that exact native picker gesture remains a manual-browser test gap rather than a visual or implementation defect.
-- Operational drill-down: passed; “Belum ditugaskan” opens `/tickets?attention=unassigned`, shows the active insight filter, and returns the matching ticket.
-- CSV: passed; the action downloads without navigation or application error.
-- PDF/print: handler and print-specific stylesheet verified; sidebar, application header, and control toolbar are excluded from print output.
-- Refresh: control is enabled, bound to a no-store fetch, and displays its loading state.
-- Console: no SIBATIK application errors observed. Logged errors were emitted by the installed Chrome extension, not the production origin.
-- Production service: Next.js build passed and PM2 `helpdesk` is online.
+- Form fields: passed. Idle inputs render the inset token; the title field focus state rendered `rgb(112, 71, 235)` and the intended outer focus shadow.
+- Form footer: passed. The action footer reports `position: sticky`, `bottom: 0`, and remained visible after the mobile form scroll container moved from 0 to 602 px. Evidence: `mobile-form-sticky-footer.png`.
+- Upload zone: passed by rendered state and compiled interactive classes. The inactive zone is inset and the hover/drag classes compile to raised elevation.
+- Detail ticket: passed. The status strip renders the raised token; description, activity, and information panels render the surface token; the desktop information rail reports `position: sticky` and `top: 16px`.
+- Reports: passed. The period/export toolbar renders the raised token, plot background renders the inset token, KPI/insight cards compile their interactive transition, and the open period dropdown renders the overlay shadow at z-index 50. Evidence: `desktop-reports-dropdown.png`.
+- Hover/active: compiled hover lift, raised shadow, active reset, and `motion-reduce` rules were verified in production CSS. The Chrome control surface did not expose a pointer-hover command for an authenticated external tab, so the exact pointer gesture remains a manual-browser test gap; no visual or implementation defect was observed.
+- Responsive behavior: passed. At 390 × 844, all four pages report root `scrollWidth === clientWidth`; there is no page-level horizontal overflow or clipping. Mobile surface and raised shadows resolve to the reduced-opacity token values.
+- Loading/transition state: passed. Route captures were delayed until the SIBATIK opening transition was no longer visible; final screenshots represent stable page state.
+- Dropdown: passed. Period options open above the content with the overlay token and remain aligned to the trigger.
+- Production runtime: passed. ESLint completed with zero errors, TypeScript and the Next.js production build passed, all four routes returned HTTP 200, and PM2 `helpdesk` remained online after Chrome QA. The process error log was not modified during or after this deployment.
+- Browser diagnostics: no SIBATIK error overlay, failed route, or post-deployment server error was observed. The connected Chrome surface did not expose a console-message accessor; route stability, rendered DOM, HTTP checks, and unchanged PM2 error-log timestamp were used as the available diagnostics.
 
 ## Comparison history
 
-1. Initial production comparison found a P2 clarity issue: the period trigger displayed raw `30`, and the rendered end date drifted by one day due to UTC formatting. Fixed by rendering the full preset label and formatting ISO calendar dates without timezone conversion. Post-fix evidence: `desktop-final.png`.
-2. Initial detail comparison found a P2 density issue: 30 daily trend columns created horizontal scrolling on desktop. Fixed by using weekly buckets for periods longer than 14 days. Post-fix evidence: `desktop-details-final.png` shows five readable weekly buckets with no trend overflow.
-3. Mobile verification found no P0/P1/P2 issue: page width remains 390 px with no horizontal overflow, and Staff performance renders as cards rather than the desktop table.
+1. First post-build comparison found no actionable P0/P1/P2 difference. The new hierarchy was visible without changing layout density, typography, color balance, imagery, or copy, so no visual rework iteration was required.
+2. Mobile verification found no P0/P1/P2 issue. The 390 px layouts remained within the viewport, the form footer stayed visible after scrolling, and card shadows resolved to the lighter mobile values.
+
+## Residual test gaps
+
+- Exact mouse-pointer hover is a manual-browser gap because the connected Chrome control surface exposes click and keyboard actions but not pointer hover.
+- Native file drag-over was not performed to avoid opening an OS file picker during production QA; the rendered idle state and compiled drag/hover elevation styles were verified.
 
 ## Final result
 
