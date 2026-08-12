@@ -61,8 +61,8 @@ const navigation = {
   ],
   EXECUTIVE: [
     { name: "Dashboard", href: "/dashboard", icon: Crown },
-    { name: "Monitor Tiket", href: "/tickets", icon: Ticket },
     { name: "Tiket Saya", href: "/tickets?scope=mine", icon: Ticket },
+    { name: "Monitor Tiket", href: "/tickets", icon: Ticket },
     { name: "Buat Tiket", href: "/tickets/new", icon: PlusCircle },
     { name: "Laporan", href: "/executive/reports", icon: BarChart3 },
   ],
