@@ -182,6 +182,32 @@ export async function PATCH(
       );
     }
 
+    // Assignee harus merupakan Staff/Supervisor aktif dari divisi tujuan tiket.
+    // Validasi backend mencegah assignment lintas divisi melalui request langsung.
+    if (validated.assignedToId) {
+      const assignee = await prisma.user.findUnique({
+        where: { id: validated.assignedToId },
+        select: { role: true, department: true, isActive: true },
+      });
+      const ticketDepartment = ticket.category.department?.trim().toLocaleLowerCase("id-ID");
+      const assigneeDepartment = assignee?.department?.trim().toLocaleLowerCase("id-ID");
+      const hasEligibleRole =
+        assignee?.role === "AGENT" || assignee?.role === "SUPERVISOR";
+
+      if (
+        !assignee ||
+        !assignee.isActive ||
+        !hasEligibleRole ||
+        !ticketDepartment ||
+        assigneeDepartment !== ticketDepartment
+      ) {
+        return NextResponse.json(
+          { error: "Assignee harus Staff atau Supervisor aktif dari divisi tujuan tiket" },
+          { status: 400 },
+        );
+      }
+    }
+
     const updateData: Prisma.TicketUncheckedUpdateInput = { ...validated };
 
     // Track first response

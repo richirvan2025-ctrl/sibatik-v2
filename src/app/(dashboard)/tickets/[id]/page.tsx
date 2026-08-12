@@ -761,8 +761,8 @@ export default function TicketDetailPage() {
                     </Label>
                     <AssigneeSelect
                       currentId={ticket.assignedTo?.id}
+                      currentName={ticket.assignedTo?.name}
                       onAssign={handleAssign}
-                      isSupervisor={isSupervisor}
                       categoryDept={ticket.category.department}
                     />
                   </div>
@@ -802,39 +802,40 @@ function InfoRow({
 
 function AssigneeSelect({
   currentId,
+  currentName,
   onAssign,
-  isSupervisor = false,
   categoryDept = null,
 }: {
   currentId?: string;
+  currentName?: string;
   onAssign: (id: string) => void;
-  isSupervisor?: boolean;
   categoryDept?: string | null;
 }) {
   const [assignees, setAssignees] = useState<
     { id: string; name: string; role: string; department: string | null }[]
   >([]);
 
-  const isItCategory = categoryDept === "Sistem Informasi & IT Support";
-
   useEffect(() => {
-    Promise.all([
-      fetch("/api/users?role=AGENT").then((r) => r.json()),
-      fetch("/api/users?role=SUPERVISOR").then((r) => r.json()),
-    ]).then(([agents, supervisors]) => {
-      const all = [...(Array.isArray(agents) ? agents : []), ...(Array.isArray(supervisors) ? supervisors : [])];
-      setAssignees(all);
-    });
-  }, []);
+    if (!categoryDept) return;
 
-  // SUPERVISOR: hanya lihat divisinya sendiri, kecuali kategori IT Support boleh lihat semua
-  const filteredAssignees = isSupervisor && !isItCategory
-    ? assignees.filter((a) => a.department === categoryDept)
-    : assignees;
+    const controller = new AbortController();
+    fetch(`/api/users/assignees?departments=${encodeURIComponent(categoryDept)}`, {
+      signal: controller.signal,
+    })
+      .then((response) => (response.ok ? response.json() : []))
+      .then((users) => setAssignees(Array.isArray(users) ? users : []))
+      .catch((error) => {
+        if (error instanceof Error && error.name !== "AbortError") {
+          console.error("Failed to fetch assignees:", error);
+        }
+      });
 
-  const agents = filteredAssignees.filter((a) => a.role === "AGENT");
-  const supervisors = filteredAssignees.filter((a) => a.role === "SUPERVISOR");
-  const selectedName = assignees.find((a) => a.id === currentId)?.name;
+    return () => controller.abort();
+  }, [categoryDept]);
+
+  const agents = assignees.filter((a) => a.role === "AGENT");
+  const supervisors = assignees.filter((a) => a.role === "SUPERVISOR");
+  const selectedName = assignees.find((a) => a.id === currentId)?.name || currentName;
 
   return (
     <Select
@@ -851,7 +852,7 @@ function AssigneeSelect({
         {agents.length > 0 && (
           <>
             <div className="px-2 py-1.5 text-[10px] font-bold uppercase tracking-wider text-[#94A3B8]">
-              Agent
+              Staff
             </div>
             {agents.map((t) => (
               <SelectItem key={t.id} value={t.id}>
