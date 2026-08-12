@@ -124,7 +124,7 @@ export function Sidebar({ onClose }: { onClose?: () => void }) {
 
   return (
     <div className="flex h-full flex-col border-r border-[var(--sidebar-border)] bg-[var(--sidebar)] text-white shadow-[10px_0_30px_rgba(4,76,113,0.10)]">
-      <div className="flex h-[calc(4rem+env(safe-area-inset-top))] items-center border-b border-white/10 px-4 pt-[env(safe-area-inset-top)] md:h-14 md:pt-0">
+      <div className="relative z-10 flex h-[calc(50px+env(safe-area-inset-top))] items-center border-b border-white/10 px-4 pt-[env(safe-area-inset-top)] shadow-[0_5px_17px_rgba(0,25,43,0.30)] md:h-[50px] md:pt-0">
         <Image
           src="/sibatik-logo-white.png"
           alt="SIBATIK"
