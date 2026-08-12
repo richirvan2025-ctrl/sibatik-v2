@@ -350,7 +350,7 @@ export default function TicketDetailPage() {
         </section>
       </header>
 
-      <div className="mt-6 grid items-start gap-4 lg:grid-cols-[minmax(0,1fr)_455px]">
+      <div className="mt-6 grid items-start gap-4 lg:grid-cols-[minmax(0,1fr)_360px]">
         {/* Main Content */}
         <main className="min-w-0 space-y-4">
           {/* Description */}
