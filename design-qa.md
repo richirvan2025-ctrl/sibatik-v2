@@ -104,3 +104,37 @@ Measured Siprodi header height is 50px with a 17px shadow. SIBATIK now uses the 
 - Open P0/P1/P2 defects: none.
 
 final result: passed
+
+## Ticket detail refinement — Slim information panel
+
+- Route: `https://sibatik.idbbali.ac.id/tickets/cmsoft6ag0001jphojcoiyvnn`
+- Source visual truth: selected Operational Brief design plus the user-requested narrower information-panel override.
+- Previous production baseline: `C:/Users/Lenovo/Documents/Codex/2026-08-11/ssh/work/ticket-detail-redesign/qa/prod-final-desktop.png`
+- Implementation screenshot: `C:/Users/Lenovo/Documents/Codex/2026-08-11/ssh/work/ticket-detail-redesign/qa/prod-slim-info-desktop.png`
+- Full-view comparison: `C:/Users/Lenovo/Documents/Codex/2026-08-11/ssh/work/ticket-detail-redesign/qa/before-vs-slim-info.png`
+- Mobile screenshot: `C:/Users/Lenovo/Documents/Codex/2026-08-11/ssh/work/ticket-detail-redesign/qa/prod-slim-info-mobile.png`
+- Desktop source and implementation: 1487 × 1058 px at 1487 × 1058 CSS px, device pixel ratio 1.
+- Mobile viewport: 390 × 844 CSS px, device pixel ratio 1.
+- State: authenticated executive user; ticket TKT-2026-00001; production build.
+
+### Findings
+
+No actionable P0, P1, or P2 issues remain. The information panel is reduced from 455 px to 360 px, while the description and activity cards expand from 705 px to 800 px. The resulting hierarchy gives substantially more room to the ticket narrative and activity stream while every information value remains legible.
+
+- Fonts and typography: passed — no type scale or hierarchy changed; narrower information values wrap cleanly.
+- Spacing and layout rhythm: passed — the 16 px column gap is preserved, the main work area is wider, and panel alignment remains exact.
+- Colors and visual tokens: passed — no color, border, radius, or shadow regressions.
+- Image quality and asset fidelity: passed — existing SIBATIK logo and Bali batik header asset are unchanged.
+- Copy and content: passed — all ticket values remain present and readable.
+- Responsiveness: passed — mobile retains the existing stacked layout with no horizontal overflow.
+- Runtime: passed — expected ticket data is visible and no SIBATIK application console errors were observed.
+
+Focused comparison was not needed because the requested change affects only the two desktop grid tracks; the complete before/after view shows both widths and all wrapped text clearly.
+
+### Comparison history
+
+1. Baseline used a 455 px information panel and a 705 px primary column.
+2. The information track was changed to 360 px, producing an 800 px primary column at the same viewport.
+3. Post-fix Chrome evidence confirms correct alignment, readable wrapping, unchanged content, and no desktop or mobile overflow.
+
+final result: passed
