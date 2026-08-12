@@ -243,7 +243,7 @@ export async function GET(req: NextRequest) {
       staffMap.set(ticket.assignedToId, existing);
     });
 
-    const useWeeklyBuckets = days > 45;
+    const useWeeklyBuckets = days > 14;
     const bucketSize = useWeeklyBuckets ? 7 : 1;
     const bucketCount = Math.ceil(days / bucketSize);
     const trends = Array.from({ length: bucketCount }, (_, index) => {
