@@ -150,6 +150,12 @@ export default function DashboardPage() {
   const visibleQuickActions = isExecutive
     ? [
         {
+          label: "Buat tiket baru",
+          description: "Ajukan request atau laporkan masalah baru",
+          href: "/tickets/new",
+          icon: Plus,
+        },
+        {
           label: "Monitor tiket",
           description: "Pantau seluruh tiket dan progres penanganan",
           href: "/tickets",

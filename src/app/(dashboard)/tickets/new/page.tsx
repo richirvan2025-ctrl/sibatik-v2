@@ -348,7 +348,7 @@ export default function NewTicketPage() {
             Buat Tiket Baru
           </h1>
           <p className="mt-1 text-sm leading-6 text-[#71809A]">
-            Berikan detail yang jelas agar tim kami dapat membantu Anda lebih cepat.
+            Berikan detail yang jelas agar divisi terkait dapat membantu Anda lebih cepat.
           </p>
         </div>
       </header>
@@ -405,7 +405,7 @@ export default function NewTicketPage() {
               </Label>
               <Input
                 aria-label="Judul tiket"
-                placeholder="Ringkasan masalah"
+                placeholder="Ringkasan request/masalah"
                 value={title}
                 onChange={(e) => setTitle(e.target.value)}
                 className={fieldClassName}
@@ -711,7 +711,7 @@ export default function NewTicketPage() {
               </Label>
               <Textarea
                 aria-label="Deskripsi tiket"
-                placeholder="Jelaskan masalah secara detail..."
+                placeholder="Jelaskan request/masalah secara detail.."
                 value={description}
                 onChange={(e) => setDescription(e.target.value)}
                 rows={6}
