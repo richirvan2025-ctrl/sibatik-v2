@@ -40,6 +40,7 @@ import {
   CircleDot,
   Flag,
   Info,
+  Hash,
 } from "lucide-react";
 
 interface Comment {
@@ -282,9 +283,9 @@ export default function TicketDetailPage() {
     : false;
 
   return (
-    <div className="mx-auto w-full max-w-[1320px] space-y-4 pb-6">
+    <div className="mx-auto w-full max-w-[1190px] space-y-4 pb-6">
       {/* Operational brief */}
-      <header className="space-y-3">
+      <header>
         <Button
           variant="ghost"
           className="-ml-2 h-8 rounded-lg px-2 text-sm font-medium text-[#64748B] hover:bg-[#F1F5F9] hover:text-[#1E293B]"
@@ -294,36 +295,36 @@ export default function TicketDetailPage() {
           Kembali
         </Button>
 
-        <div className="flex items-center gap-3">
+        <div className="mt-5 flex items-center gap-3">
           <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg border border-[#E2E8F0] bg-[#F8FAFC] text-[#64748B] shadow-sm">
-            <Tag className="h-4 w-4" aria-hidden="true" />
+            <Hash className="h-4 w-4" aria-hidden="true" />
           </span>
           <span className="font-mono text-base font-semibold tracking-tight text-[#64748B] sm:text-lg">
             {ticket.ticketNumber}
           </span>
         </div>
 
-        <h1 className="max-w-5xl text-2xl font-bold leading-tight tracking-[-0.025em] text-[#17233A] sm:text-[28px]">
+        <h1 className="mt-4 max-w-5xl text-2xl font-bold leading-tight tracking-[-0.025em] text-[#17233A] sm:text-[30px]">
           {ticket.title}
         </h1>
 
         <section
           aria-label="Ringkasan operasional tiket"
-          className="grid overflow-hidden rounded-xl border border-[#DCE3EC] bg-white shadow-[0_1px_2px_rgba(15,23,42,0.04)] sm:grid-cols-2 xl:grid-cols-4"
+          className="mt-6 grid overflow-hidden rounded-xl border border-[#DCE3EC] bg-white shadow-[0_1px_2px_rgba(15,23,42,0.04)] sm:grid-cols-2 xl:grid-cols-4"
         >
-          <div className="flex min-h-16 items-center gap-3 px-5 py-3">
+          <div className="flex min-h-[78px] items-center gap-3 px-5 py-3">
             <CircleDot className={`h-5 w-5 shrink-0 ${status.text}`} aria-hidden="true" />
             <p className={`truncate text-sm font-semibold ${status.text}`}>
               {status.label}
             </p>
           </div>
-          <div className="flex min-h-16 items-center gap-3 border-t border-[#E2E8F0] px-5 py-3 sm:border-l sm:border-t-0">
+          <div className="flex min-h-[78px] items-center gap-3 border-t border-[#E2E8F0] px-5 py-3 sm:border-l sm:border-t-0">
             <Flag className={`h-5 w-5 shrink-0 ${priority.text}`} aria-hidden="true" />
             <p className={`truncate text-sm font-semibold ${priority.text}`}>
               {ticket.priority}
             </p>
           </div>
-          <div className="flex min-h-16 items-center gap-3 border-t border-[#E2E8F0] px-5 py-3 xl:border-l xl:border-t-0">
+          <div className="flex min-h-[78px] items-center gap-3 border-t border-[#E2E8F0] px-5 py-3 xl:border-l xl:border-t-0">
             <Clock
               className={`h-5 w-5 shrink-0 ${
                 deadlineIsUrgent ? "text-red-500" : "text-[#64748B]"
@@ -340,7 +341,7 @@ export default function TicketDetailPage() {
                 : "Tanpa deadline"}
             </p>
           </div>
-          <div className="flex min-h-16 items-center gap-3 border-t border-[#E2E8F0] px-5 py-3 sm:border-l xl:border-t-0">
+          <div className="flex min-h-[78px] items-center gap-3 border-t border-[#E2E8F0] px-5 py-3 sm:border-l xl:border-t-0">
             <User className="h-5 w-5 shrink-0 text-[#64748B]" aria-hidden="true" />
             <p className="truncate text-sm font-semibold text-[#475569]">
               {ticket.assignedTo?.name || "Belum di-assign"}
@@ -349,11 +350,11 @@ export default function TicketDetailPage() {
         </section>
       </header>
 
-      <div className="grid items-start gap-4 lg:grid-cols-[minmax(0,1fr)_360px]">
+      <div className="grid items-start gap-4 lg:grid-cols-[minmax(0,1fr)_440px]">
         {/* Main Content */}
         <main className="min-w-0 space-y-4">
           {/* Description */}
-          <Card className="overflow-hidden rounded-xl border border-[#DCE3EC] bg-white shadow-[0_1px_2px_rgba(15,23,42,0.04)]">
+          <Card className="gap-0 overflow-hidden rounded-xl border border-[#DCE3EC] bg-white py-0 shadow-[0_1px_2px_rgba(15,23,42,0.04)]">
             <CardHeader className="border-b border-[#E2E8F0] px-5 py-4">
               <CardTitle className="flex items-center gap-2.5 text-base font-semibold text-[#17233A]">
                 <FileText className="h-[18px] w-[18px] text-[#334155]" aria-hidden="true" />
@@ -433,7 +434,7 @@ export default function TicketDetailPage() {
           </Card>
 
           {/* Comments */}
-          <Card className="overflow-hidden rounded-xl border border-[#DCE3EC] bg-white shadow-[0_1px_2px_rgba(15,23,42,0.04)]">
+          <Card className="gap-0 overflow-hidden rounded-xl border border-[#DCE3EC] bg-white py-0 shadow-[0_1px_2px_rgba(15,23,42,0.04)]">
             <CardHeader className="border-b border-[#E2E8F0] px-5 py-4">
               <CardTitle className="flex items-center justify-between gap-3 text-base font-semibold text-[#17233A]">
                 <span className="flex min-w-0 items-center gap-2.5">
@@ -501,7 +502,7 @@ export default function TicketDetailPage() {
               ))}
 
               {ticket.comments.length === 0 && (
-                <div className="flex min-h-[190px] flex-col items-center justify-center text-center">
+                <div className="flex min-h-[246px] flex-col items-center justify-center text-center">
                   <span className="mb-3 flex h-14 w-14 items-center justify-center rounded-full bg-[#F1F5F9] text-[#64748B]">
                     <MessageSquare className="h-6 w-6" aria-hidden="true" />
                   </span>
@@ -568,7 +569,7 @@ export default function TicketDetailPage() {
           {ticket.status === "RESOLVED" &&
             !ticket.rating &&
             ticket.createdBy.id === userId && (
-              <Card className="border border-[#E2E8F0] bg-gradient-to-br from-orange-50 to-amber-50 rounded-xl shadow-[0_1px_3px_rgba(0,0,0,0.05),0_1px_2px_rgba(0,0,0,0.03)] overflow-hidden">
+              <Card className="gap-0 overflow-hidden rounded-xl border border-[#E2E8F0] bg-gradient-to-br from-orange-50 to-amber-50 py-0 shadow-[0_1px_3px_rgba(0,0,0,0.05),0_1px_2px_rgba(0,0,0,0.03)]">
                 <CardHeader className="pb-3 pt-5 px-5">
                   <CardTitle className="flex items-center gap-2 text-sm font-semibold text-[#1E293B]">
                     <Star className="h-4 w-4 text-[#0EA5E9]" />
@@ -601,14 +602,14 @@ export default function TicketDetailPage() {
         {/* Sidebar Info */}
         <aside className="space-y-4" aria-label="Informasi dan aksi tiket">
           {/* Ticket Info */}
-          <Card className="overflow-hidden rounded-xl border border-[#DCE3EC] bg-white shadow-[0_1px_2px_rgba(15,23,42,0.04)]">
+          <Card className="gap-0 overflow-hidden rounded-xl border border-[#DCE3EC] bg-white py-0 shadow-[0_1px_2px_rgba(15,23,42,0.04)] lg:min-h-[590px]">
             <CardHeader className="border-b border-[#E2E8F0] px-5 py-4">
               <CardTitle className="flex items-center gap-2.5 text-base font-semibold text-[#17233A]">
                 <Info className="h-[18px] w-[18px] text-[#334155]" aria-hidden="true" />
                 Informasi Tiket
               </CardTitle>
             </CardHeader>
-            <CardContent className="divide-y divide-[#E2E8F0] px-5 py-0">
+            <CardContent className="flex flex-1 flex-col divide-y divide-[#E2E8F0] px-5 py-0">
               <InfoRow
                 icon={<Tag className="h-4 w-4" />}
                 label="Kategori"
@@ -675,7 +676,7 @@ export default function TicketDetailPage() {
 
           {/* Actions */}
           {canManage && (
-            <Card className="overflow-hidden rounded-xl border border-[#DCE3EC] bg-white shadow-[0_1px_2px_rgba(15,23,42,0.04)]">
+            <Card className="gap-0 overflow-hidden rounded-xl border border-[#DCE3EC] bg-white py-0 shadow-[0_1px_2px_rgba(15,23,42,0.04)]">
               <CardHeader className="border-b border-[#E2E8F0] px-5 py-4">
                 <CardTitle className="text-sm font-semibold text-[#1E293B]">
                   Aksi
@@ -784,7 +785,7 @@ function InfoRow({
   valueClass?: string;
 }) {
   return (
-    <div className="grid grid-cols-[20px_102px_minmax(0,1fr)] items-start gap-2.5 py-4">
+    <div className="grid flex-1 grid-cols-[20px_102px_minmax(0,1fr)] items-center gap-2.5 py-4">
       <div className="mt-0.5 text-[#64748B]" aria-hidden="true">{icon}</div>
       <p className="pt-0.5 text-[10px] font-semibold uppercase tracking-[0.08em] text-[#64748B]">
           {label}
