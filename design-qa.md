@@ -62,6 +62,8 @@ Separate focused crops were not required. The change is an elevation-system pass
 
 1. First post-build comparison found no actionable P0/P1/P2 difference. The new hierarchy was visible without changing layout density, typography, color balance, imagery, or copy, so no visual rework iteration was required.
 2. Mobile verification found no P0/P1/P2 issue. The 390 px layouts remained within the viewport, the form footer stayed visible after scrolling, and card shadows resolved to the lighter mobile values.
+3. Ticket-list spacing follow-up used `C:\Users\Lenovo\Downloads\Screenshot 2026-08-12 144510.png` (1659 × 283 px) as source truth. The source exposed a P2 rhythm issue: adjacent card borders visually touched because their inline link wrappers prevented `space-y-3` from taking effect. The link wrapper was changed to block layout. Post-fix evidence is `C:\Users\Lenovo\Documents\Codex\2026-08-11\ssh\work\depth-implementation\qa\ticket-spacing-after.png` at 1659 × 900 CSS px, DPR 1, and the focused no-resampling comparison is `C:\Users\Lenovo\Documents\Codex\2026-08-11\ssh\work\depth-implementation\qa\compare-ticket-spacing.png`.
+4. Post-fix measurement confirms an exact 12 px gap between ticket cards on desktop and mobile. Mobile evidence is `C:\Users\Lenovo\Documents\Codex\2026-08-11\ssh\work\depth-implementation\qa\ticket-spacing-mobile.png` at 390 × 844 CSS px, DPR 1, with `scrollWidth === clientWidth`. Typography, colors, imagery/icons, card dimensions, copy, navigation, and click affordance are unchanged. No remaining P0/P1/P2 finding was observed.
 
 ## Residual test gaps
 
