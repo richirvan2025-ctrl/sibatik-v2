@@ -283,7 +283,7 @@ export default function TicketDetailPage() {
     : false;
 
   return (
-    <div className="mx-auto w-full max-w-[1190px] space-y-4 pb-6">
+    <div className="mx-auto w-full max-w-[1176px] pb-6">
       {/* Operational brief */}
       <header>
         <Button
@@ -295,7 +295,7 @@ export default function TicketDetailPage() {
           Kembali
         </Button>
 
-        <div className="mt-5 flex items-center gap-3">
+        <div className="mt-7 flex items-center gap-3">
           <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg border border-[#E2E8F0] bg-[#F8FAFC] text-[#64748B] shadow-sm">
             <Hash className="h-4 w-4" aria-hidden="true" />
           </span>
@@ -310,7 +310,7 @@ export default function TicketDetailPage() {
 
         <section
           aria-label="Ringkasan operasional tiket"
-          className="mt-6 grid overflow-hidden rounded-xl border border-[#DCE3EC] bg-white shadow-[0_1px_2px_rgba(15,23,42,0.04)] sm:grid-cols-2 xl:grid-cols-4"
+          className="mt-8 grid overflow-hidden rounded-xl border border-[#DCE3EC] bg-white shadow-[0_1px_2px_rgba(15,23,42,0.04)] sm:grid-cols-2 xl:grid-cols-4"
         >
           <div className="flex min-h-[78px] items-center gap-3 px-5 py-3">
             <CircleDot className={`h-5 w-5 shrink-0 ${status.text}`} aria-hidden="true" />
@@ -350,7 +350,7 @@ export default function TicketDetailPage() {
         </section>
       </header>
 
-      <div className="grid items-start gap-4 lg:grid-cols-[minmax(0,1fr)_440px]">
+      <div className="mt-6 grid items-start gap-4 lg:grid-cols-[minmax(0,1fr)_455px]">
         {/* Main Content */}
         <main className="min-w-0 space-y-4">
           {/* Description */}
@@ -502,7 +502,7 @@ export default function TicketDetailPage() {
               ))}
 
               {ticket.comments.length === 0 && (
-                <div className="flex min-h-[246px] flex-col items-center justify-center text-center">
+                <div className="flex min-h-[228px] flex-col items-center justify-center text-center">
                   <span className="mb-3 flex h-14 w-14 items-center justify-center rounded-full bg-[#F1F5F9] text-[#64748B]">
                     <MessageSquare className="h-6 w-6" aria-hidden="true" />
                   </span>
