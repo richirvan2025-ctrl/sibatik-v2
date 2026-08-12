@@ -47,3 +47,22 @@ The focused comparison confirms the form hierarchy, spacing rhythm, field propor
 No open P0, P1, or P2 visual defects remain.
 
 final result: passed
+
+## Header parity update — Siprodi reference
+
+- Reference route: `https://siprodi.idbbali.ac.id/umum/dashboard.php`
+- Implementation route: `https://sibatik.idbbali.ac.id/tickets/new`
+- Reference screenshot: `C:/Users/Lenovo/Documents/Codex/2026-08-11/ssh/work/header-compare/04-siprodi-matched.png`
+- Implementation screenshot: `C:/Users/Lenovo/Documents/Codex/2026-08-11/ssh/work/header-compare/05-sibatik-matched.png`
+- Same-state comparison: `C:/Users/Lenovo/Documents/Codex/2026-08-11/ssh/work/header-compare/06-header-comparison.png`
+- Comparison viewport: 1440 × 900 CSS px
+
+Measured Siprodi header height is 50px with a 17px shadow. SIBATIK now uses the same 50px header height and 17px shadow reach, with controlled opacity to suit the darker branded header. The sidebar logo row is also 50px so the horizontal seam remains aligned. The Bali batik image, edge fade, navigation controls, and existing functionality remain unchanged.
+
+- Desktop header height and visual alignment: passed.
+- Shadow visibility and separation from page content: passed.
+- Mobile 390 × 844 layout, tap target fit, and horizontal overflow: passed.
+- Application console errors on the checked route: none.
+- Open P0/P1/P2 defects: none.
+
+final result: passed
