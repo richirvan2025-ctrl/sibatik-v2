@@ -36,6 +36,9 @@ export async function GET(req: NextRequest) {
     const status = searchParams.get("status");
     const priority = searchParams.get("priority");
     const search = searchParams.get("search");
+    const attention = searchParams.get("attention");
+    const from = searchParams.get("from");
+    const to = searchParams.get("to");
 
     const userId = session.user.id;
     const role = session.user.role;
@@ -87,6 +90,49 @@ export async function GET(req: NextRequest) {
     }
     if (search) {
       where.title = { contains: search, mode: "insensitive" };
+    }
+    if (from || to) {
+      where.createdAt = {
+        ...(from ? { gte: new Date(`${from}T00:00:00`) } : {}),
+        ...(to ? { lte: new Date(`${to}T23:59:59.999`) } : {}),
+      };
+    }
+
+    if (attention) {
+      const now = new Date();
+      const activeStatuses = ["OPEN", "IN_PROGRESS", "ESCALATED", "REOPENED"];
+
+      switch (attention) {
+        case "active":
+          where.status = { in: activeStatuses };
+          break;
+        case "overdue":
+          where.status = { in: activeStatuses };
+          where.deadline = { lt: now };
+          break;
+        case "due24":
+          where.status = { in: activeStatuses };
+          where.deadline = {
+            gte: now,
+            lte: new Date(now.getTime() + 24 * 60 * 60 * 1000),
+          };
+          break;
+        case "unassigned":
+          where.status = { in: activeStatuses };
+          where.assignedToId = null;
+          break;
+        case "sla":
+          where.status = { in: activeStatuses };
+          where.slaBreached = true;
+          break;
+        case "escalated":
+          where.status = "ESCALATED";
+          break;
+        case "high":
+          where.status = { in: activeStatuses };
+          where.priority = { in: ["URGENT", "HIGH"] };
+          break;
+      }
     }
 
     const tickets = await prisma.ticket.findMany({

@@ -39,18 +39,29 @@ interface TicketItem {
 }
 
 const statusConfig: Record<string, { bg: string; text: string; dot: string; label: string }> = {
-  OPEN: { bg: "bg-blue-50", text: "text-blue-700", dot: "bg-blue-500", label: "Open" },
-  IN_PROGRESS: { bg: "bg-amber-50", text: "text-amber-700", dot: "bg-amber-500", label: "In Progress" },
-  RESOLVED: { bg: "bg-emerald-50", text: "text-emerald-700", dot: "bg-emerald-500", label: "Resolved" },
-  CLOSED: { bg: "bg-slate-100", text: "text-slate-600", dot: "bg-slate-400", label: "Closed" },
-  ESCALATED: { bg: "bg-red-50", text: "text-red-700", dot: "bg-red-500", label: "Escalated" },
+  OPEN: { bg: "bg-blue-50", text: "text-blue-700", dot: "bg-blue-500", label: "Terbuka" },
+  IN_PROGRESS: { bg: "bg-amber-50", text: "text-amber-700", dot: "bg-amber-500", label: "Dalam Proses" },
+  RESOLVED: { bg: "bg-emerald-50", text: "text-emerald-700", dot: "bg-emerald-500", label: "Selesai" },
+  CLOSED: { bg: "bg-slate-100", text: "text-slate-600", dot: "bg-slate-400", label: "Ditutup" },
+  ESCALATED: { bg: "bg-red-50", text: "text-red-700", dot: "bg-red-500", label: "Eskalasi" },
+  REOPENED: { bg: "bg-cyan-50", text: "text-cyan-700", dot: "bg-cyan-500", label: "Dibuka Kembali" },
 };
 
-const priorityConfig: Record<string, { bg: string; text: string }> = {
-  LOW: { bg: "bg-slate-100", text: "text-slate-600" },
-  MEDIUM: { bg: "bg-blue-50", text: "text-blue-700" },
-  HIGH: { bg: "bg-orange-50", text: "text-orange-700" },
-  URGENT: { bg: "bg-red-50", text: "text-red-700" },
+const priorityConfig: Record<string, { bg: string; text: string; label: string }> = {
+  LOW: { bg: "bg-slate-100", text: "text-slate-600", label: "Rendah" },
+  MEDIUM: { bg: "bg-blue-50", text: "text-blue-700", label: "Sedang" },
+  HIGH: { bg: "bg-orange-50", text: "text-orange-700", label: "Tinggi" },
+  URGENT: { bg: "bg-red-50", text: "text-red-700", label: "Mendesak" },
+};
+
+const attentionLabels: Record<string, string> = {
+  active: "Tiket aktif",
+  overdue: "Deadline terlewat",
+  due24: "Deadline kurang dari 24 jam",
+  unassigned: "Belum ditugaskan",
+  sla: "Pelanggaran SLA aktif",
+  escalated: "Tiket eskalasi",
+  high: "Prioritas tinggi dan mendesak",
 };
 
 export default function TicketsPage() {
@@ -58,6 +69,9 @@ export default function TicketsPage() {
   const searchParams = useSearchParams();
   const requestedStatus = searchParams.get("status") || "";
   const requestedPriority = searchParams.get("priority") || "";
+  const requestedAttention = searchParams.get("attention") || "";
+  const requestedFrom = searchParams.get("from") || "";
+  const requestedTo = searchParams.get("to") || "";
   const scopeParam = searchParams.get("scope");
   const scope =
     scopeParam === "department"
@@ -71,6 +85,9 @@ export default function TicketsPage() {
   const [appliedSearch, setAppliedSearch] = useState("");
   const [statusFilter, setStatusFilter] = useState(requestedStatus);
   const [priorityFilter, setPriorityFilter] = useState(requestedPriority);
+  const attention = attentionLabels[requestedAttention]
+    ? requestedAttention
+    : "";
 
   useEffect(() => {
     let cancelled = false;
@@ -82,6 +99,9 @@ export default function TicketsPage() {
         if (priorityFilter) params.append("priority", priorityFilter);
         if (appliedSearch) params.append("search", appliedSearch);
         if (scope) params.append("scope", scope);
+        if (attention) params.append("attention", attention);
+        if (requestedFrom) params.append("from", requestedFrom);
+        if (requestedTo) params.append("to", requestedTo);
 
         const res = await fetch(`/api/tickets?${params}`);
         if (res.ok && !cancelled) {
@@ -99,7 +119,15 @@ export default function TicketsPage() {
     return () => {
       cancelled = true;
     };
-  }, [appliedSearch, priorityFilter, scope, statusFilter]);
+  }, [
+    appliedSearch,
+    attention,
+    priorityFilter,
+    requestedFrom,
+    requestedTo,
+    scope,
+    statusFilter,
+  ]);
 
   const handleSearch = () => {
     setAppliedSearch(search);
@@ -190,12 +218,13 @@ export default function TicketsPage() {
                 </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="">Semua Status</SelectItem>
-                  <SelectItem value="OPEN">Open</SelectItem>
-                  <SelectItem value="IN_PROGRESS">In Progress</SelectItem>
+                  <SelectItem value="OPEN">Terbuka</SelectItem>
+                  <SelectItem value="IN_PROGRESS">Dalam Proses</SelectItem>
                   <SelectItem value="COMPLETED">Selesai</SelectItem>
-                  <SelectItem value="RESOLVED">Resolved</SelectItem>
-                  <SelectItem value="CLOSED">Closed</SelectItem>
-                  <SelectItem value="ESCALATED">Escalated</SelectItem>
+                  <SelectItem value="RESOLVED">Selesai</SelectItem>
+                  <SelectItem value="CLOSED">Ditutup</SelectItem>
+                  <SelectItem value="ESCALATED">Eskalasi</SelectItem>
+                  <SelectItem value="REOPENED">Dibuka Kembali</SelectItem>
                 </SelectContent>
               </Select>
               <Select
@@ -210,16 +239,45 @@ export default function TicketsPage() {
                 </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="">Semua Priority</SelectItem>
-                  <SelectItem value="LOW">Low</SelectItem>
-                  <SelectItem value="MEDIUM">Medium</SelectItem>
-                  <SelectItem value="HIGH">High</SelectItem>
-                  <SelectItem value="URGENT">Urgent</SelectItem>
+                  <SelectItem value="LOW">Rendah</SelectItem>
+                  <SelectItem value="MEDIUM">Sedang</SelectItem>
+                  <SelectItem value="HIGH">Tinggi</SelectItem>
+                  <SelectItem value="URGENT">Mendesak</SelectItem>
                 </SelectContent>
               </Select>
             </div>
           </div>
         </CardContent>
       </Card>
+
+      {attention && (
+        <div className="flex flex-col gap-2 rounded-xl border border-sky-200 bg-sky-50 px-4 py-3 text-sm text-sky-900 sm:flex-row sm:items-center sm:justify-between">
+          <span>
+            Filter insight aktif: <strong>{attentionLabels[attention]}</strong>
+          </span>
+          <Link
+            href="/tickets"
+            className="font-semibold text-sky-700 underline-offset-4 hover:underline"
+          >
+            Hapus filter
+          </Link>
+        </div>
+      )}
+
+      {(requestedFrom || requestedTo) && (
+        <div className="flex flex-col gap-2 rounded-xl border border-violet-200 bg-violet-50 px-4 py-3 text-sm text-violet-900 sm:flex-row sm:items-center sm:justify-between">
+          <span>
+            Periode laporan: <strong>{requestedFrom || "awal"}</strong> sampai{" "}
+            <strong>{requestedTo || "hari ini"}</strong>
+          </span>
+          <Link
+            href="/tickets"
+            className="font-semibold text-violet-700 underline-offset-4 hover:underline"
+          >
+            Hapus periode
+          </Link>
+        </div>
+      )}
 
       {/* Tickets List */}
       <div className="space-y-3">
@@ -255,7 +313,7 @@ export default function TicketsPage() {
                         <span
                           className={`rounded-full px-2.5 py-0.5 text-xs font-semibold ${priority.bg} ${priority.text}`}
                         >
-                          {ticket.priority}
+                          {priority.label}
                         </span>
                       </div>
 

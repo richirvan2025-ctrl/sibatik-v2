@@ -112,7 +112,7 @@ const roleLabels: Record<string, string> = {
   ADMIN: "Administrator",
   EXECUTIVE: "Eksekutif",
   SUPERVISOR: "Supervisor",
-  AGENT: "Teknisi",
+  AGENT: "Staff",
   USER: "Pengguna",
 };
 
@@ -458,13 +458,13 @@ export default function DashboardPage() {
           <CardHeader className="flex-row items-center justify-between pb-2">
             <CardTitle className="flex items-center gap-2 text-[17px] text-[#14203B]">
               <Users className="h-5 w-5 text-[#7047EB]" />
-              Performa Teknisi
+              Performa Staff
             </CardTitle>
             <span className="text-xs text-[#71809A]">Bulan {new Date().toLocaleString("id-ID", { month: "long", year: "numeric" })}</span>
           </CardHeader>
           <CardContent className="pb-5">
             {agentPerformance.length === 0 ? (
-              <div className="flex h-36 items-center justify-center rounded-xl border border-dashed border-[#D8E0EC] bg-[#F8FAFD] text-sm text-[#7A879D]">Belum ada data teknisi bulan ini</div>
+              <div className="flex h-36 items-center justify-center rounded-xl border border-dashed border-[#D8E0EC] bg-[#F8FAFD] text-sm text-[#7A879D]">Belum ada data Staff bulan ini</div>
             ) : (
               <AgentPerformanceChart data={agentPerformance} />
             )}

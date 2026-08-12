@@ -79,7 +79,7 @@ const rolePresentation = {
   ADMIN: { label: "Administrator", icon: Shield, tone: "bg-[#7047EB] text-white" },
   EXECUTIVE: { label: "Eksekutif", icon: Crown, tone: "bg-[#7047EB] text-white" },
   SUPERVISOR: { label: "Supervisor", icon: Building2, tone: "bg-[#7047EB] text-white" },
-  AGENT: { label: "Teknisi", icon: Shield, tone: "bg-[#F47D24] text-white" },
+  AGENT: { label: "Staff", icon: Shield, tone: "bg-[#F47D24] text-white" },
   USER: { label: "Pengguna", icon: Users, tone: "bg-white/12 text-[#D6E9ED]" },
   MAHASISWA: { label: "Mahasiswa", icon: Users, tone: "bg-white/12 text-[#D6E9ED]" },
 };
