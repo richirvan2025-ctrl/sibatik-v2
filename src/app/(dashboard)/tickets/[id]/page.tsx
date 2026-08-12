@@ -37,6 +37,9 @@ import {
   RotateCcw,
   Link as LinkIcon,
   ExternalLink,
+  CircleDot,
+  Flag,
+  Info,
 } from "lucide-react";
 
 interface Comment {
@@ -96,6 +99,42 @@ const priorityConfig: Record<string, { bg: string; text: string; border: string 
   HIGH: { bg: "bg-orange-50", text: "text-orange-700", border: "border-orange-200" },
   URGENT: { bg: "bg-red-50", text: "text-red-700", border: "border-red-200" },
 };
+
+function formatTicketDate(value: string, includeYear = true) {
+  return new Date(value).toLocaleString("id-ID", {
+    day: "numeric",
+    month: "short",
+    ...(includeYear ? { year: "numeric" } : {}),
+    hour: "2-digit",
+    minute: "2-digit",
+  });
+}
+
+function formatDeadlineSummary(value: string) {
+  const deadline = new Date(value);
+  const now = new Date();
+  const startOfToday = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+  const deadlineDay = new Date(
+    deadline.getFullYear(),
+    deadline.getMonth(),
+    deadline.getDate()
+  );
+  const differenceInDays = Math.round(
+    (deadlineDay.getTime() - startOfToday.getTime()) / 86400000
+  );
+  const time = deadline.toLocaleTimeString("id-ID", {
+    hour: "2-digit",
+    minute: "2-digit",
+    hour12: false,
+  });
+
+  if (differenceInDays === 0) return `Deadline hari ini · ${time}`;
+  if (differenceInDays === 1) return `Deadline besok · ${time}`;
+  return `Deadline ${deadline.toLocaleDateString("id-ID", {
+    day: "numeric",
+    month: "short",
+  })} · ${time}`;
+}
 
 export default function TicketDetailPage() {
   const { data: session } = useSession();
@@ -237,66 +276,98 @@ export default function TicketDetailPage() {
 
   const status = statusConfig[ticket.status] || statusConfig.OPEN;
   const priority = priorityConfig[ticket.priority] || priorityConfig.MEDIUM;
+  const deadlineIsUrgent = ticket.deadline
+    ? new Date(ticket.deadline).getTime() <=
+      new Date().setHours(23, 59, 59, 999)
+    : false;
 
   return (
-    <div className="space-y-6">
-      {/* Back + Header */}
-      <div>
+    <div className="mx-auto w-full max-w-[1320px] space-y-4 pb-6">
+      {/* Operational brief */}
+      <header className="space-y-3">
         <Button
           variant="ghost"
-          className="mb-3 -ml-2 text-[#64748B] hover:text-[#1E293B] h-9 text-sm"
+          className="-ml-2 h-8 rounded-lg px-2 text-sm font-medium text-[#64748B] hover:bg-[#F1F5F9] hover:text-[#1E293B]"
           onClick={() => router.push("/tickets")}
         >
-          <ArrowLeft className="mr-1 h-4 w-4" />
+          <ArrowLeft className="mr-1.5 h-4 w-4" />
           Kembali
         </Button>
 
-        <div className="flex flex-wrap items-start justify-between gap-4">
-          <div className="space-y-2">
-            <div className="flex items-center gap-2 flex-wrap">
-              <span className="inline-flex items-center gap-1.5 rounded-lg bg-[#F1F5F9] px-2.5 py-1 text-xs font-mono font-semibold text-[#64748B]">
-                <Tag className="h-3 w-3" />
-                {ticket.ticketNumber}
-              </span>
-              <span
-                className={`inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-xs font-semibold ${status.bg} ${status.text}`}
-              >
-                <span className={`h-1.5 w-1.5 rounded-full ${status.dot}`} />
-                {status.label}
-              </span>
-              <span
-                className={`rounded-full border px-3 py-1 text-xs font-semibold ${priority.bg} ${priority.text} ${priority.border}`}
-              >
-                {ticket.priority}
-              </span>
-            </div>
-            <h1 className="text-xl font-bold tracking-tight text-[#1E293B]">
-              {ticket.title}
-            </h1>
-          </div>
+        <div className="flex items-center gap-3">
+          <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg border border-[#E2E8F0] bg-[#F8FAFC] text-[#64748B] shadow-sm">
+            <Tag className="h-4 w-4" aria-hidden="true" />
+          </span>
+          <span className="font-mono text-base font-semibold tracking-tight text-[#64748B] sm:text-lg">
+            {ticket.ticketNumber}
+          </span>
         </div>
-      </div>
 
-      <div className="grid gap-6 lg:grid-cols-3">
+        <h1 className="max-w-5xl text-2xl font-bold leading-tight tracking-[-0.025em] text-[#17233A] sm:text-[28px]">
+          {ticket.title}
+        </h1>
+
+        <section
+          aria-label="Ringkasan operasional tiket"
+          className="grid overflow-hidden rounded-xl border border-[#DCE3EC] bg-white shadow-[0_1px_2px_rgba(15,23,42,0.04)] sm:grid-cols-2 xl:grid-cols-4"
+        >
+          <div className="flex min-h-16 items-center gap-3 px-5 py-3">
+            <CircleDot className={`h-5 w-5 shrink-0 ${status.text}`} aria-hidden="true" />
+            <p className={`truncate text-sm font-semibold ${status.text}`}>
+              {status.label}
+            </p>
+          </div>
+          <div className="flex min-h-16 items-center gap-3 border-t border-[#E2E8F0] px-5 py-3 sm:border-l sm:border-t-0">
+            <Flag className={`h-5 w-5 shrink-0 ${priority.text}`} aria-hidden="true" />
+            <p className={`truncate text-sm font-semibold ${priority.text}`}>
+              {ticket.priority}
+            </p>
+          </div>
+          <div className="flex min-h-16 items-center gap-3 border-t border-[#E2E8F0] px-5 py-3 xl:border-l xl:border-t-0">
+            <Clock
+              className={`h-5 w-5 shrink-0 ${
+                deadlineIsUrgent ? "text-red-500" : "text-[#64748B]"
+              }`}
+              aria-hidden="true"
+            />
+            <p
+              className={`truncate text-sm font-semibold ${
+                deadlineIsUrgent ? "text-red-600" : "text-[#334155]"
+              }`}
+            >
+              {ticket.deadline
+                ? formatDeadlineSummary(ticket.deadline)
+                : "Tanpa deadline"}
+            </p>
+          </div>
+          <div className="flex min-h-16 items-center gap-3 border-t border-[#E2E8F0] px-5 py-3 sm:border-l xl:border-t-0">
+            <User className="h-5 w-5 shrink-0 text-[#64748B]" aria-hidden="true" />
+            <p className="truncate text-sm font-semibold text-[#475569]">
+              {ticket.assignedTo?.name || "Belum di-assign"}
+            </p>
+          </div>
+        </section>
+      </header>
+
+      <div className="grid items-start gap-4 lg:grid-cols-[minmax(0,1fr)_360px]">
         {/* Main Content */}
-        <div className="lg:col-span-2 space-y-6">
+        <main className="min-w-0 space-y-4">
           {/* Description */}
-          <Card className="border border-[#E2E8F0] bg-white rounded-xl shadow-[0_1px_3px_rgba(0,0,0,0.05),0_1px_2px_rgba(0,0,0,0.03)] overflow-hidden">
-            <div className="h-1 bg-[#7C3AED]" />
-            <CardHeader className="pb-3 pt-5 px-5">
-              <CardTitle className="flex items-center gap-2 text-sm font-semibold text-[#1E293B]">
-                <FileText className="h-4 w-4 text-[#7C3AED]" />
+          <Card className="overflow-hidden rounded-xl border border-[#DCE3EC] bg-white shadow-[0_1px_2px_rgba(15,23,42,0.04)]">
+            <CardHeader className="border-b border-[#E2E8F0] px-5 py-4">
+              <CardTitle className="flex items-center gap-2.5 text-base font-semibold text-[#17233A]">
+                <FileText className="h-[18px] w-[18px] text-[#334155]" aria-hidden="true" />
                 Deskripsi
               </CardTitle>
             </CardHeader>
-            <CardContent className="px-5 pb-5">
-              <p className="text-sm text-[#1E293B] whitespace-pre-wrap leading-relaxed">
+            <CardContent className="min-h-[178px] px-5 py-5">
+              <p className="whitespace-pre-wrap text-sm leading-7 text-[#334155]">
                 {ticket.description}
               </p>
 
               {ticket.attachments && ticket.attachments.length > 0 && (
-                <div className="mt-5 pt-4 border-t border-[#E2E8F0]">
-                  <p className="flex items-center gap-1.5 text-xs font-semibold text-[#64748B] uppercase tracking-wider mb-3">
+                <div className="mt-5 border-t border-[#E2E8F0] pt-4">
+                  <p className="mb-3 flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wider text-[#64748B]">
                     <Paperclip className="h-3.5 w-3.5" />
                     Lampiran ({ticket.attachments.length})
                   </p>
@@ -362,18 +433,19 @@ export default function TicketDetailPage() {
           </Card>
 
           {/* Comments */}
-          <Card className="border border-[#E2E8F0] bg-white rounded-xl shadow-[0_1px_3px_rgba(0,0,0,0.05),0_1px_2px_rgba(0,0,0,0.03)] overflow-hidden">
-            <div className="h-1 bg-[#0EA5E9]" />
-            <CardHeader className="pb-3 pt-5 px-5">
-              <CardTitle className="flex items-center gap-2 text-sm font-semibold text-[#1E293B]">
-                <MessageSquare className="h-4 w-4 text-[#0EA5E9]" />
-                Komentar
-                <span className="ml-1 rounded-full bg-[#F1F5F9] px-2 py-0.5 text-xs text-[#64748B]">
-                  {ticket.comments.length}
+          <Card className="overflow-hidden rounded-xl border border-[#DCE3EC] bg-white shadow-[0_1px_2px_rgba(15,23,42,0.04)]">
+            <CardHeader className="border-b border-[#E2E8F0] px-5 py-4">
+              <CardTitle className="flex items-center justify-between gap-3 text-base font-semibold text-[#17233A]">
+                <span className="flex min-w-0 items-center gap-2.5">
+                  <MessageSquare className="h-[18px] w-[18px] shrink-0 text-[#334155]" aria-hidden="true" />
+                  <span className="truncate">Aktivitas / Komentar</span>
+                </span>
+                <span className="shrink-0 rounded-full border border-[#E2E8F0] bg-[#F8FAFC] px-2.5 py-1 text-xs font-medium text-[#64748B]">
+                  {ticket.comments.length} komentar
                 </span>
               </CardTitle>
             </CardHeader>
-            <CardContent className="px-5 pb-5 space-y-4">
+            <CardContent className="space-y-4 px-5 py-5">
               {ticket.comments.map((comment) => (
                 <div
                   key={comment.id}
@@ -429,9 +501,14 @@ export default function TicketDetailPage() {
               ))}
 
               {ticket.comments.length === 0 && (
-                <div className="flex flex-col items-center py-8 text-[#94A3B8]">
-                  <MessageSquare className="h-10 w-10 mb-2 text-[#E2E8F0]" />
-                  <p className="text-sm">Belum ada komentar</p>
+                <div className="flex min-h-[190px] flex-col items-center justify-center text-center">
+                  <span className="mb-3 flex h-14 w-14 items-center justify-center rounded-full bg-[#F1F5F9] text-[#64748B]">
+                    <MessageSquare className="h-6 w-6" aria-hidden="true" />
+                  </span>
+                  <p className="text-sm font-semibold text-[#1E293B]">Belum ada komentar</p>
+                  <p className="mt-1 text-sm text-[#94A3B8]">
+                    Belum ada komentar pada tiket ini.
+                  </p>
                 </div>
               )}
 
@@ -492,7 +569,6 @@ export default function TicketDetailPage() {
             !ticket.rating &&
             ticket.createdBy.id === userId && (
               <Card className="border border-[#E2E8F0] bg-gradient-to-br from-orange-50 to-amber-50 rounded-xl shadow-[0_1px_3px_rgba(0,0,0,0.05),0_1px_2px_rgba(0,0,0,0.03)] overflow-hidden">
-                <div className="h-1 bg-[#0EA5E9]" />
                 <CardHeader className="pb-3 pt-5 px-5">
                   <CardTitle className="flex items-center gap-2 text-sm font-semibold text-[#1E293B]">
                     <Star className="h-4 w-4 text-[#0EA5E9]" />
@@ -520,19 +596,19 @@ export default function TicketDetailPage() {
                 </CardContent>
               </Card>
             )}
-        </div>
+        </main>
 
         {/* Sidebar Info */}
-        <div className="space-y-5">
+        <aside className="space-y-4" aria-label="Informasi dan aksi tiket">
           {/* Ticket Info */}
-          <Card className="border border-[#E2E8F0] bg-white rounded-xl shadow-[0_1px_3px_rgba(0,0,0,0.05),0_1px_2px_rgba(0,0,0,0.03)] overflow-hidden">
-            <div className="h-1 bg-[#7C3AED]" />
-            <CardHeader className="pb-3 pt-5 px-5">
-              <CardTitle className="text-sm font-semibold text-[#1E293B]">
+          <Card className="overflow-hidden rounded-xl border border-[#DCE3EC] bg-white shadow-[0_1px_2px_rgba(15,23,42,0.04)]">
+            <CardHeader className="border-b border-[#E2E8F0] px-5 py-4">
+              <CardTitle className="flex items-center gap-2.5 text-base font-semibold text-[#17233A]">
+                <Info className="h-[18px] w-[18px] text-[#334155]" aria-hidden="true" />
                 Informasi Tiket
               </CardTitle>
             </CardHeader>
-            <CardContent className="px-5 pb-5 space-y-4">
+            <CardContent className="divide-y divide-[#E2E8F0] px-5 py-0">
               <InfoRow
                 icon={<Tag className="h-4 w-4" />}
                 label="Kategori"
@@ -556,25 +632,13 @@ export default function TicketDetailPage() {
               <InfoRow
                 icon={<Calendar className="h-4 w-4" />}
                 label="Dibuat Pada"
-                value={new Date(ticket.createdAt).toLocaleString("id-ID", {
-                  day: "numeric",
-                  month: "short",
-                  year: "numeric",
-                  hour: "2-digit",
-                  minute: "2-digit",
-                })}
+                value={formatTicketDate(ticket.createdAt)}
               />
               {ticket.deadline && (
                 <InfoRow
                   icon={<Clock className="h-4 w-4" />}
                   label="Deadline"
-                  value={new Date(ticket.deadline).toLocaleString("id-ID", {
-                    day: "numeric",
-                    month: "short",
-                    year: "numeric",
-                    hour: "2-digit",
-                    minute: "2-digit",
-                  })}
+                  value={formatTicketDate(ticket.deadline)}
                   valueClass={
                     new Date(ticket.deadline) < new Date() &&
                     !["RESOLVED", "CLOSED"].includes(ticket.status)
@@ -587,12 +651,7 @@ export default function TicketDetailPage() {
                 <InfoRow
                   icon={<CheckCircle className="h-4 w-4" />}
                   label="Diselesaikan"
-                  value={new Date(ticket.resolvedAt).toLocaleString("id-ID", {
-                    day: "numeric",
-                    month: "short",
-                    hour: "2-digit",
-                    minute: "2-digit",
-                  })}
+                  value={formatTicketDate(ticket.resolvedAt, false)}
                   valueClass="text-emerald-600"
                 />
               )}
@@ -600,10 +659,7 @@ export default function TicketDetailPage() {
                 <InfoRow
                   icon={<Clock className="h-4 w-4" />}
                   label="First Response"
-                  value={new Date(ticket.firstResponseAt).toLocaleString(
-                    "id-ID",
-                    { day: "numeric", month: "short", hour: "2-digit", minute: "2-digit" }
-                  )}
+                  value={formatTicketDate(ticket.firstResponseAt, false)}
                 />
               )}
               {ticket.rating && (
@@ -619,9 +675,8 @@ export default function TicketDetailPage() {
 
           {/* Actions */}
           {canManage && (
-            <Card className="border border-[#E2E8F0] bg-white rounded-xl shadow-[0_1px_3px_rgba(0,0,0,0.05),0_1px_2px_rgba(0,0,0,0.03)] overflow-hidden">
-              <div className="h-1 bg-[#0EA5E9]" />
-              <CardHeader className="pb-3 pt-5 px-5">
+            <Card className="overflow-hidden rounded-xl border border-[#DCE3EC] bg-white shadow-[0_1px_2px_rgba(15,23,42,0.04)]">
+              <CardHeader className="border-b border-[#E2E8F0] px-5 py-4">
                 <CardTitle className="text-sm font-semibold text-[#1E293B]">
                   Aksi
                 </CardTitle>
@@ -711,7 +766,7 @@ export default function TicketDetailPage() {
               </CardContent>
             </Card>
           )}
-        </div>
+        </aside>
       </div>
     </div>
   );
@@ -729,14 +784,14 @@ function InfoRow({
   valueClass?: string;
 }) {
   return (
-    <div className="flex items-start gap-3">
-      <div className="mt-0.5 text-[#94A3B8]">{icon}</div>
-      <div>
-        <p className="text-[11px] font-semibold uppercase tracking-wider text-[#94A3B8]">
+    <div className="grid grid-cols-[20px_102px_minmax(0,1fr)] items-start gap-2.5 py-4">
+      <div className="mt-0.5 text-[#64748B]" aria-hidden="true">{icon}</div>
+      <p className="pt-0.5 text-[10px] font-semibold uppercase tracking-[0.08em] text-[#64748B]">
           {label}
-        </p>
-        <p className={`text-sm text-[#1E293B] mt-0.5 ${valueClass}`}>{value}</p>
-      </div>
+      </p>
+      <p className={`min-w-0 break-words text-sm leading-5 text-[#334155] ${valueClass}`}>
+        {value}
+      </p>
     </div>
   );
 }
