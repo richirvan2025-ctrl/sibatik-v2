@@ -306,7 +306,7 @@ export default function ReportsPage() {
   );
 
   return (
-    <div className="mx-auto max-w-[1600px] space-y-5 print:max-w-none print:space-y-4">
+    <div className="report-print-root mx-auto max-w-[1600px] space-y-5 print:max-w-none print:space-y-4">
       <header className="flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
         <div>
           <div className="mb-2 flex items-center gap-2 text-[11px] font-bold uppercase tracking-[0.18em] text-[#7047EB]">
@@ -365,6 +365,7 @@ export default function ReportsPage() {
                   </label>
                   <Input
                     type="date"
+                    aria-label="Tanggal mulai laporan"
                     value={customFrom}
                     max={customTo}
                     onChange={(event) => setCustomFrom(event.target.value)}
@@ -377,6 +378,7 @@ export default function ReportsPage() {
                   </label>
                   <Input
                     type="date"
+                    aria-label="Tanggal akhir laporan"
                     value={customTo}
                     min={customFrom}
                     max={inputDate(new Date())}
@@ -850,6 +852,42 @@ export default function ReportsPage() {
           )}
         </CardContent>
       </Card>
+      <style jsx global>{`
+        @media print {
+          @page {
+            size: A4 landscape;
+            margin: 10mm;
+          }
+
+          .sibatik-shell-enter {
+            display: block !important;
+            height: auto !important;
+            min-height: 0 !important;
+            background: white !important;
+          }
+
+          .sibatik-shell-enter > aside,
+          .sibatik-shell-enter > div > header {
+            display: none !important;
+          }
+
+          .sibatik-shell-enter > div,
+          .sibatik-shell-enter main {
+            display: block !important;
+            height: auto !important;
+            overflow: visible !important;
+          }
+
+          .sibatik-shell-enter main > div {
+            max-width: none !important;
+            padding: 0 !important;
+          }
+
+          .report-print-root [data-slot="card"] {
+            break-inside: avoid;
+          }
+        }
+      `}</style>
     </div>
   );
 }
