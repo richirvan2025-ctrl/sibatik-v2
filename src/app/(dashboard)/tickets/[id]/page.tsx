@@ -312,19 +312,19 @@ export default function TicketDetailPage() {
           aria-label="Ringkasan operasional tiket"
           className="mt-8 grid overflow-hidden rounded-xl border border-[#DCE3EC] bg-white shadow-[0_1px_2px_rgba(15,23,42,0.04)] sm:grid-cols-2 xl:grid-cols-4"
         >
-          <div className="flex min-h-[78px] items-center gap-3 px-5 py-3">
+          <div className="flex min-h-[60px] items-center gap-3 px-5 py-2">
             <CircleDot className={`h-5 w-5 shrink-0 ${status.text}`} aria-hidden="true" />
             <p className={`truncate text-sm font-semibold ${status.text}`}>
               {status.label}
             </p>
           </div>
-          <div className="flex min-h-[78px] items-center gap-3 border-t border-[#E2E8F0] px-5 py-3 sm:border-l sm:border-t-0">
+          <div className="flex min-h-[60px] items-center gap-3 border-t border-[#E2E8F0] px-5 py-2 sm:border-l sm:border-t-0">
             <Flag className={`h-5 w-5 shrink-0 ${priority.text}`} aria-hidden="true" />
             <p className={`truncate text-sm font-semibold ${priority.text}`}>
               {ticket.priority}
             </p>
           </div>
-          <div className="flex min-h-[78px] items-center gap-3 border-t border-[#E2E8F0] px-5 py-3 xl:border-l xl:border-t-0">
+          <div className="flex min-h-[60px] items-center gap-3 border-t border-[#E2E8F0] px-5 py-2 xl:border-l xl:border-t-0">
             <Clock
               className={`h-5 w-5 shrink-0 ${
                 deadlineIsUrgent ? "text-red-500" : "text-[#64748B]"
@@ -341,7 +341,7 @@ export default function TicketDetailPage() {
                 : "Tanpa deadline"}
             </p>
           </div>
-          <div className="flex min-h-[78px] items-center gap-3 border-t border-[#E2E8F0] px-5 py-3 sm:border-l xl:border-t-0">
+          <div className="flex min-h-[60px] items-center gap-3 border-t border-[#E2E8F0] px-5 py-2 sm:border-l xl:border-t-0">
             <User className="h-5 w-5 shrink-0 text-[#64748B]" aria-hidden="true" />
             <p className="truncate text-sm font-semibold text-[#475569]">
               {ticket.assignedTo?.name || "Belum di-assign"}
