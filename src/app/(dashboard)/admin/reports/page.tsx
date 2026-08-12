@@ -120,7 +120,7 @@ const priorityConfig: Record<
 };
 
 const cardClass =
-  "gap-0 overflow-hidden rounded-2xl border border-[#E2E8F0] bg-white py-0 shadow-[0_8px_30px_rgba(15,23,42,0.04)]";
+  "gap-0 overflow-hidden rounded-2xl border border-[#E2E8F0] bg-white py-0";
 
 const periodLabels: Record<string, string> = {
   "7": "7 hari terakhir",
@@ -335,7 +335,7 @@ export default function ReportsPage() {
         </div>
       </header>
 
-      <Card className={`${cardClass} print:hidden`}>
+      <Card variant="raised" className={`${cardClass} print:hidden`}>
         <CardContent className="flex flex-col gap-3 p-4 lg:flex-row lg:items-end lg:justify-between">
           <div className="flex flex-col gap-3 sm:flex-row sm:items-end">
             <div className="min-w-48">
@@ -388,7 +388,7 @@ export default function ReportsPage() {
                 </div>
               </div>
             )}
-            <div className="flex h-10 items-center gap-2 rounded-lg border border-[#E2E8F0] bg-[#F8FAFC] px-3 text-xs font-medium text-[#475569]">
+            <div className="flex h-10 items-center gap-2 rounded-lg border border-[#E2E8F0] bg-[#F8FAFC] px-3 text-xs font-medium text-[#475569] shadow-[var(--shadow-inset)]">
               <CalendarDays className="h-4 w-4 text-[#7047EB]" />
               {dateFrom} – {dateTo}
             </div>
@@ -632,7 +632,7 @@ export default function ReportsPage() {
           </CardHeader>
           <CardContent className="px-4 pb-5 sm:px-5">
             <div
-              className="flex h-52 items-end gap-1.5 overflow-x-auto rounded-xl bg-gradient-to-b from-[#FAFBFF] to-white px-2 pt-5 sm:gap-2 sm:px-3"
+              className="flex h-52 items-end gap-1.5 overflow-x-auto rounded-xl border border-[#EEF2F6] bg-gradient-to-b from-[#F8FAFC] to-white px-2 pt-5 shadow-[var(--shadow-inset)] sm:gap-2 sm:px-3"
               role="img"
               aria-label={`Grafik ${data.meta.label}: ${createdTotal} tiket dibuat dan ${resolvedTotal} tiket selesai`}
             >
@@ -705,7 +705,7 @@ export default function ReportsPage() {
                 {rankedStaff.slice(0, 3).map((staff, index) => (
                   <div
                     key={staff.name}
-                    className="flex items-center gap-3 rounded-xl border border-[#E2E8F0] bg-[#F8FAFC] p-3"
+                    className="flex items-center gap-3 rounded-xl border border-[#E2E8F0] bg-[#F8FAFC] p-3 shadow-[var(--shadow-inset)]"
                   >
                     <div className={`flex h-9 w-9 items-center justify-center rounded-lg text-sm font-bold ${
                       index === 0
@@ -949,7 +949,7 @@ function StatCard({
   const compactValue = value === "Belum ada data";
   return (
     <Link href={href} className="group block rounded-2xl focus:outline-none focus:ring-2 focus:ring-[#7047EB] focus:ring-offset-2">
-      <Card className={`${cardClass} relative h-full transition-all duration-200 group-hover:-translate-y-0.5 group-hover:border-violet-200 group-hover:shadow-[0_12px_32px_rgba(15,23,42,0.08)]`}>
+      <Card variant="interactive" className={`${cardClass} relative h-full group-hover:border-violet-200`}>
         <div className={`absolute inset-x-0 top-0 h-1 ${accent}`} />
         <CardContent className="p-4">
           <div className="flex items-start justify-between gap-3">
@@ -1003,7 +1003,7 @@ function AttentionCard({
 }) {
   return (
     <Link href={href} className="group rounded-2xl focus:outline-none focus:ring-2 focus:ring-[#7047EB] focus:ring-offset-2">
-      <Card className="h-full gap-0 rounded-2xl border border-[#E2E8F0] bg-white py-0 shadow-[0_6px_20px_rgba(15,23,42,0.035)] transition-all group-hover:-translate-y-0.5 group-hover:border-[#CFC4F6]">
+      <Card variant="interactive" className="h-full gap-0 rounded-2xl border border-[#E2E8F0] bg-white py-0 group-hover:border-[#CFC4F6]">
         <CardContent className="p-4">
           <div className="flex items-start justify-between gap-3">
             <div className={`flex h-9 w-9 items-center justify-center rounded-xl border ${attentionTones[tone]}`}>
@@ -1044,7 +1044,7 @@ function DistributionCard({
       </CardHeader>
       <CardContent className="space-y-3.5 px-5 pb-5">
         {items.length === 0 ? (
-          <p className="rounded-xl border border-dashed border-[#CBD5E1] bg-[#F8FAFC] p-6 text-center text-sm text-[#64748B]">Belum ada data</p>
+          <p className="rounded-xl border border-dashed border-[#CBD5E1] bg-[#F8FAFC] p-6 text-center text-sm text-[#64748B] shadow-[var(--shadow-inset)]">Belum ada data</p>
         ) : (
           items.map((item) => {
             const percentage = Math.round((item.count / Math.max(total, 1)) * 100);
@@ -1079,7 +1079,7 @@ function EmptyState({
   description: string;
 }) {
   return (
-    <div className="flex min-h-36 flex-col items-center justify-center rounded-xl border border-dashed border-[#CBD5E1] bg-[#F8FAFC] px-5 text-center">
+    <div className="flex min-h-36 flex-col items-center justify-center rounded-xl border border-dashed border-[#CBD5E1] bg-[#F8FAFC] px-5 text-center shadow-[var(--shadow-inset)]">
       <div className="mb-3 flex h-10 w-10 items-center justify-center rounded-full bg-violet-50 text-violet-500">
         <Icon className="h-5 w-5" />
       </div>
@@ -1091,7 +1091,7 @@ function EmptyState({
 
 function StaffCard({ staff }: { staff: StaffPerformance }) {
   return (
-    <div className="rounded-xl border border-[#E2E8F0] bg-[#F8FAFC] p-4">
+    <div className="rounded-xl border border-[#E2E8F0] bg-[#F8FAFC] p-4 shadow-[var(--shadow-inset)]">
       <div className="flex items-start justify-between gap-3">
         <div>
           <p className="font-semibold text-[#1E293B]">{staff.name}</p>

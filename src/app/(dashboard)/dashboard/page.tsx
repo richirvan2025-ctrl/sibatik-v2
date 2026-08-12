@@ -56,6 +56,7 @@ const statCards = [
     icon: Ticket,
     color: "bg-[#7047EB]",
     iconColor: "text-[#DCD3FF]",
+    hoverShadow: "group-hover:shadow-[0_14px_30px_rgba(112,71,235,0.24)]",
     href: "/tickets",
   },
   {
@@ -65,6 +66,7 @@ const statCards = [
     icon: AlertCircle,
     color: "bg-[#268EDB]",
     iconColor: "text-[#C9EBFF]",
+    hoverShadow: "group-hover:shadow-[0_14px_30px_rgba(38,142,219,0.22)]",
     href: "/tickets?status=OPEN",
   },
   {
@@ -74,6 +76,7 @@ const statCards = [
     icon: Clock3,
     color: "bg-[#F4AB32]",
     iconColor: "text-[#FFF0C9]",
+    hoverShadow: "group-hover:shadow-[0_14px_30px_rgba(244,171,50,0.24)]",
     href: "/tickets?status=IN_PROGRESS",
   },
   {
@@ -83,6 +86,7 @@ const statCards = [
     icon: CheckCircle2,
     color: "bg-[#24AE78]",
     iconColor: "text-[#CBF5E4]",
+    hoverShadow: "group-hover:shadow-[0_14px_30px_rgba(36,174,120,0.22)]",
     href: "/tickets?status=COMPLETED",
   },
 ];
@@ -199,7 +203,7 @@ export default function DashboardPage() {
 
   return (
     <div className="space-y-5 md:space-y-6">
-      <section className="overflow-hidden rounded-[16px] bg-[var(--brand-header)] px-5 py-6 text-white shadow-[0_12px_32px_rgba(4,76,113,0.18)] md:px-7 md:py-7">
+      <section className="overflow-hidden rounded-[16px] bg-[var(--brand-header)] px-5 py-6 text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.12),0_14px_34px_rgba(4,76,113,0.18)] md:px-7 md:py-7">
         <div className="flex flex-col gap-6 xl:flex-row xl:items-center xl:justify-between">
           <div className="max-w-2xl">
             <div className="mb-3 flex flex-wrap items-center gap-2">
@@ -221,7 +225,7 @@ export default function DashboardPage() {
           </div>
 
           <div className="flex flex-col gap-2.5 sm:flex-row">
-            <div className="flex min-h-12 items-center gap-3 rounded-xl border border-white/12 bg-white/[0.07] px-4">
+            <div className="flex min-h-12 items-center gap-3 rounded-xl border border-white/15 bg-white/[0.08] px-4 shadow-[inset_0_1px_0_rgba(255,255,255,0.10),0_8px_20px_rgba(0,36,55,0.14)]">
               <CalendarDays className="h-5 w-5 text-[#FFD0A6]" />
               <div>
                 <p className="text-[10px] font-semibold uppercase tracking-[0.1em] text-[#9FB1C9]">Hari ini</p>
@@ -250,7 +254,7 @@ export default function DashboardPage() {
               : stats[card.key];
           return (
             <Link key={card.key} href={card.href} className="group block rounded-[14px] focus-visible:outline-none focus-visible:ring-3 focus-visible:ring-[#7047EB]/25">
-              <article className={`${card.color} overflow-hidden rounded-[14px] text-white shadow-[0_8px_24px_rgba(28,43,75,0.10)] transition-transform duration-200 group-hover:-translate-y-0.5`}>
+              <article className={`${card.color} ${card.hoverShadow} overflow-hidden rounded-[14px] text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.16),0_8px_24px_rgba(28,43,75,0.10)] transition-[transform,box-shadow] duration-200 ease-out group-hover:-translate-y-0.5 group-active:translate-y-0 motion-reduce:transform-none motion-reduce:transition-none`}>
                 <div className="flex items-start justify-between px-5 pb-4 pt-5">
                   <div>
                     <p className="text-[11px] font-extrabold uppercase tracking-[0.08em] text-white/82">{card.label}</p>
@@ -271,7 +275,7 @@ export default function DashboardPage() {
 
       {isManagement && (
         <section className="grid gap-3 md:grid-cols-2" aria-label="Metrik operasional">
-          <Card className="py-0">
+          <Card variant="surface" className="py-0">
             <CardContent className="flex items-center gap-4 p-4.5">
               <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-[#EAF4FC] text-[#268EDB]">
                 <TrendingUp className="h-5 w-5" />
@@ -294,7 +298,7 @@ export default function DashboardPage() {
               </div>
             </CardContent>
           </Card>
-          <Card className="py-0">
+          <Card variant="surface" className="py-0">
             <CardContent className="flex items-center gap-4 p-4.5">
               <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-[#EAF8F2] text-[#16966A]">
                 <Gauge className="h-5 w-5" />
@@ -310,7 +314,7 @@ export default function DashboardPage() {
       )}
 
       <section className="grid items-start gap-4 xl:grid-cols-[1.25fr_.75fr]">
-        <Card>
+        <Card variant="surface">
           <CardHeader className="flex-row items-center justify-between pb-2">
             <div>
               <CardTitle className="text-[17px] text-[#14203B]">Akses Cepat</CardTitle>
@@ -329,7 +333,7 @@ export default function DashboardPage() {
                 <Link
                   key={action.href}
                   href={action.href}
-                  className="group flex min-h-[88px] items-center gap-3.5 rounded-xl border border-[#D8E0EC] bg-white px-4 py-3.5 shadow-[0_1px_2px_rgba(16,24,40,0.04)] transition-all duration-200 hover:-translate-y-0.5 hover:border-[#BDAFF3] hover:bg-[#F8F6FF] hover:shadow-[0_8px_20px_rgba(112,71,235,0.12)] focus-visible:outline-none focus-visible:ring-3 focus-visible:ring-[#7047EB]/25"
+                  className="group flex min-h-[88px] items-center gap-3.5 rounded-xl border border-[#D8E0EC] bg-[#FCFDFE] px-4 py-3.5 shadow-none transition-[transform,box-shadow,border-color,background-color] duration-200 ease-out hover:-translate-y-0.5 hover:border-[#BDAFF3] hover:bg-[#F8F6FF] hover:shadow-[var(--shadow-raised)] active:translate-y-0 focus-visible:outline-none focus-visible:ring-3 focus-visible:ring-[#7047EB]/25 motion-reduce:transform-none motion-reduce:transition-none"
                 >
                   <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-[#EEE9FF] text-[#7047EB] ring-1 ring-[#DCD3FF] transition-colors group-hover:bg-[#7047EB] group-hover:text-white group-hover:ring-[#7047EB]">
                     <Icon className="h-5 w-5" />
@@ -347,7 +351,7 @@ export default function DashboardPage() {
           </CardContent>
         </Card>
 
-        <Card size="sm" className="self-start bg-[#F8FAFD]">
+        <Card size="sm" variant="surface" className="self-start bg-[#F8FAFD]">
           <CardHeader className="pb-1">
             <div className="flex items-center gap-3">
               <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-[#102B50] text-white">
@@ -363,7 +367,7 @@ export default function DashboardPage() {
             <div className="grid min-w-0 gap-2.5">
               <Link
                 href="/tickets"
-                className="group flex min-w-0 items-center gap-3 rounded-xl border border-[#F1DFC2] bg-white p-3 shadow-[0_1px_2px_rgba(16,24,40,0.03)] transition-colors hover:border-amber-300 hover:bg-amber-50/45 focus-visible:outline-none focus-visible:ring-3 focus-visible:ring-amber-200"
+                className="group flex min-w-0 items-center gap-3 rounded-xl border border-[#F1DFC2] bg-white p-3 shadow-none transition-[transform,box-shadow,border-color,background-color] duration-200 hover:-translate-y-0.5 hover:border-amber-300 hover:bg-amber-50/45 hover:shadow-[var(--shadow-raised)] active:translate-y-0 focus-visible:outline-none focus-visible:ring-3 focus-visible:ring-amber-200 motion-reduce:transform-none motion-reduce:transition-none"
               >
                 <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-amber-50 text-amber-600">
                   <CalendarClock className="h-4.5 w-4.5" />
@@ -384,7 +388,7 @@ export default function DashboardPage() {
 
               <Link
                 href={stats.oldestUnhandled ? `/tickets/${stats.oldestUnhandled.id}` : "/tickets?status=OPEN"}
-                className="group flex min-w-0 items-center gap-3 rounded-xl border border-[#DCE6F2] bg-white p-3 shadow-[0_1px_2px_rgba(16,24,40,0.03)] transition-colors hover:border-sky-300 hover:bg-sky-50/45 focus-visible:outline-none focus-visible:ring-3 focus-visible:ring-sky-200"
+                className="group flex min-w-0 items-center gap-3 rounded-xl border border-[#DCE6F2] bg-white p-3 shadow-none transition-[transform,box-shadow,border-color,background-color] duration-200 hover:-translate-y-0.5 hover:border-sky-300 hover:bg-sky-50/45 hover:shadow-[var(--shadow-raised)] active:translate-y-0 focus-visible:outline-none focus-visible:ring-3 focus-visible:ring-sky-200 motion-reduce:transform-none motion-reduce:transition-none"
               >
                 <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-sky-50 text-sky-600">
                   <TimerReset className="h-4.5 w-4.5" />
@@ -409,7 +413,7 @@ export default function DashboardPage() {
 
               <Link
                 href="/tickets?status=ESCALATED"
-                className="group flex min-w-0 items-center gap-3 rounded-xl border border-[#F0D8DB] bg-white p-3 shadow-[0_1px_2px_rgba(16,24,40,0.03)] transition-colors hover:border-red-300 hover:bg-red-50/45 focus-visible:outline-none focus-visible:ring-3 focus-visible:ring-red-200"
+                className="group flex min-w-0 items-center gap-3 rounded-xl border border-[#F0D8DB] bg-white p-3 shadow-none transition-[transform,box-shadow,border-color,background-color] duration-200 hover:-translate-y-0.5 hover:border-red-300 hover:bg-red-50/45 hover:shadow-[var(--shadow-raised)] active:translate-y-0 focus-visible:outline-none focus-visible:ring-3 focus-visible:ring-red-200 motion-reduce:transform-none motion-reduce:transition-none"
               >
                 <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-red-50 text-red-600">
                   <Siren className="h-4.5 w-4.5" />
@@ -430,7 +434,7 @@ export default function DashboardPage() {
 
               <Link
                 href="/tickets"
-                className="group flex min-w-0 items-center gap-3 rounded-xl border border-[#E3DCF6] bg-white p-3 shadow-[0_1px_2px_rgba(16,24,40,0.03)] transition-colors hover:border-violet-300 hover:bg-violet-50/45 focus-visible:outline-none focus-visible:ring-3 focus-visible:ring-violet-200"
+                className="group flex min-w-0 items-center gap-3 rounded-xl border border-[#E3DCF6] bg-white p-3 shadow-none transition-[transform,box-shadow,border-color,background-color] duration-200 hover:-translate-y-0.5 hover:border-violet-300 hover:bg-violet-50/45 hover:shadow-[var(--shadow-raised)] active:translate-y-0 focus-visible:outline-none focus-visible:ring-3 focus-visible:ring-violet-200 motion-reduce:transform-none motion-reduce:transition-none"
               >
                 <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-violet-50 text-violet-600">
                   <ShieldAlert className="h-4.5 w-4.5" />

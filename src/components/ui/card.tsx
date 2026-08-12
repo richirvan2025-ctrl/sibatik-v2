@@ -5,14 +5,27 @@ import { cn } from "@/lib/utils"
 function Card({
   className,
   size = "default",
+  variant = "surface",
   ...props
-}: React.ComponentProps<"div"> & { size?: "default" | "sm" }) {
+}: React.ComponentProps<"div"> & {
+  size?: "default" | "sm"
+  variant?: "surface" | "raised" | "interactive" | "flat"
+}) {
+  const elevation = {
+    surface: "ring-1 ring-border shadow-[var(--shadow-surface)]",
+    raised: "ring-1 ring-border shadow-[var(--shadow-raised)]",
+    interactive:
+      "ring-1 ring-border shadow-[var(--shadow-surface)] transition-[transform,box-shadow,border-color] duration-200 ease-out hover:-translate-y-0.5 hover:shadow-[var(--shadow-raised)] active:translate-y-0 motion-reduce:transform-none motion-reduce:transition-none",
+    flat: "ring-1 ring-border shadow-none",
+  }[variant]
+
   return (
     <div
       data-slot="card"
       data-size={size}
       className={cn(
-        "group/card flex flex-col gap-(--card-spacing) overflow-hidden rounded-[14px] bg-card py-(--card-spacing) text-sm text-card-foreground ring-1 ring-border shadow-[0_1px_2px_rgba(16,24,40,0.04),0_8px_24px_rgba(29,43,76,0.04)] [--card-spacing:--spacing(5)] has-data-[slot=card-footer]:pb-0 has-[>img:first-child]:pt-0 data-[size=sm]:[--card-spacing:--spacing(4)] data-[size=sm]:has-data-[slot=card-footer]:pb-0 *:[img:first-child]:rounded-t-[14px] *:[img:last-child]:rounded-b-[14px]",
+        "group/card flex flex-col gap-(--card-spacing) overflow-hidden rounded-[14px] bg-card py-(--card-spacing) text-sm text-card-foreground [--card-spacing:--spacing(5)] has-data-[slot=card-footer]:pb-0 has-[>img:first-child]:pt-0 data-[size=sm]:[--card-spacing:--spacing(4)] data-[size=sm]:has-data-[slot=card-footer]:pb-0 *:[img:first-child]:rounded-t-[14px] *:[img:last-child]:rounded-b-[14px]",
+        elevation,
         className
       )}
       {...props}

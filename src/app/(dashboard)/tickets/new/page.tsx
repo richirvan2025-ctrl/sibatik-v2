@@ -82,7 +82,7 @@ const priorityConfig: Record<string, { color: string; bg: string; dot: string; l
 };
 
 const fieldClassName =
-  "h-11 scroll-mt-24 rounded-xl border border-[#E2E8F0] bg-white text-sm shadow-[0_1px_2px_rgba(16,24,40,0.03)] transition-all focus-visible:border-[#7047EB] focus-visible:ring-3 focus-visible:ring-[#7047EB]/15 data-[popup-open]:border-[#7047EB] data-[popup-open]:ring-3 data-[popup-open]:ring-[#7047EB]/15";
+  "h-11 scroll-mt-24 rounded-xl border border-[#E2E8F0] bg-white text-sm shadow-[var(--shadow-inset)] transition-[border-color,box-shadow,background-color] duration-200 focus-visible:border-[#7047EB] focus-visible:ring-0 focus-visible:shadow-[var(--shadow-focus)] data-[popup-open]:border-[#7047EB] data-[popup-open]:ring-0 data-[popup-open]:shadow-[var(--shadow-focus)] motion-reduce:transition-none";
 const fieldLabelClassName = "text-[13px] font-bold text-[#26334D]";
 const minimumDeadline = new Date(new Date().getTime() - new Date().getTimezoneOffset() * 60000)
   .toISOString()
@@ -114,7 +114,7 @@ function FormSection({
   return (
     <section className="relative">
       <div className="flex items-center gap-3">
-        <span className="relative z-10 flex h-9 w-9 shrink-0 items-center justify-center rounded-full border border-[#8B5CF6] bg-white text-sm font-bold text-[#7047EB] shadow-[0_2px_8px_rgba(112,71,235,0.10)]">
+        <span className="relative z-10 flex h-9 w-9 shrink-0 items-center justify-center rounded-full border border-[#8B5CF6] bg-white text-sm font-bold text-[#7047EB] shadow-[inset_0_1px_0_rgba(255,255,255,0.90),0_4px_12px_rgba(112,71,235,0.16)]">
           {number}
         </span>
         <h2 className="text-base font-bold text-[#17223D]">{title}</h2>
@@ -457,7 +457,7 @@ export default function NewTicketPage() {
         </div>
       </header>
 
-      <Card className="overflow-hidden rounded-[14px] border-[#DDE5EF] py-0 shadow-[0_8px_28px_rgba(29,43,76,0.05)]">
+      <Card variant="surface" className="overflow-hidden rounded-[14px] border-[#DDE5EF] py-0">
         <CardContent className="space-y-5 p-5 md:p-6">
           {error && (
             <Alert
@@ -568,7 +568,7 @@ export default function NewTicketPage() {
                       role="listbox"
                       aria-label="Daftar divisi tujuan"
                       aria-multiselectable="true"
-                      className="absolute z-50 mt-1 max-h-60 w-full overflow-y-auto rounded-xl border border-[#E2E8F0] bg-white py-1 shadow-lg"
+                      className="absolute z-50 mt-1 max-h-60 w-full overflow-y-auto rounded-xl border border-[#E2E8F0] bg-white py-1 shadow-[var(--shadow-overlay)]"
                     >
                       {categories
                         .filter((cat) =>
@@ -736,12 +736,12 @@ export default function NewTicketPage() {
                     <span className="ml-1 text-xs font-medium text-[#64748B]">(opsional)</span>
                   </Label>
                   {loadingAssignees ? (
-                    <div className="flex h-11 items-center gap-2 rounded-xl border border-[#E2E8F0] bg-white px-3 text-sm text-[#64748B]">
+                    <div className="flex h-11 items-center gap-2 rounded-xl border border-[#E2E8F0] bg-white px-3 text-sm text-[#64748B] shadow-[var(--shadow-inset)]">
                       <Loader2 className="h-4 w-4 animate-spin" />
                       Memuat daftar anggota divisi...
                     </div>
                   ) : assignees.length === 0 ? (
-                    <div className="flex h-11 items-center rounded-xl border border-[#E2E8F0] bg-white px-3 text-sm text-[#64748B]">
+                    <div className="flex h-11 items-center rounded-xl border border-[#E2E8F0] bg-white px-3 text-sm text-[#64748B] shadow-[var(--shadow-inset)]">
                       Tidak ada anggota di divisi ini
                     </div>
                   ) : (
@@ -781,7 +781,7 @@ export default function NewTicketPage() {
                   </p>
                 </div>
               ) : (
-                <div className="flex min-h-11 items-start gap-3 rounded-xl border border-[#E2E8F0] bg-[#F8FAFC] px-4 py-3 text-[#59667E]">
+                <div className="flex min-h-11 items-start gap-3 rounded-xl border border-[#E2E8F0] bg-[#F8FAFC] px-4 py-3 text-[#59667E] shadow-[var(--shadow-inset)]">
                   <Info aria-hidden="true" className="mt-0.5 h-4 w-4 shrink-0 text-[#71809A]" />
                   <div className="space-y-0.5 text-xs leading-5">
                     <p className="font-semibold text-[#44516A]">
@@ -964,7 +964,7 @@ export default function NewTicketPage() {
                   <button
                     type="button"
                     onClick={() => fileInputRef.current?.click()}
-                    className="group flex w-full flex-col items-center gap-3 rounded-xl border border-dashed border-[#CBD5E1] bg-[#F8FAFC] px-5 py-4 text-center transition-all hover:border-[#A995EE] hover:bg-[#F7F5FF] hover:shadow-[0_6px_18px_rgba(112,71,235,0.08)] focus-visible:outline-none focus-visible:ring-3 focus-visible:ring-[#7047EB]/15 sm:flex-row sm:text-left"
+                    className="group flex w-full flex-col items-center gap-3 rounded-xl border border-dashed border-[#CBD5E1] bg-[#F8FAFC] px-5 py-4 text-center shadow-[var(--shadow-inset)] transition-[transform,box-shadow,border-color,background-color] duration-200 ease-out hover:-translate-y-0.5 hover:border-[#A995EE] hover:bg-[#F7F5FF] hover:shadow-[var(--shadow-raised)] active:translate-y-0 focus-visible:outline-none focus-visible:ring-0 focus-visible:shadow-[var(--shadow-focus)] motion-reduce:transform-none motion-reduce:transition-none sm:flex-row sm:text-left"
                   >
                     <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-[#EEE9FF] text-[#7047EB] ring-1 ring-[#DDD4FA] transition-colors group-hover:bg-[#7047EB] group-hover:text-white">
                       <Upload className="h-5 w-5" />
@@ -1052,7 +1052,7 @@ export default function NewTicketPage() {
 
             </FormSection>
 
-            <div className="-mx-5 -mb-5 flex flex-col-reverse gap-3 border-t border-[#E4E9F1] bg-[#FCFDFE] px-5 py-5 sm:flex-row sm:justify-end md:-mx-6 md:-mb-6 md:px-6">
+            <div className="sticky bottom-0 z-20 -mx-5 -mb-5 flex flex-col-reverse gap-3 border-t border-[#E4E9F1] bg-white/95 px-5 py-5 shadow-[0_-10px_26px_rgba(29,43,76,0.08)] backdrop-blur-sm sm:flex-row sm:justify-end md:-mx-6 md:-mb-6 md:px-6">
               <Button
                 type="button"
                 variant="outline"
@@ -1064,7 +1064,7 @@ export default function NewTicketPage() {
               <Button
                 type="submit"
                 disabled={loading}
-                className="h-11 w-full rounded-xl bg-[#7047EB] px-6 text-sm font-bold text-white shadow-[0_8px_20px_rgba(112,71,235,0.20)] transition-all hover:-translate-y-0.5 hover:bg-[#5F39DB] hover:shadow-[0_10px_24px_rgba(112,71,235,0.26)] sm:min-w-[148px] sm:w-auto"
+                className="h-11 w-full rounded-xl bg-[#7047EB] px-6 text-sm font-bold text-white shadow-[0_8px_20px_rgba(112,71,235,0.20)] transition-[transform,box-shadow,background-color] duration-200 hover:-translate-y-0.5 hover:bg-[#5F39DB] hover:shadow-[0_10px_24px_rgba(112,71,235,0.26)] active:translate-y-0 motion-reduce:transform-none motion-reduce:transition-none sm:min-w-[148px] sm:w-auto"
               >
                 {loading ? (
                   <>

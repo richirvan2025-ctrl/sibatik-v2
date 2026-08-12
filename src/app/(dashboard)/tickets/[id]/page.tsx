@@ -310,7 +310,7 @@ export default function TicketDetailPage() {
 
         <section
           aria-label="Ringkasan operasional tiket"
-          className="mt-8 grid overflow-hidden rounded-xl border border-[#DCE3EC] bg-white shadow-[0_1px_2px_rgba(15,23,42,0.04)] sm:grid-cols-2 xl:grid-cols-4"
+          className="mt-8 grid overflow-hidden rounded-xl border border-[#DCE3EC] bg-white shadow-[var(--shadow-raised)] sm:grid-cols-2 xl:grid-cols-4"
         >
           <div className="flex min-h-[60px] items-center gap-3 px-5 py-2">
             <CircleDot className={`h-5 w-5 shrink-0 ${status.text}`} aria-hidden="true" />
@@ -354,7 +354,7 @@ export default function TicketDetailPage() {
         {/* Main Content */}
         <main className="min-w-0 space-y-4">
           {/* Description */}
-          <Card className="gap-0 overflow-hidden rounded-xl border border-[#DCE3EC] bg-white py-0 shadow-[0_1px_2px_rgba(15,23,42,0.04)]">
+          <Card variant="surface" className="gap-0 overflow-hidden rounded-xl border border-[#DCE3EC] bg-white py-0">
             <CardHeader className="border-b border-[#E2E8F0] px-5 py-4">
               <CardTitle className="flex items-center gap-2.5 text-base font-semibold text-[#17233A]">
                 <FileText className="h-[18px] w-[18px] text-[#334155]" aria-hidden="true" />
@@ -434,7 +434,7 @@ export default function TicketDetailPage() {
           </Card>
 
           {/* Comments */}
-          <Card className="gap-0 overflow-hidden rounded-xl border border-[#DCE3EC] bg-white py-0 shadow-[0_1px_2px_rgba(15,23,42,0.04)]">
+          <Card variant="surface" className="gap-0 overflow-hidden rounded-xl border border-[#DCE3EC] bg-white py-0">
             <CardHeader className="border-b border-[#E2E8F0] px-5 py-4">
               <CardTitle className="flex items-center justify-between gap-3 text-base font-semibold text-[#17233A]">
                 <span className="flex min-w-0 items-center gap-2.5">
@@ -502,7 +502,7 @@ export default function TicketDetailPage() {
               ))}
 
               {ticket.comments.length === 0 && (
-                <div className="flex min-h-[228px] flex-col items-center justify-center text-center">
+                <div className="flex min-h-[228px] flex-col items-center justify-center rounded-xl border border-[#E5EAF1] bg-[#F8FAFC] px-4 text-center shadow-[var(--shadow-inset)]">
                   <span className="mb-3 flex h-14 w-14 items-center justify-center rounded-full bg-[#F1F5F9] text-[#64748B]">
                     <MessageSquare className="h-6 w-6" aria-hidden="true" />
                   </span>
@@ -569,7 +569,7 @@ export default function TicketDetailPage() {
           {ticket.status === "RESOLVED" &&
             !ticket.rating &&
             ticket.createdBy.id === userId && (
-              <Card className="gap-0 overflow-hidden rounded-xl border border-[#E2E8F0] bg-gradient-to-br from-orange-50 to-amber-50 py-0 shadow-[0_1px_3px_rgba(0,0,0,0.05),0_1px_2px_rgba(0,0,0,0.03)]">
+              <Card variant="surface" className="gap-0 overflow-hidden rounded-xl border border-[#E2E8F0] bg-gradient-to-br from-orange-50 to-amber-50 py-0">
                 <CardHeader className="pb-3 pt-5 px-5">
                   <CardTitle className="flex items-center gap-2 text-sm font-semibold text-[#1E293B]">
                     <Star className="h-4 w-4 text-[#0EA5E9]" />
@@ -600,9 +600,9 @@ export default function TicketDetailPage() {
         </main>
 
         {/* Sidebar Info */}
-        <aside className="space-y-4" aria-label="Informasi dan aksi tiket">
+        <aside className="space-y-4 lg:sticky lg:top-4" aria-label="Informasi dan aksi tiket">
           {/* Ticket Info */}
-          <Card className="gap-0 overflow-hidden rounded-xl border border-[#DCE3EC] bg-white py-0 shadow-[0_1px_2px_rgba(15,23,42,0.04)] lg:min-h-[590px]">
+          <Card variant="surface" className="gap-0 overflow-hidden rounded-xl border border-[#DCE3EC] bg-white py-0 lg:min-h-[590px]">
             <CardHeader className="border-b border-[#E2E8F0] px-5 py-4">
               <CardTitle className="flex items-center gap-2.5 text-base font-semibold text-[#17233A]">
                 <Info className="h-[18px] w-[18px] text-[#334155]" aria-hidden="true" />
@@ -676,7 +676,7 @@ export default function TicketDetailPage() {
 
           {/* Actions */}
           {canManage && (
-            <Card className="gap-0 overflow-hidden rounded-xl border border-[#DCE3EC] bg-white py-0 shadow-[0_1px_2px_rgba(15,23,42,0.04)]">
+            <Card variant="surface" className="gap-0 overflow-hidden rounded-xl border border-[#DCE3EC] bg-white py-0">
               <CardHeader className="border-b border-[#E2E8F0] px-5 py-4">
                 <CardTitle className="text-sm font-semibold text-[#1E293B]">
                   Aksi
