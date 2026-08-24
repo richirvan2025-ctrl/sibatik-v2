@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { sendMail } from "@/lib/mailer";
+import { Priority, Prisma, TicketStatus } from "@prisma/client";
 import { z } from "zod";
 
 const attachmentSchema = z.object({
@@ -25,6 +26,14 @@ const createTicketSchema = z.object({
   attachments: z.array(attachmentSchema).optional(),
 });
 
+function isTicketStatus(value: string | null): value is TicketStatus {
+  return value !== null && Object.values(TicketStatus).includes(value as TicketStatus);
+}
+
+function isPriority(value: string | null): value is Priority {
+  return value !== null && Object.values(Priority).includes(value as Priority);
+}
+
 export async function GET(req: NextRequest) {
   try {
     const session = await auth();
@@ -33,8 +42,14 @@ export async function GET(req: NextRequest) {
     }
 
     const { searchParams } = new URL(req.url);
-    const status = searchParams.get("status");
-    const priority = searchParams.get("priority");
+    const statusParam = searchParams.get("status");
+    const status =
+      statusParam === "COMPLETED" || isTicketStatus(statusParam)
+        ? statusParam
+        : null;
+    const priorityParam = searchParams.get("priority");
+    const priority = isPriority(priorityParam) ? priorityParam : null;
+    const department = searchParams.get("department")?.trim();
     const search = searchParams.get("search");
     const attention = searchParams.get("attention");
     const from = searchParams.get("from");
@@ -44,7 +59,7 @@ export async function GET(req: NextRequest) {
     const role = session.user.role;
     const scope = searchParams.get("scope"); // "mine" | "department" | null
 
-    let where: any = {};
+    let where: Prisma.TicketWhereInput = {};
 
     if (role === "ADMIN" || role === "EXECUTIVE") {
       // Management sees all tickets. Executive access remains read-only in the UI.
@@ -82,14 +97,20 @@ export async function GET(req: NextRequest) {
     if (status) {
       where.status =
         status === "COMPLETED"
-          ? { in: ["RESOLVED", "CLOSED"] }
+          ? { in: [TicketStatus.RESOLVED, TicketStatus.CLOSED] }
           : status;
     }
     if (priority) {
       where.priority = priority;
     }
+    if (department) {
+      where.AND = [
+        ...(Array.isArray(where.AND) ? where.AND : []),
+        { category: { department } },
+      ];
+    }
     if (search) {
-      where.title = { contains: search, mode: "insensitive" };
+      where.title = { contains: search };
     }
     if (from || to) {
       where.createdAt = {
@@ -100,7 +121,12 @@ export async function GET(req: NextRequest) {
 
     if (attention) {
       const now = new Date();
-      const activeStatuses = ["OPEN", "IN_PROGRESS", "ESCALATED", "REOPENED"];
+      const activeStatuses: TicketStatus[] = [
+        TicketStatus.OPEN,
+        TicketStatus.IN_PROGRESS,
+        TicketStatus.ESCALATED,
+        TicketStatus.REOPENED,
+      ];
 
       switch (attention) {
         case "active":
@@ -126,11 +152,11 @@ export async function GET(req: NextRequest) {
           where.slaBreached = true;
           break;
         case "escalated":
-          where.status = "ESCALATED";
+          where.status = TicketStatus.ESCALATED;
           break;
         case "high":
           where.status = { in: activeStatuses };
-          where.priority = { in: ["URGENT", "HIGH"] };
+          where.priority = { in: [Priority.URGENT, Priority.HIGH] };
           break;
       }
     }
@@ -218,7 +244,7 @@ export async function POST(req: NextRequest) {
     }
 
     // Kirim notifikasi ke penerima yang relevan
-    const categoryDept = (ticket.category as any).department as string | null;
+    const categoryDept = ticket.category.department;
     const creatorName = ticket.createdBy.name;
     const notifMessage = `Tiket baru dari ${creatorName}: ${ticket.ticketNumber} — ${ticket.title}`;
 

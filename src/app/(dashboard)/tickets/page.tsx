@@ -67,6 +67,7 @@ export default function TicketsPage() {
   const searchParams = useSearchParams();
   const requestedStatus = searchParams.get("status") || "";
   const requestedPriority = searchParams.get("priority") || "";
+  const requestedDepartment = searchParams.get("department") || "";
   const requestedAttention = searchParams.get("attention") || "";
   const requestedFrom = searchParams.get("from") || "";
   const requestedTo = searchParams.get("to") || "";
@@ -83,9 +84,32 @@ export default function TicketsPage() {
   const [appliedSearch, setAppliedSearch] = useState("");
   const [statusFilter, setStatusFilter] = useState(requestedStatus);
   const [priorityFilter, setPriorityFilter] = useState(requestedPriority);
+  const [departmentFilter, setDepartmentFilter] = useState(requestedDepartment);
+  const [departments, setDepartments] = useState<string[]>([]);
   const attention = attentionLabels[requestedAttention]
     ? requestedAttention
     : "";
+
+  useEffect(() => {
+    let cancelled = false;
+
+    const loadDepartments = async () => {
+      try {
+        const res = await fetch("/api/departments");
+        if (!res.ok || cancelled) return;
+
+        const departmentNames = (await res.json()) as string[];
+        if (!cancelled) setDepartments(departmentNames);
+      } catch (error) {
+        console.error("Failed to fetch departments:", error);
+      }
+    };
+
+    void loadDepartments();
+    return () => {
+      cancelled = true;
+    };
+  }, []);
 
   useEffect(() => {
     let cancelled = false;
@@ -95,6 +119,7 @@ export default function TicketsPage() {
         const params = new URLSearchParams();
         if (statusFilter) params.append("status", statusFilter);
         if (priorityFilter) params.append("priority", priorityFilter);
+        if (departmentFilter) params.append("department", departmentFilter);
         if (appliedSearch) params.append("search", appliedSearch);
         if (scope) params.append("scope", scope);
         if (attention) params.append("attention", attention);
@@ -120,6 +145,7 @@ export default function TicketsPage() {
   }, [
     appliedSearch,
     attention,
+    departmentFilter,
     priorityFilter,
     requestedFrom,
     requestedTo,
@@ -202,8 +228,8 @@ export default function TicketsPage() {
                 <Search className="h-4 w-4" />
               </Button>
             </div>
-            <div className="grid grid-cols-[auto_1fr_1fr] items-center gap-2 sm:flex">
-              <Filter className="h-4 w-4 text-[#94A3B8]" />
+            <div className="grid grid-cols-2 items-center gap-2 sm:flex">
+              <Filter className="hidden h-4 w-4 text-[#94A3B8] sm:block" />
               <Select
                 value={statusFilter}
                 onValueChange={(value) => setStatusFilter(value || "")}
@@ -240,6 +266,25 @@ export default function TicketsPage() {
                   <SelectItem value="MEDIUM">Sedang</SelectItem>
                   <SelectItem value="HIGH">Tinggi</SelectItem>
                   <SelectItem value="URGENT">Mendesak</SelectItem>
+                </SelectContent>
+              </Select>
+              <Select
+                value={departmentFilter}
+                onValueChange={(value) => setDepartmentFilter(value || "")}
+              >
+                <SelectTrigger
+                  aria-label="Filter divisi tiket"
+                  className="col-span-2 h-10 w-full bg-[#F8FAFD] text-sm sm:w-56"
+                >
+                  <SelectValue placeholder="Divisi" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="">Semua Divisi</SelectItem>
+                  {departments.map((department) => (
+                    <SelectItem key={department} value={department}>
+                      {department}
+                    </SelectItem>
+                  ))}
                 </SelectContent>
               </Select>
             </div>
