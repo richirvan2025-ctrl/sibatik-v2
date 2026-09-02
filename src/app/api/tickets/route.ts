@@ -2,6 +2,11 @@ import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { sendMail } from "@/lib/mailer";
+import {
+  actorFromSession,
+  getClientIp,
+  recordAuditEvent,
+} from "@/lib/audit-log";
 import { Priority, Prisma, TicketStatus } from "@prisma/client";
 import { z } from "zod";
 
@@ -377,6 +382,24 @@ export async function POST(req: NextRequest) {
         });
       }
     }
+
+    await recordAuditEvent({
+      action: "TICKET_CREATED",
+      actor: actorFromSession(session),
+      actorIp: getClientIp(req),
+      classification: "TICKET",
+      details: {
+        assignedToId: autoAssignedId,
+        attachmentCount: validated.attachments?.length || 0,
+        category: ticket.category.name,
+        department: ticket.category.department,
+        onBehalfOfId: onBehalfOfId || null,
+        priority: ticket.priority,
+      },
+      resourceId: ticket.id,
+      resourceType: "TICKET",
+      summary: `${session.user.name} membuat ${ticket.ticketNumber}: ${ticket.title}`,
+    });
 
     return NextResponse.json(ticket, { status: 201 });
   } catch (error) {

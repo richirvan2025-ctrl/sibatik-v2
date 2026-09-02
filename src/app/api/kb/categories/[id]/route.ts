@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
+import { actorFromSession, getClientIp, recordAuditEvent } from "@/lib/audit-log";
 
 export async function PATCH(
   req: Request,
@@ -21,6 +22,17 @@ export async function PATCH(
       data: { name, description, icon, isActive },
     });
 
+    await recordAuditEvent({
+      classification: "KNOWLEDGE_BASE",
+      action: "KB_CATEGORY_UPDATED",
+      summary: `${session.user.name || session.user.email || "Admin"} memperbarui kategori knowledge base ${category.name}`,
+      actor: actorFromSession(session),
+      actorIp: getClientIp(req),
+      resourceType: "KB_CATEGORY",
+      resourceId: category.id,
+      details: { name, description, icon, isActive },
+    });
+
     return NextResponse.json(category);
   } catch (error) {
     console.error("PATCH kb/categories error:", error);
@@ -39,7 +51,19 @@ export async function DELETE(
     }
 
     const { id } = await params;
-    await prisma.kBCategory.delete({ where: { id } });
+    const category = await prisma.kBCategory.delete({ where: { id } });
+
+    await recordAuditEvent({
+      classification: "KNOWLEDGE_BASE",
+      severity: "WARNING",
+      action: "KB_CATEGORY_DELETED",
+      summary: `${session.user.name || session.user.email || "Admin"} menghapus kategori knowledge base ${category.name}`,
+      actor: actorFromSession(session),
+      actorIp: getClientIp(req),
+      resourceType: "KB_CATEGORY",
+      resourceId: category.id,
+      details: { name: category.name },
+    });
 
     return NextResponse.json({ success: true });
   } catch (error) {

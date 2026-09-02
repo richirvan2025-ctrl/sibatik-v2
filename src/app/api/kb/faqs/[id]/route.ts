@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
+import { actorFromSession, getClientIp, recordAuditEvent } from "@/lib/audit-log";
 
 export async function PUT(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   try {
@@ -26,6 +27,17 @@ export async function PUT(req: NextRequest, { params }: { params: Promise<{ id: 
       },
     });
 
+    await recordAuditEvent({
+      classification: "KNOWLEDGE_BASE",
+      action: "FAQ_UPDATED",
+      summary: `${session.user.name || session.user.email || "Admin"} memperbarui FAQ`,
+      actor: actorFromSession(session),
+      actorIp: getClientIp(req),
+      resourceType: "FAQ",
+      resourceId: faq.id,
+      details: { changedFields: Object.keys(body) },
+    });
+
     return NextResponse.json(faq);
   } catch (error) {
     console.error("PUT kb/faqs/[id] error:", error);
@@ -33,7 +45,7 @@ export async function PUT(req: NextRequest, { params }: { params: Promise<{ id: 
   }
 }
 
-export async function DELETE(_req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
+export async function DELETE(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   try {
     const session = await auth();
     if (!session?.user?.id) {
@@ -44,7 +56,19 @@ export async function DELETE(_req: NextRequest, { params }: { params: Promise<{ 
     }
 
     const { id } = await params;
-    await prisma.fAQ.delete({ where: { id } });
+    const faq = await prisma.fAQ.delete({ where: { id } });
+
+    await recordAuditEvent({
+      classification: "KNOWLEDGE_BASE",
+      severity: "WARNING",
+      action: "FAQ_DELETED",
+      summary: `${session.user.name || session.user.email || "Admin"} menghapus FAQ`,
+      actor: actorFromSession(session),
+      actorIp: getClientIp(req),
+      resourceType: "FAQ",
+      resourceId: faq.id,
+      details: { question: faq.question },
+    });
 
     return NextResponse.json({ success: true });
   } catch (error) {

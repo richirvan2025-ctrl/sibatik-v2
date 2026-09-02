@@ -3,6 +3,11 @@ import { auth } from "@/lib/auth";
 import { writeFile, mkdir } from "fs/promises";
 import { join } from "path";
 import { randomUUID } from "crypto";
+import {
+  actorFromSession,
+  getClientIp,
+  recordAuditEvent,
+} from "@/lib/audit-log";
 
 const MAX_FILE_SIZE = 10 * 1024 * 1024; // 10MB
 const ALLOWED_TYPES = [
@@ -61,6 +66,22 @@ export async function POST(req: NextRequest) {
         mimeType: file.type,
       });
     }
+
+    await recordAuditEvent({
+      action: "FILES_UPLOADED",
+      actor: actorFromSession(session),
+      actorIp: getClientIp(req),
+      classification: "ATTACHMENT",
+      details: {
+        files: results.map((file) => ({
+          fileName: file.fileName,
+          fileSize: file.fileSize,
+          mimeType: file.mimeType,
+        })),
+      },
+      resourceType: "UPLOAD_BATCH",
+      summary: `${session.user.name} mengunggah ${results.length} file lampiran`,
+    });
 
     return NextResponse.json(results);
   } catch (error) {

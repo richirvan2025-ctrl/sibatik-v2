@@ -2,6 +2,11 @@ import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { sendMail } from "@/lib/mailer";
+import {
+  actorFromSession,
+  getClientIp,
+  recordAuditEvent,
+} from "@/lib/audit-log";
 import { z } from "zod";
 
 const commentSchema = z.object({
@@ -120,6 +125,21 @@ export async function POST(
         }
       }
     }
+
+    await recordAuditEvent({
+      action: isInternal ? "INTERNAL_COMMENT_ADDED" : "COMMENT_ADDED",
+      actor: actorFromSession(session),
+      actorIp: getClientIp(req),
+      classification: "COMMENT",
+      details: {
+        commentId: comment.id,
+        isInternal,
+        preview: validated.message.slice(0, 160),
+      },
+      resourceId: ticket.id,
+      resourceType: "TICKET",
+      summary: `${session.user.name} menambahkan ${isInternal ? "catatan internal" : "komentar"} pada ${ticket.ticketNumber}`,
+    });
 
     return NextResponse.json(comment, { status: 201 });
   } catch (error) {

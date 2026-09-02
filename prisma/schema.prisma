@@ -280,6 +280,30 @@ model TicketCustomField {
   @@index([ticketId])
 }
 
+model AuditLog {
+  id             String              @id @default(cuid())
+  occurredAt     DateTime            @default(now())
+  source         AuditSource         @default(APPLICATION)
+  classification AuditClassification
+  severity       AuditSeverity       @default(INFO)
+  action         String
+  summary        String
+  actorId        String?
+  actorName      String?
+  actorEmail     String?
+  actorRole      String?
+  actorIp        String?
+  resourceType   String?
+  resourceId     String?
+  details        Json?
+  createdAt      DateTime            @default(now())
+
+  @@index([occurredAt])
+  @@index([classification, occurredAt])
+  @@index([source, occurredAt])
+  @@index([actorId, occurredAt])
+}
+
 enum Role {
   ADMIN
   USER
@@ -303,4 +327,31 @@ enum Priority {
   MEDIUM
   HIGH
   URGENT
+}
+
+enum AuditSource {
+  APPLICATION
+  SYSTEM
+  SSH
+  GIT
+}
+
+enum AuditClassification {
+  AUTH
+  TICKET
+  COMMENT
+  ATTACHMENT
+  ADMIN
+  KNOWLEDGE_BASE
+  SECURITY
+  SYSTEM
+  SSH
+  CODE_CHANGE
+  LOG_ACCESS
+}
+
+enum AuditSeverity {
+  INFO
+  WARNING
+  ERROR
 }

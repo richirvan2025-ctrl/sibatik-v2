@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { z } from "zod";
+import { actorFromSession, getClientIp, recordAuditEvent } from "@/lib/audit-log";
 
 const userSchema = z.object({
   name: z.string().min(1),
@@ -46,6 +47,17 @@ export async function POST(req: NextRequest) {
         department: validated.department,
         provider: "sinergy",
       },
+    });
+
+    await recordAuditEvent({
+      classification: "ADMIN",
+      action: "USER_CREATED",
+      summary: `${session.user.name || session.user.email || "Admin"} membuat pengguna ${user.name || user.email}`,
+      actor: actorFromSession(session),
+      actorIp: getClientIp(req),
+      resourceType: "USER",
+      resourceId: user.id,
+      details: { email: user.email, role: user.role, department: user.department },
     });
 
     return NextResponse.json(user, { status: 201 });

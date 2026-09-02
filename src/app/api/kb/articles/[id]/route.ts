@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
+import { actorFromSession, getClientIp, recordAuditEvent } from "@/lib/audit-log";
 
 function slugify(text: string): string {
   return text
@@ -104,6 +105,20 @@ export async function PATCH(
       }
     }
 
+    await recordAuditEvent({
+      classification: "KNOWLEDGE_BASE",
+      action: "KB_ARTICLE_UPDATED",
+      summary: `${session.user.name || session.user.email || "Staff"} memperbarui artikel ${article.title}`,
+      actor: actorFromSession(session),
+      actorIp: getClientIp(req),
+      resourceType: "KB_ARTICLE",
+      resourceId: article.id,
+      details: {
+        changedFields: Object.keys(updateData),
+        tagsUpdated: Array.isArray(tags),
+      },
+    });
+
     return NextResponse.json(article);
   } catch (error) {
     console.error("PATCH kb/articles/[id] error:", error);
@@ -127,7 +142,19 @@ export async function DELETE(
     }
 
     const { id } = await params;
-    await prisma.kBArticle.delete({ where: { id } });
+    const article = await prisma.kBArticle.delete({ where: { id } });
+
+    await recordAuditEvent({
+      classification: "KNOWLEDGE_BASE",
+      severity: "WARNING",
+      action: "KB_ARTICLE_DELETED",
+      summary: `${session.user.name || session.user.email || "Staff"} menghapus artikel ${article.title}`,
+      actor: actorFromSession(session),
+      actorIp: getClientIp(req),
+      resourceType: "KB_ARTICLE",
+      resourceId: article.id,
+      details: { slug: article.slug },
+    });
 
     return NextResponse.json({ success: true });
   } catch (error) {

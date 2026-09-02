@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { z } from "zod";
+import { actorFromSession, getClientIp, recordAuditEvent } from "@/lib/audit-log";
 
 const groupSchema = z.object({
   name: z.string().min(1, "Nama group wajib diisi").max(100),
@@ -71,6 +72,17 @@ export async function POST(req: NextRequest) {
         description: validated.description || null,
       },
       include: { members: { include: { user: true } } },
+    });
+
+    await recordAuditEvent({
+      classification: "ADMIN",
+      action: "GROUP_CREATED",
+      summary: `${session.user.name || session.user.email || "Admin"} membuat group ${group.name}`,
+      actor: actorFromSession(session),
+      actorIp: getClientIp(req),
+      resourceType: "USER_GROUP",
+      resourceId: group.id,
+      details: { name: group.name },
     });
 
     return NextResponse.json(group, { status: 201 });

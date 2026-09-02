@@ -2,6 +2,11 @@ import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { sendMail } from "@/lib/mailer";
+import {
+  actorFromSession,
+  getClientIp,
+  recordAuditEvent,
+} from "@/lib/audit-log";
 import type { Prisma } from "@prisma/client";
 import { z } from "zod";
 
@@ -294,6 +299,52 @@ export async function PATCH(
         });
       }
     }
+
+    const changes: Record<
+      string,
+      { after: string | number | null; before: string | number | null }
+    > = {};
+    if (ticket.status !== updated.status) {
+      changes.status = { before: ticket.status, after: updated.status };
+    }
+    if (ticket.priority !== updated.priority) {
+      changes.priority = { before: ticket.priority, after: updated.priority };
+    }
+    if (ticket.assignedToId !== updated.assignedToId) {
+      changes.assignedToId = {
+        before: ticket.assignedToId,
+        after: updated.assignedToId,
+      };
+    }
+    if (ticket.title !== updated.title) {
+      changes.title = { before: ticket.title, after: updated.title };
+    }
+    if (ticket.description !== updated.description) {
+      changes.descriptionLength = {
+        before: ticket.description.length,
+        after: updated.description.length,
+      };
+    }
+    if (ticket.rating !== updated.rating) {
+      changes.rating = { before: ticket.rating, after: updated.rating };
+    }
+    if (ticket.feedback !== updated.feedback) {
+      changes.feedback = {
+        before: ticket.feedback,
+        after: updated.feedback,
+      };
+    }
+
+    await recordAuditEvent({
+      action: "TICKET_UPDATED",
+      actor: actorFromSession(session),
+      actorIp: getClientIp(req),
+      classification: "TICKET",
+      details: { changes },
+      resourceId: ticket.id,
+      resourceType: "TICKET",
+      summary: `${session.user.name} mengubah ${Object.keys(changes).join(", ") || "data"} pada ${ticket.ticketNumber}`,
+    });
 
     return NextResponse.json(updated);
   } catch (error) {

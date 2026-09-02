@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
+import { actorFromSession, getClientIp, recordAuditEvent } from "@/lib/audit-log";
 
 export async function GET(req: Request) {
   try {
@@ -45,6 +46,17 @@ export async function POST(req: Request) {
 
     const category = await prisma.kBCategory.create({
       data: { name, description, icon },
+    });
+
+    await recordAuditEvent({
+      classification: "KNOWLEDGE_BASE",
+      action: "KB_CATEGORY_CREATED",
+      summary: `${session.user.name || session.user.email || "Admin"} membuat kategori knowledge base ${category.name}`,
+      actor: actorFromSession(session),
+      actorIp: getClientIp(req),
+      resourceType: "KB_CATEGORY",
+      resourceId: category.id,
+      details: { name: category.name },
     });
 
     return NextResponse.json(category);

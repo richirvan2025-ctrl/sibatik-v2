@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { z } from "zod";
+import { actorFromSession, getClientIp, recordAuditEvent } from "@/lib/audit-log";
 
 const addMemberSchema = z.object({
   userIds: z.array(z.string()).min(1, "Pilih minimal 1 user"),
@@ -51,6 +52,17 @@ export async function POST(
       await prisma.userGroupMember.createMany({
         data: newIds.map((userId) => ({ groupId: id, userId })),
       });
+
+      await recordAuditEvent({
+        classification: "ADMIN",
+        action: "GROUP_MEMBERS_ADDED",
+        summary: `${session.user.name || session.user.email || "Admin"} menambahkan ${newIds.length} anggota ke group ${group.name}`,
+        actor: actorFromSession(session),
+        actorIp: getClientIp(req),
+        resourceType: "USER_GROUP",
+        resourceId: group.id,
+        details: { userIds: newIds },
+      });
     }
 
     return NextResponse.json({ added: newIds.length, skipped: existingIds.size });
@@ -84,6 +96,17 @@ export async function DELETE(
 
     await prisma.userGroupMember.deleteMany({
       where: { groupId: id, userId },
+    });
+
+    await recordAuditEvent({
+      classification: "ADMIN",
+      action: "GROUP_MEMBER_REMOVED",
+      summary: `${session.user.name || session.user.email || "Admin"} menghapus anggota dari group`,
+      actor: actorFromSession(session),
+      actorIp: getClientIp(req),
+      resourceType: "USER_GROUP",
+      resourceId: id,
+      details: { userId },
     });
 
     return NextResponse.json({ success: true });

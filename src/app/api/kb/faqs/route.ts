@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
+import { actorFromSession, getClientIp, recordAuditEvent } from "@/lib/audit-log";
 
 export async function GET() {
   try {
@@ -38,6 +39,17 @@ export async function POST(req: NextRequest) {
         answer: answer.trim(),
         order: typeof order === "number" ? order : 0,
       },
+    });
+
+    await recordAuditEvent({
+      classification: "KNOWLEDGE_BASE",
+      action: "FAQ_CREATED",
+      summary: `${session.user.name || session.user.email || "Admin"} membuat FAQ`,
+      actor: actorFromSession(session),
+      actorIp: getClientIp(req),
+      resourceType: "FAQ",
+      resourceId: faq.id,
+      details: { question: faq.question, order: faq.order },
     });
 
     return NextResponse.json(faq, { status: 201 });

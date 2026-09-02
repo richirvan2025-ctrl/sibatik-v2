@@ -5,6 +5,7 @@ import { indexDocument } from "@/lib/rag";
 import { writeFile, mkdir } from "fs/promises";
 import { join } from "path";
 import { randomUUID } from "crypto";
+import { actorFromSession, getClientIp, recordAuditEvent } from "@/lib/audit-log";
 
 const ALLOWED_TYPES = [
   "application/pdf",
@@ -89,6 +90,17 @@ export async function POST(req: NextRequest) {
     indexDocument(doc.id, content.trim()).catch((err) =>
       console.error("RAG indexing error:", err)
     );
+
+    await recordAuditEvent({
+      classification: "ADMIN",
+      action: "INTERNAL_DOCUMENT_UPLOADED",
+      summary: `${session.user.name || session.user.email || "Admin"} mengunggah dokumen internal ${doc.title}`,
+      actor: actorFromSession(session),
+      actorIp: getClientIp(req),
+      resourceType: "INTERNAL_DOCUMENT",
+      resourceId: doc.id,
+      details: { category: doc.category, fileName: doc.fileName, size: file.size },
+    });
 
     return NextResponse.json(doc, { status: 201 });
   } catch (error) {

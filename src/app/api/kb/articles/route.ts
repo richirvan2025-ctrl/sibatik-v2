@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
+import { actorFromSession, getClientIp, recordAuditEvent } from "@/lib/audit-log";
 
 function slugify(text: string): string {
   return text
@@ -98,6 +99,21 @@ export async function POST(req: Request) {
         });
       }
     }
+
+    await recordAuditEvent({
+      classification: "KNOWLEDGE_BASE",
+      action: "KB_ARTICLE_CREATED",
+      summary: `${session.user.name || session.user.email || "Staff"} membuat artikel ${article.title}`,
+      actor: actorFromSession(session),
+      actorIp: getClientIp(req),
+      resourceType: "KB_ARTICLE",
+      resourceId: article.id,
+      details: {
+        categoryId: article.categoryId,
+        isPublished: article.isPublished,
+        tags: Array.isArray(tags) ? tags : [],
+      },
+    });
 
     return NextResponse.json(article);
   } catch (error) {

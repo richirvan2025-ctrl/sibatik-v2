@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { z } from "zod";
+import { actorFromSession, getClientIp, recordAuditEvent } from "@/lib/audit-log";
 
 const updateCategorySchema = z.object({
   name: z.string().min(1).optional(),
@@ -61,6 +62,17 @@ export async function PATCH(
       data: validated,
     });
 
+    await recordAuditEvent({
+      classification: "ADMIN",
+      action: "CATEGORY_UPDATED",
+      summary: `${session.user.name || session.user.email || "Admin"} memperbarui kategori ${category.name}`,
+      actor: actorFromSession(session),
+      actorIp: getClientIp(req),
+      resourceType: "CATEGORY",
+      resourceId: category.id,
+      details: { changes: validated },
+    });
+
     return NextResponse.json(category);
   } catch (error) {
     if (error instanceof z.ZodError) {
@@ -105,8 +117,20 @@ export async function DELETE(
       );
     }
 
-    await prisma.category.delete({
+    const category = await prisma.category.delete({
       where: { id },
+    });
+
+    await recordAuditEvent({
+      classification: "ADMIN",
+      severity: "WARNING",
+      action: "CATEGORY_DELETED",
+      summary: `${session.user.name || session.user.email || "Admin"} menghapus kategori ${category.name}`,
+      actor: actorFromSession(session),
+      actorIp: getClientIp(req),
+      resourceType: "CATEGORY",
+      resourceId: category.id,
+      details: { name: category.name },
     });
 
     return NextResponse.json({ success: true });

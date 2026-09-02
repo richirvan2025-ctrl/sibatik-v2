@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { z } from "zod";
+import { actorFromSession, getClientIp, recordAuditEvent } from "@/lib/audit-log";
 
 const updateUserSchema = z.object({
   name: z.string().min(1).optional(),
@@ -30,6 +31,17 @@ export async function PATCH(
       data: validated,
     });
 
+    await recordAuditEvent({
+      classification: "ADMIN",
+      action: "USER_UPDATED",
+      summary: `${session.user.name || session.user.email || "Admin"} memperbarui pengguna ${user.name || user.email}`,
+      actor: actorFromSession(session),
+      actorIp: getClientIp(req),
+      resourceType: "USER",
+      resourceId: user.id,
+      details: { changes: validated },
+    });
+
     return NextResponse.json(user);
   } catch (error) {
     if (error instanceof z.ZodError) {
@@ -52,7 +64,7 @@ export async function PATCH(
 }
 
 export async function DELETE(
-  _req: NextRequest,
+  req: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
@@ -118,6 +130,18 @@ export async function DELETE(
     }
 
     await prisma.user.delete({ where: { id } });
+
+    await recordAuditEvent({
+      classification: "ADMIN",
+      severity: "WARNING",
+      action: "USER_DELETED",
+      summary: `${session.user.name || session.user.email || "Admin"} menghapus pengguna ${user.name || user.email}`,
+      actor: actorFromSession(session),
+      actorIp: getClientIp(req),
+      resourceType: "USER",
+      resourceId: user.id,
+      details: { email: user.email, role: user.role, department: user.department },
+    });
 
     return NextResponse.json({ success: true });
   } catch (error) {

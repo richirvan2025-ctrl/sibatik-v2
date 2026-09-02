@@ -3,9 +3,10 @@ import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { unlink } from "fs/promises";
 import { join } from "path";
+import { actorFromSession, getClientIp, recordAuditEvent } from "@/lib/audit-log";
 
 export async function DELETE(
-  _req: NextRequest,
+  req: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
@@ -30,6 +31,18 @@ export async function DELETE(
     }
 
     await prisma.internalDoc.delete({ where: { id } });
+
+    await recordAuditEvent({
+      classification: "ADMIN",
+      severity: "WARNING",
+      action: "INTERNAL_DOCUMENT_DELETED",
+      summary: `${session.user.name || session.user.email || "Admin"} menghapus dokumen internal ${doc.title}`,
+      actor: actorFromSession(session),
+      actorIp: getClientIp(req),
+      resourceType: "INTERNAL_DOCUMENT",
+      resourceId: doc.id,
+      details: { category: doc.category, fileName: doc.fileName },
+    });
 
     return NextResponse.json({ success: true });
   } catch (error) {

@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { z } from "zod";
+import { actorFromSession, getClientIp, recordAuditEvent } from "@/lib/audit-log";
 
 const categorySchema = z.object({
   name: z.string().min(1),
@@ -71,6 +72,21 @@ export async function POST(req: NextRequest) {
         responseTimeHours: validated.responseTimeHours,
         resolveTimeHours: validated.resolveTimeHours,
         parentId: validated.parentId ?? null,
+      },
+    });
+
+    await recordAuditEvent({
+      classification: "ADMIN",
+      action: "CATEGORY_CREATED",
+      summary: `${session.user.name || session.user.email || "Admin"} membuat kategori ${category.name}`,
+      actor: actorFromSession(session),
+      actorIp: getClientIp(req),
+      resourceType: "CATEGORY",
+      resourceId: category.id,
+      details: {
+        name: category.name,
+        department: category.department,
+        parentId: category.parentId,
       },
     });
 

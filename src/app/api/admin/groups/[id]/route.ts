@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { z } from "zod";
+import { actorFromSession, getClientIp, recordAuditEvent } from "@/lib/audit-log";
 
 const updateSchema = z.object({
   name: z.string().min(1).max(100).optional(),
@@ -48,6 +49,17 @@ export async function PATCH(
       },
     });
 
+    await recordAuditEvent({
+      classification: "ADMIN",
+      action: "GROUP_UPDATED",
+      summary: `${session.user.name || session.user.email || "Admin"} memperbarui group ${updated.name}`,
+      actor: actorFromSession(session),
+      actorIp: getClientIp(req),
+      resourceType: "USER_GROUP",
+      resourceId: updated.id,
+      details: { changes: validated },
+    });
+
     return NextResponse.json(updated);
   } catch (error) {
     if (error instanceof z.ZodError) {
@@ -60,7 +72,7 @@ export async function PATCH(
 
 // DELETE /api/admin/groups/[id] - hapus group (beserta keanggotaan)
 export async function DELETE(
-  _req: NextRequest,
+  req: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
@@ -76,6 +88,17 @@ export async function DELETE(
     }
 
     await prisma.userGroup.delete({ where: { id } });
+    await recordAuditEvent({
+      classification: "ADMIN",
+      severity: "WARNING",
+      action: "GROUP_DELETED",
+      summary: `${session.user.name || session.user.email || "Admin"} menghapus group ${group.name}`,
+      actor: actorFromSession(session),
+      actorIp: getClientIp(req),
+      resourceType: "USER_GROUP",
+      resourceId: group.id,
+      details: { name: group.name },
+    });
     return NextResponse.json({ success: true });
   } catch (error) {
     console.error("DELETE admin/groups error:", error);
