@@ -211,7 +211,11 @@ async function readKernelChangeEvents(): Promise<UnifiedAuditEvent[]> {
               .filter((path) => path.startsWith(APP_ROOT))
               .map((path) => relative(APP_ROOT, path) || ".")
           )
-        );
+        ).sort((left, right) => {
+          const depthDifference =
+            right.split("/").length - left.split("/").length;
+          return depthDifference || right.length - left.length;
+        });
         const primaryPath = paths[0] || "area aplikasi SIBATIK";
         const extraCount = Math.max(paths.length - 1, 0);
 
