@@ -75,6 +75,16 @@ export interface AuditFilters {
   to?: string;
 }
 
+interface LoadAuditOptions {
+  applicationLimit?: number;
+  eventLimit?: number;
+}
+
+function boundedLimit(value: number | undefined, fallback: number) {
+  if (!Number.isFinite(value)) return fallback;
+  return Math.min(Math.max(Math.trunc(value || fallback), 1), 5_000);
+}
+
 function parseBoundary(value: string | undefined, endOfDay: boolean) {
   if (!value || !/^\d{4}-\d{2}-\d{2}$/.test(value)) return null;
   return new Date(
@@ -118,7 +128,12 @@ function matchesFilters(event: UnifiedAuditEvent, filters: AuditFilters) {
   return searchable.includes(query);
 }
 
-export async function loadUnifiedAuditEvents(filters: AuditFilters) {
+export async function loadUnifiedAuditEvents(
+  filters: AuditFilters,
+  options: LoadAuditOptions = {}
+) {
+  const eventLimit = boundedLimit(options.eventLimit, 250);
+  const applicationLimit = boundedLimit(options.applicationLimit, 600);
   const dbWhere: Prisma.AuditLogWhereInput = {};
   const from = parseBoundary(filters.from, false);
   const to = parseBoundary(filters.to, true);
@@ -149,7 +164,7 @@ export async function loadUnifiedAuditEvents(filters: AuditFilters) {
   const [applicationLogs, systemLogs] = await Promise.all([
     prisma.auditLog.findMany({
       orderBy: { occurredAt: "desc" },
-      take: 600,
+      take: applicationLimit,
       where: dbWhere,
     }),
     readSystemAuditEvents(),
@@ -178,9 +193,9 @@ export async function loadUnifiedAuditEvents(filters: AuditFilters) {
     .sort((a, b) => b.occurredAt.getTime() - a.occurredAt.getTime());
 
   return {
-    events: filtered.slice(0, 250),
+    events: filtered.slice(0, eventLimit),
     totalMatched: filtered.length,
-    truncated: filtered.length > 250,
+    truncated: filtered.length > eventLimit,
   };
 }
 

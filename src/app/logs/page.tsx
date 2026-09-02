@@ -8,6 +8,7 @@ import {
   ChevronDown,
   Code2,
   Database,
+  Download,
   ExternalLink,
   FileClock,
   Filter,
@@ -35,6 +36,7 @@ import {
   normalizeAuditFilters,
   SEVERITY_LABELS,
   SOURCE_LABELS,
+  type AuditFilters,
 } from "@/lib/logs-data";
 import type { UnifiedAuditEvent } from "@/lib/system-audit";
 
@@ -114,6 +116,15 @@ function eventHref(event: UnifiedAuditEvent) {
     return `/tickets/${event.resourceId}`;
   }
   return null;
+}
+
+function exportHref(filters: AuditFilters) {
+  const params = new URLSearchParams();
+  Object.entries(filters).forEach(([key, value]) => {
+    if (value) params.set(key, value);
+  });
+  const query = params.toString();
+  return `/api/logs/export${query ? `?${query}` : ""}`;
 }
 
 function AccessGate({ error }: { error?: string }) {
@@ -222,6 +233,7 @@ export default async function LogsPage({ searchParams }: PageProps) {
   const filters = normalizeAuditFilters(params);
   const { events, totalMatched, truncated } =
     await loadUnifiedAuditEvents(filters);
+  const exportUrl = exportHref(filters);
   const applicationCount = events.filter(
     (event) => event.source === "APPLICATION"
   ).length;
@@ -266,7 +278,16 @@ export default async function LogsPage({ searchParams }: PageProps) {
             </div>
           </div>
 
-          <div className="flex items-center gap-2">
+          <div className="flex flex-wrap items-center gap-2">
+            <a
+              className="inline-flex h-10 items-center gap-2 rounded-xl border border-emerald-200/25 bg-emerald-300/15 px-3.5 text-xs font-semibold text-emerald-50 transition hover:bg-emerald-300/25"
+              download
+              href={exportUrl}
+              title={`Export ${totalMatched.toLocaleString("id-ID")} event sesuai filter`}
+            >
+              <Download className="h-3.5 w-3.5" />
+              Export CSV
+            </a>
             <Link
               className="inline-flex h-10 items-center gap-2 rounded-xl border border-white/15 bg-white/10 px-3.5 text-xs font-semibold text-white transition hover:bg-white/15"
               href="/logs"
