@@ -70,7 +70,7 @@ interface DynamicFieldConfig {
 interface TicketRequestBody extends Record<string, unknown> {
   title: string;
   description: string;
-  categoryId: string;
+  categoryIds: string[];
   priority: string;
 }
 
@@ -294,6 +294,24 @@ export default function NewTicketPage() {
     );
   };
 
+  const toggleCategory = (categoryId: string) => {
+    const nextCategoryIds = selectedCategoryIds.includes(categoryId)
+      ? selectedCategoryIds.filter((id) => id !== categoryId)
+      : [...selectedCategoryIds, categoryId];
+
+    setSelectedCategoryIds(nextCategoryIds);
+    setCategorySearch("");
+    clearFieldError("category");
+
+    if (nextCategoryIds.length === 0) {
+      setAssignees([]);
+      setAssigneeId("");
+      setLoadingAssignees(false);
+    } else {
+      setLoadingAssignees(true);
+    }
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
@@ -376,36 +394,38 @@ export default function NewTicketPage() {
           .map(link => ({ type: 'link', url: link.trim(), name: link.trim() }));
       }
 
-      // Buat 1 tiket untuk setiap kategori yang dipilih
-      const ticketPromises = selectedCategoryIds.map(async (categoryId) => {
-        const body: TicketRequestBody = { title, description, categoryId, priority };
-        if (deadline) body.deadline = new Date(deadline).toISOString();
-        if (assigneeId) body.assignedToId = assigneeId;
-        if (onBehalfOfId) body.onBehalfOfId = onBehalfOfId;
-        if (uploadedAttachments.length > 0) body.attachments = uploadedAttachments;
+      // Semua divisi dikirim dalam satu request. Backend membuat satu tiket per
+      // divisi dalam satu transaksi agar nomor tiket selalu unik dan tidak ada
+      // tiket yang hanya tersimpan sebagian.
+      const body: TicketRequestBody = {
+        categoryIds: selectedCategoryIds,
+        description,
+        priority,
+        title,
+      };
+      if (deadline) body.deadline = new Date(deadline).toISOString();
+      if (assigneeId) body.assignedToId = assigneeId;
+      if (onBehalfOfId) body.onBehalfOfId = onBehalfOfId;
+      if (uploadedAttachments.length > 0) body.attachments = uploadedAttachments;
 
-        // Tambahkan custom fields jika ada (hanya untuk 1 kategori)
-        if (dynamicFields && selectedCategoryIds.length === 1) {
-          body.customFields = {
-            emailAktif: customFieldValues.emailAktif,
-            pinLaptop: customFieldValues.pinLaptop,
-            softwareList: customFieldValues.softwareList,
-          };
-        }
+      if (dynamicFields && selectedCategoryIds.length === 1) {
+        body.customFields = {
+          emailAktif: customFieldValues.emailAktif,
+          pinLaptop: customFieldValues.pinLaptop,
+          softwareList: customFieldValues.softwareList,
+        };
+      }
 
-        return fetch("/api/tickets", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(body),
-        });
+      const result = await fetch("/api/tickets", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(body),
       });
 
-      const results = await Promise.all(ticketPromises);
-
-      // Cek apakah ada yang gagal
-      const failedResults = results.filter((res) => !res.ok);
-      if (failedResults.length > 0) {
-        const data: { error?: unknown } = await failedResults[0].json();
+      if (!result.ok) {
+        const data: { error?: unknown } = await result
+          .json()
+          .catch(() => ({ error: "Gagal membuat tiket" }));
         if (Array.isArray(data.error)) {
           setError(
             data.error
@@ -583,18 +603,15 @@ export default function NewTicketPage() {
                               type="button"
                               role="option"
                               aria-selected={isSelected}
-                              onClick={() => {
-                                if (!isSelected) {
-                                  setSelectedCategoryIds((prev) => [...prev, cat.id]);
-                                  setLoadingAssignees(true);
-                                  setCategorySearch("");
-                                  clearFieldError("category");
-                                }
-                              }}
-                              disabled={isSelected}
+                              title={
+                                isSelected
+                                  ? "Klik untuk membatalkan pilihan"
+                                  : "Klik untuk memilih divisi"
+                              }
+                              onClick={() => toggleCategory(cat.id)}
                               className={`flex w-full items-center gap-2 px-3 py-2 text-sm transition-colors ${
                                 isSelected
-                                  ? "bg-blue-50 opacity-60 cursor-not-allowed"
+                                  ? "cursor-pointer bg-violet-50 hover:bg-violet-100"
                                   : "hover:bg-[#F8FAFC] cursor-pointer"
                               }`}
                             >
@@ -635,7 +652,7 @@ export default function NewTicketPage() {
                   </p>
                 ) : (
                   <p id="ticket-category-help" className="text-xs text-[#64748B]">
-                    Ketik untuk melihat saran divisi. Anda dapat memilih lebih dari satu.
+                    Anda dapat memilih lebih dari satu. Klik kembali pilihan untuk membatalkan.
                   </p>
                 )}
                 {/* Selected categories chips */}
@@ -653,18 +670,9 @@ export default function NewTicketPage() {
                           <button
                             type="button"
                             aria-label={`Hapus ${cat.name} dari divisi tujuan`}
-                            onClick={() => {
-                              const nextCategoryIds = selectedCategoryIds.filter((cid) => cid !== id);
-                              setSelectedCategoryIds(nextCategoryIds);
-                              if (nextCategoryIds.length === 0) {
-                                setAssignees([]);
-                                setAssigneeId("");
-                                setLoadingAssignees(false);
-                              } else {
-                                setLoadingAssignees(true);
-                              }
-                            }}
-                            className="hover:text-red-500 transition-colors"
+                            title={`Hapus ${cat.name}`}
+                            onClick={() => toggleCategory(id)}
+                            className="inline-flex h-5 w-5 items-center justify-center rounded-full transition-colors hover:bg-red-50 hover:text-red-500 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-300"
                           >
                             <X className="h-3 w-3" />
                           </button>

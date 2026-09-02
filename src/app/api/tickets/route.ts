@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { sendMail } from "@/lib/mailer";
+import { nextTicketSequence } from "@/lib/ticket-number";
 import {
   actorFromSession,
   getClientIp,
@@ -20,7 +21,8 @@ const attachmentSchema = z.object({
 const createTicketSchema = z.object({
   title: z.string().min(1),
   description: z.string().min(1),
-  categoryId: z.string(),
+  categoryId: z.string().min(1).optional(),
+  categoryIds: z.array(z.string().min(1)).min(1).max(50).optional(),
   priority: z.enum(["LOW", "MEDIUM", "HIGH", "URGENT"]),
   deadline: z
     .string()
@@ -29,7 +31,36 @@ const createTicketSchema = z.object({
   onBehalfOfId: z.string().optional(),
   assignedToId: z.string().optional(),
   attachments: z.array(attachmentSchema).optional(),
+}).refine((value) => value.categoryId || value.categoryIds?.length, {
+  message: "Pilih minimal satu divisi tujuan",
+  path: ["categoryIds"],
 });
+
+const TICKET_NUMBER_RETRY_LIMIT = 5;
+
+function normalizedDepartment(value: string | null) {
+  return value?.trim().toLocaleLowerCase("id-ID") || null;
+}
+
+function isRetryableTicketCreationError(error: unknown) {
+  const code =
+    typeof error === "object" && error !== null && "code" in error
+      ? String(error.code)
+      : null;
+  const message = error instanceof Error ? error.message : "";
+
+  return (
+    code === "P1008" ||
+    code === "P2002" ||
+    code === "P2028" ||
+    code === "P2034" ||
+    message.toLowerCase().includes("database is locked")
+  );
+}
+
+async function waitBeforeRetry(attempt: number) {
+  await new Promise((resolve) => setTimeout(resolve, 40 * 2 ** attempt));
+}
 
 function isTicketStatus(value: string | null): value is TicketStatus {
   return value !== null && Object.values(TicketStatus).includes(value as TicketStatus);
@@ -64,7 +95,11 @@ export async function GET(req: NextRequest) {
     const role = session.user.role;
     const scope = searchParams.get("scope"); // "mine" | "department" | null
 
-    let where: Prisma.TicketWhereInput = {};
+    // Preserve the production behavior: cancelled tickets are hidden from the
+    // unrestricted management list.
+    let where: Prisma.TicketWhereInput = {
+      AND: [{ status: { not: TicketStatus.CANCELLED } }],
+    };
 
     if (role === "ADMIN" || role === "EXECUTIVE") {
       // Management sees all tickets. Executive access remains read-only in the UI.
@@ -198,18 +233,6 @@ export async function POST(req: NextRequest) {
     const userId = session.user.id;
     const role = session.user.role;
 
-    // Generate ticket number: TKT-YYYY-NNNNN
-    const year = new Date().getFullYear();
-    const count = await prisma.ticket.count({
-      where: {
-        createdAt: {
-          gte: new Date(year, 0, 1),
-          lt: new Date(year + 1, 0, 1),
-        },
-      },
-    });
-    const ticketNumber = `TKT-${year}-${String(count + 1).padStart(5, "0")}`;
-
     // Only admin/agent/supervisor can create on behalf of another user
     const onBehalfOfId =
       validated.onBehalfOfId &&
@@ -217,191 +240,315 @@ export async function POST(req: NextRequest) {
         ? validated.onBehalfOfId
         : null;
 
-    const ticket = await prisma.ticket.create({
-      data: {
-        ticketNumber,
-        title: validated.title,
-        description: validated.description,
-        categoryId: validated.categoryId,
-        priority: validated.priority,
-        deadline: validated.deadline ? new Date(validated.deadline) : undefined,
-        createdById: userId,
-        onBehalfOfId: onBehalfOfId || undefined,
-        status: "OPEN",
-      },
-      include: {
-        category: true,
-        createdBy: { select: { id: true, name: true, email: true } },
-      },
+    const requestedCategoryIds = Array.from(
+      new Set(
+        validated.categoryIds?.length
+          ? validated.categoryIds
+          : [validated.categoryId as string]
+      )
+    );
+    const categories = await prisma.category.findMany({
+      where: { id: { in: requestedCategoryIds }, isActive: true },
+      select: { id: true, name: true, department: true },
+    });
+    const categoryById = new Map(categories.map((category) => [category.id, category]));
+    const missingCategoryIds = requestedCategoryIds.filter(
+      (categoryId) => !categoryById.has(categoryId)
+    );
+
+    if (missingCategoryIds.length > 0) {
+      return NextResponse.json(
+        { error: "Satu atau beberapa divisi tujuan tidak tersedia" },
+        { status: 400 }
+      );
+    }
+
+    // Satu tiket per divisi. Jika payload berisi dua kategori dari divisi yang
+    // sama, kategori pertama dipakai agar tidak membuat tiket duplikat.
+    const seenTargets = new Set<string>();
+    const targetCategories = requestedCategoryIds.flatMap((categoryId) => {
+      const category = categoryById.get(categoryId);
+      if (!category) return [];
+      const key = normalizedDepartment(category.department) || `category:${category.id}`;
+      if (seenTargets.has(key)) return [];
+      seenTargets.add(key);
+      return [category];
+    });
+    const targetDepartments = Array.from(
+      new Set(
+        targetCategories
+          .map((category) => category.department)
+          .filter((department): department is string => Boolean(department))
+      )
+    );
+
+    const [chosenAssignee, supervisors, recipientUsers] = await Promise.all([
+      validated.assignedToId
+        ? prisma.user.findFirst({
+            where: {
+              id: validated.assignedToId,
+              isActive: true,
+              role: { in: ["ADMIN", "AGENT", "SUPERVISOR"] },
+            },
+            select: { id: true, email: true, department: true },
+          })
+        : Promise.resolve(null),
+      targetDepartments.length
+        ? prisma.user.findMany({
+            where: {
+              department: { in: targetDepartments },
+              isActive: true,
+              role: "SUPERVISOR",
+            },
+            orderBy: { name: "asc" },
+            select: { id: true, email: true, department: true },
+          })
+        : Promise.resolve([]),
+      targetDepartments.length
+        ? prisma.user.findMany({
+            where: {
+              department: { in: targetDepartments },
+              id: { not: userId },
+              isActive: true,
+              role: { not: "MAHASISWA" },
+            },
+            select: { id: true, email: true, department: true },
+          })
+        : Promise.resolve([]),
+    ]);
+
+    const supervisorByDepartment = new Map<
+      string,
+      (typeof supervisors)[number]
+    >();
+    supervisors.forEach((supervisor) => {
+      const key = normalizedDepartment(supervisor.department);
+      if (key && !supervisorByDepartment.has(key)) {
+        supervisorByDepartment.set(key, supervisor);
+      }
     });
 
-    if (validated.attachments?.length) {
-      await prisma.ticketAttachment.createMany({
-        data: validated.attachments.map((a) => ({
-          ticketId: ticket.id,
-          fileName: a.fileName,
-          fileUrl: a.fileUrl,
-          fileSize: a.fileSize,
-          mimeType: a.mimeType,
-          uploadedById: userId,
-        })),
-      });
-    }
+    const recipientsByDepartment = new Map<
+      string,
+      typeof recipientUsers
+    >();
+    recipientUsers.forEach((recipient) => {
+      const key = normalizedDepartment(recipient.department);
+      if (!key) return;
+      recipientsByDepartment.set(key, [
+        ...(recipientsByDepartment.get(key) || []),
+        recipient,
+      ]);
+    });
 
-    // Kirim notifikasi ke penerima yang relevan
-    const categoryDept = ticket.category.department;
-    const creatorName = ticket.createdBy.name;
-    const notifMessage = `Tiket baru dari ${creatorName}: ${ticket.ticketNumber} — ${ticket.title}`;
+    const itSupportDepartment = normalizedDepartment(
+      "Sistem Informasi & IT Support"
+    );
+    const targets = targetCategories.map((category) => {
+      const departmentKey = normalizedDepartment(category.department);
+      const manualAssigneeMatches =
+        chosenAssignee &&
+        departmentKey &&
+        normalizedDepartment(chosenAssignee.department) === departmentKey;
+      const fallbackSupervisor =
+        departmentKey && departmentKey !== itSupportDepartment
+          ? supervisorByDepartment.get(departmentKey)
+          : null;
+      const assignee = manualAssigneeMatches
+        ? chosenAssignee
+        : fallbackSupervisor || null;
 
-    // Auto-assign logic dengan prioritas (gabungan HEAD + a2cbde1):
-    // 1. Assignee yang dipilih manual saat membuat tiket (harus dari divisi kategori)
-    // 2. @mention di description (SEMENTARA DINONAKTIFKAN: extractMentions belum ada)
-    // 3. SUPERVISOR dari divisi kategori — kecuali kategori IT Support (ditangani manual tim IT)
-    let autoAssignedId: string | null = null;
+      return {
+        assignee,
+        category,
+        recipients: departmentKey
+          ? recipientsByDepartment.get(departmentKey) || []
+          : [],
+      };
+    });
 
-    // Priority 1: Assignee dipilih manual di form
-    if (validated.assignedToId) {
-      const chosenAssignee = await prisma.user.findFirst({
-        where: {
-          id: validated.assignedToId,
-          isActive: true,
-          ...(categoryDept ? { department: categoryDept } : {}),
+    const year = new Date().getFullYear();
+    const ticketNumberPrefix = `TKT-${year}-`;
+    const createBatch = () =>
+      prisma.$transaction(
+        async (tx) => {
+          const existingNumbers = await tx.ticket.findMany({
+            where: { ticketNumber: { startsWith: ticketNumberPrefix } },
+            select: { ticketNumber: true },
+          });
+          let nextSequence = nextTicketSequence(
+            existingNumbers.map((ticket) => ticket.ticketNumber),
+            ticketNumberPrefix
+          );
+          const created = [];
+
+          for (const target of targets) {
+            const ticketNumber = `${ticketNumberPrefix}${String(
+              nextSequence++
+            ).padStart(5, "0")}`;
+            const ticket = await tx.ticket.create({
+              data: {
+                assignedToId: target.assignee?.id || undefined,
+                categoryId: target.category.id,
+                createdById: userId,
+                deadline: validated.deadline
+                  ? new Date(validated.deadline)
+                  : undefined,
+                description: validated.description,
+                onBehalfOfId: onBehalfOfId || undefined,
+                priority: validated.priority,
+                status: TicketStatus.OPEN,
+                ticketNumber,
+                title: validated.title,
+              },
+              include: {
+                category: true,
+                createdBy: { select: { id: true, name: true, email: true } },
+              },
+            });
+
+            if (validated.attachments?.length) {
+              await tx.ticketAttachment.createMany({
+                data: validated.attachments.map((attachment) => ({
+                  fileName: attachment.fileName,
+                  fileSize: attachment.fileSize,
+                  fileUrl: attachment.fileUrl,
+                  mimeType: attachment.mimeType,
+                  ticketId: ticket.id,
+                  uploadedById: userId,
+                })),
+              });
+            }
+
+            const notificationMessage = `Tiket baru dari ${ticket.createdBy.name}: ${ticket.ticketNumber} — ${ticket.title}`;
+            const notifications = target.recipients.map((recipient) => ({
+              message: notificationMessage,
+              ticketId: ticket.id,
+              type: "NEW_TICKET",
+              userId: recipient.id,
+            }));
+
+            if (target.assignee && target.assignee.id !== userId) {
+              notifications.push({
+                message: `Tiket ${ticket.ticketNumber} — "${ticket.title}" telah di-assign ke Anda secara otomatis.`,
+                ticketId: ticket.id,
+                type: "TICKET_ASSIGNED",
+                userId: target.assignee.id,
+              });
+            }
+
+            if (notifications.length > 0) {
+              await tx.notification.createMany({ data: notifications });
+            }
+
+            created.push({
+              assigneeEmail: target.assignee?.email || null,
+              assigneeId: target.assignee?.id || null,
+              recipients: target.recipients,
+              ticket,
+            });
+          }
+
+          return created;
         },
-        select: { id: true },
-      });
-      if (chosenAssignee) {
-        autoAssignedId = chosenAssignee.id;
+        { maxWait: 10_000, timeout: 20_000 }
+      );
+
+    let createdTickets: Awaited<ReturnType<typeof createBatch>> | null = null;
+    let creationError: unknown;
+
+    for (let attempt = 0; attempt < TICKET_NUMBER_RETRY_LIMIT; attempt += 1) {
+      try {
+        createdTickets = await createBatch();
+        break;
+      } catch (error) {
+        creationError = error;
+        if (
+          !isRetryableTicketCreationError(error) ||
+          attempt === TICKET_NUMBER_RETRY_LIMIT - 1
+        ) {
+          throw error;
+        }
+        await waitBeforeRetry(attempt);
       }
     }
 
-    // Priority 2: Check @mention in description
-    // NOTE: DINONAKTIFKAN SEMENTARA — fungsi `extractMentions` tidak terdefinisi/terimport
-    // di manapun dalam codebase, akan membuat build gagal. Aktifkan kembali setelah
-    // fungsi extractMentions dibuat.
-    // const mentions = extractMentions(validated.description);
-    // if (!autoAssignedId && mentions.length > 0 && categoryDept) {
-    //   const mentionedUser = await prisma.user.findFirst({
-    //     where: {
-    //       username: mentions[0],
-    //       isActive: true,
-    //       department: categoryDept, // HARUS dari divisi yang sama
-    //     },
-    //     select: { id: true },
-    //   });
-    //   if (mentionedUser) {
-    //     autoAssignedId = mentionedUser.id;
-    //   }
-    // }
+    if (!createdTickets) throw creationError;
 
-    // Priority 3: Fallback ke auto-assign SUPERVISOR by department
-    // Khusus kategori IT Support: tidak auto-assign (ditangani manual oleh tim IT)
-    if (!autoAssignedId && categoryDept && categoryDept !== "Sistem Informasi & IT Support") {
-      const supervisor = await prisma.user.findFirst({
-        where: {
-          role: "SUPERVISOR",
-          department: categoryDept,
-          isActive: true,
-        },
-        select: { id: true },
-      });
-      if (supervisor) {
-        autoAssignedId = supervisor.id;
-      }
-    }
-
-    // Update ticket dengan assignedToId jika ada
-    if (autoAssignedId) {
-      await prisma.ticket.update({
-        where: { id: ticket.id },
-        data: { assignedToId: autoAssignedId },
-      });
-    }
-
-    // Penerima notifikasi: HANYA anggota aktif divisi tujuan (kategori),
-    // kecuali MAHASISWA dan pembuat tiket sendiri.
-    // Catatan: Admin & Executive lintas divisi TIDAK menerima notifikasi tiket.
-    const recipients = categoryDept
-      ? await prisma.user.findMany({
-          where: {
-            isActive: true,
-            id: { not: userId },
-            department: categoryDept,
-            role: { not: "MAHASISWA" },
+    const actorIp = getClientIp(req);
+    await Promise.all(
+      createdTickets.map(({ assigneeId, ticket }, index) =>
+        recordAuditEvent({
+          action: "TICKET_CREATED",
+          actor: actorFromSession(session),
+          actorIp,
+          classification: "TICKET",
+          details: {
+            assignedToId: assigneeId,
+            attachmentCount: validated.attachments?.length || 0,
+            batchIndex: index + 1,
+            batchSize: createdTickets.length,
+            category: ticket.category.name,
+            department: ticket.category.department,
+            onBehalfOfId: onBehalfOfId || null,
+            priority: ticket.priority,
           },
-          select: { id: true, email: true },
+          resourceId: ticket.id,
+          resourceType: "TICKET",
+          summary: `${session.user.name} membuat ${ticket.ticketNumber}: ${ticket.title}`,
         })
-      : [];
+      )
+    );
 
-    const notifRecipients = recipients.map((r) => ({
-      userId: r.id,
-      ticketId: ticket.id,
-      type: "NEW_TICKET",
-      message: notifMessage,
-    }));
+    // Email tetap best-effort dan dijalankan setelah transaksi berhasil, sehingga
+    // kegagalan SMTP tidak dapat membuat sebagian tiket tersimpan.
+    const emailJobs = createdTickets.flatMap(
+      ({ assigneeEmail, assigneeId, recipients, ticket }) => {
+        const ticketUrl = `${process.env.NEXTAUTH_URL ?? ""}/tickets/${ticket.id}`;
+        const notificationMessage = `Tiket baru dari ${ticket.createdBy.name}: ${ticket.ticketNumber} — ${ticket.title}`;
+        const recipientEmails = recipients
+          .map((recipient) => recipient.email)
+          .filter((email): email is string => Boolean(email));
+        const jobs: Array<Promise<boolean>> = [];
 
-    // Notifikasi TICKET_ASSIGNED ke department head yang di-auto-assign
-    if (autoAssignedId && autoAssignedId !== userId) {
-      notifRecipients.push({
-        userId: autoAssignedId,
-        ticketId: ticket.id,
-        type: "TICKET_ASSIGNED",
-        message: `Tiket ${ticket.ticketNumber} — "${ticket.title}" telah di-assign ke Anda secara otomatis.`,
-      });
-    }
+        if (recipientEmails.length > 0) {
+          jobs.push(
+            sendMail({
+              html: `<p>${notificationMessage}</p><p><a href="${ticketUrl}">Lihat tiket ${ticket.ticketNumber}</a></p>`,
+              subject: `[Tiket Baru] ${ticket.ticketNumber} — ${ticket.title}`,
+              text: `${notificationMessage}\n\nLihat tiket: ${ticketUrl}`,
+              to: recipientEmails,
+            })
+          );
+        }
 
-    if (notifRecipients.length > 0) {
-      await prisma.notification.createMany({
-        data: notifRecipients,
-      });
-    }
+        if (assigneeId && assigneeId !== userId && assigneeEmail) {
+          jobs.push(
+            sendMail({
+              html: `<p>Tiket <strong>${ticket.ticketNumber}</strong> — "${ticket.title}" telah di-assign ke Anda secara otomatis.</p><p><a href="${ticketUrl}">Lihat tiket</a></p>`,
+              subject: `[Tiket Ditugaskan] ${ticket.ticketNumber} — ${ticket.title}`,
+              text: `Tiket ${ticket.ticketNumber} — "${ticket.title}" telah di-assign ke Anda secara otomatis.\n\nLihat tiket: ${ticketUrl}`,
+              to: assigneeEmail,
+            })
+          );
+        }
 
-    // Kirim notifikasi via email (best-effort; tidak menggagalkan request)
-    const ticketUrl = `${process.env.NEXTAUTH_URL ?? ""}/tickets/${ticket.id}`;
-    const emailRecipients = recipients.map((r) => r.email).filter(Boolean) as string[];
-    if (emailRecipients.length > 0) {
-      void sendMail({
-        to: emailRecipients,
-        subject: `[Tiket Baru] ${ticket.ticketNumber} — ${ticket.title}`,
-        text: `${notifMessage}\n\nLihat tiket: ${ticketUrl}`,
-        html: `<p>${notifMessage}</p><p><a href="${ticketUrl}">Lihat tiket ${ticket.ticketNumber}</a></p>`,
-      });
-    }
-
-    // Email khusus ke assignee otomatis
-    if (autoAssignedId && autoAssignedId !== userId) {
-      const assignee = await prisma.user.findUnique({
-        where: { id: autoAssignedId },
-        select: { email: true },
-      });
-      if (assignee?.email) {
-        void sendMail({
-          to: assignee.email,
-          subject: `[Tiket Ditugaskan] ${ticket.ticketNumber} — ${ticket.title}`,
-          text: `Tiket ${ticket.ticketNumber} — "${ticket.title}" telah di-assign ke Anda secara otomatis.\n\nLihat tiket: ${ticketUrl}`,
-          html: `<p>Tiket <strong>${ticket.ticketNumber}</strong> — "${ticket.title}" telah di-assign ke Anda secara otomatis.</p><p><a href="${ticketUrl}">Lihat tiket</a></p>`,
-        });
+        return jobs;
       }
+    );
+    void Promise.allSettled(emailJobs);
+
+    if (validated.categoryIds) {
+      return NextResponse.json(
+        {
+          count: createdTickets.length,
+          tickets: createdTickets.map(({ ticket }) => ticket),
+        },
+        { status: 201 }
+      );
     }
 
-    await recordAuditEvent({
-      action: "TICKET_CREATED",
-      actor: actorFromSession(session),
-      actorIp: getClientIp(req),
-      classification: "TICKET",
-      details: {
-        assignedToId: autoAssignedId,
-        attachmentCount: validated.attachments?.length || 0,
-        category: ticket.category.name,
-        department: ticket.category.department,
-        onBehalfOfId: onBehalfOfId || null,
-        priority: ticket.priority,
-      },
-      resourceId: ticket.id,
-      resourceType: "TICKET",
-      summary: `${session.user.name} membuat ${ticket.ticketNumber}: ${ticket.title}`,
-    });
-
-    return NextResponse.json(ticket, { status: 201 });
+    return NextResponse.json(createdTickets[0].ticket, { status: 201 });
   } catch (error) {
     if (error instanceof z.ZodError) {
       return NextResponse.json({ error: error.issues }, { status: 400 });
