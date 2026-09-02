@@ -6,6 +6,8 @@ import {
   CalendarDays,
   CheckCircle2,
   ChevronDown,
+  ChevronLeft,
+  ChevronRight,
   Code2,
   Database,
   Download,
@@ -34,6 +36,7 @@ import {
   CLASSIFICATION_LABELS,
   loadUnifiedAuditEvents,
   normalizeAuditFilters,
+  normalizeAuditPage,
   SEVERITY_LABELS,
   SOURCE_LABELS,
   type AuditFilters,
@@ -125,6 +128,16 @@ function exportHref(filters: AuditFilters) {
   });
   const query = params.toString();
   return `/api/logs/export${query ? `?${query}` : ""}`;
+}
+
+function logsHref(filters: AuditFilters, page: number) {
+  const params = new URLSearchParams();
+  Object.entries(filters).forEach(([key, value]) => {
+    if (value) params.set(key, value);
+  });
+  if (page > 1) params.set("page", String(page));
+  const query = params.toString();
+  return `/logs${query ? `?${query}` : ""}`;
 }
 
 function AccessGate({ error }: { error?: string }) {
@@ -231,9 +244,22 @@ export default async function LogsPage({ searchParams }: PageProps) {
   if (!isAllowed) return <AccessGate error={error} />;
 
   const filters = normalizeAuditFilters(params);
-  const { events, totalMatched, truncated } =
-    await loadUnifiedAuditEvents(filters);
+  const requestedPage = normalizeAuditPage(params.page);
+  const {
+    events,
+    hasNextPage,
+    hasPreviousPage,
+    page,
+    pageSize,
+    totalMatched,
+    totalPages,
+  } = await loadUnifiedAuditEvents(filters, {
+    applicationLimit: 5_000,
+    page: requestedPage,
+  });
   const exportUrl = exportHref(filters);
+  const pageStart = totalMatched === 0 ? 0 : (page - 1) * pageSize + 1;
+  const pageEnd = Math.min(page * pageSize, totalMatched);
   const applicationCount = events.filter(
     (event) => event.source === "APPLICATION"
   ).length;
@@ -461,7 +487,9 @@ export default async function LogsPage({ searchParams }: PageProps) {
               </h2>
               <p className="mt-1 text-xs text-slate-400">
                 {totalMatched.toLocaleString("id-ID")} event sesuai filter
-                {truncated ? " · menampilkan 250 terbaru" : ""}
+                {totalMatched > 0
+                  ? ` · menampilkan ${pageStart.toLocaleString("id-ID")}–${pageEnd.toLocaleString("id-ID")}`
+                  : ""}
               </p>
             </div>
             <span className="inline-flex w-fit items-center gap-1.5 rounded-full bg-emerald-50 px-2.5 py-1 text-[10px] font-bold uppercase tracking-[0.12em] text-emerald-700">
@@ -481,10 +509,11 @@ export default async function LogsPage({ searchParams }: PageProps) {
               </p>
             </div>
           ) : (
-            <div className="divide-y divide-slate-100">
-              {events.map((event) => {
-                const href = eventHref(event);
-                return (
+            <>
+              <div className="divide-y divide-slate-100">
+                {events.map((event) => {
+                  const href = eventHref(event);
+                  return (
                   <article
                     className="grid gap-4 px-5 py-4 transition hover:bg-slate-50/70 lg:grid-cols-[170px_145px_minmax(300px,1fr)_220px] lg:items-start"
                     key={event.id}
@@ -566,9 +595,59 @@ export default async function LogsPage({ searchParams }: PageProps) {
                       </div>
                     </div>
                   </article>
-                );
-              })}
-            </div>
+                  );
+                })}
+              </div>
+
+              <nav
+                aria-label="Pagination system logs"
+                className="flex flex-col gap-3 border-t border-slate-200 bg-slate-50/70 px-5 py-4 sm:flex-row sm:items-center sm:justify-between"
+              >
+                <p className="text-xs font-medium text-slate-500">
+                  Halaman <span className="font-bold text-slate-700">{page.toLocaleString("id-ID")}</span> dari{" "}
+                  <span className="font-bold text-slate-700">{totalPages.toLocaleString("id-ID")}</span>
+                </p>
+                <div className="flex items-center gap-2">
+                  {hasPreviousPage ? (
+                    <Link
+                      aria-label="Halaman sebelumnya"
+                      className="inline-flex h-10 items-center gap-2 rounded-xl border border-slate-200 bg-white px-3.5 text-xs font-bold text-slate-600 shadow-sm transition hover:-translate-y-0.5 hover:border-violet-200 hover:text-violet-700 hover:shadow-md active:translate-y-0"
+                      href={logsHref(filters, page - 1)}
+                    >
+                      <ChevronLeft className="h-4 w-4" />
+                      Sebelumnya
+                    </Link>
+                  ) : (
+                    <span
+                      aria-disabled="true"
+                      className="inline-flex h-10 cursor-not-allowed items-center gap-2 rounded-xl border border-slate-200 bg-slate-100 px-3.5 text-xs font-bold text-slate-400"
+                    >
+                      <ChevronLeft className="h-4 w-4" />
+                      Sebelumnya
+                    </span>
+                  )}
+
+                  {hasNextPage ? (
+                    <Link
+                      aria-label="Halaman berikutnya"
+                      className="inline-flex h-10 items-center gap-2 rounded-xl bg-[#7047EB] px-3.5 text-xs font-bold text-white shadow-md shadow-violet-500/15 transition hover:-translate-y-0.5 hover:bg-[#6439E3] hover:shadow-lg hover:shadow-violet-500/20 active:translate-y-0"
+                      href={logsHref(filters, page + 1)}
+                    >
+                      Berikutnya
+                      <ChevronRight className="h-4 w-4" />
+                    </Link>
+                  ) : (
+                    <span
+                      aria-disabled="true"
+                      className="inline-flex h-10 cursor-not-allowed items-center gap-2 rounded-xl bg-slate-200 px-3.5 text-xs font-bold text-slate-400"
+                    >
+                      Berikutnya
+                      <ChevronRight className="h-4 w-4" />
+                    </span>
+                  )}
+                </div>
+              </nav>
+            </>
           )}
         </section>
 

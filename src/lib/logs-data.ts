@@ -78,6 +78,7 @@ export interface AuditFilters {
 interface LoadAuditOptions {
   applicationLimit?: number;
   eventLimit?: number;
+  page?: number;
 }
 
 function boundedLimit(value: number | undefined, fallback: number) {
@@ -134,6 +135,7 @@ export async function loadUnifiedAuditEvents(
 ) {
   const eventLimit = boundedLimit(options.eventLimit, 250);
   const applicationLimit = boundedLimit(options.applicationLimit, 600);
+  const requestedPage = boundedLimit(options.page, 1);
   const dbWhere: Prisma.AuditLogWhereInput = {};
   const from = parseBoundary(filters.from, false);
   const to = parseBoundary(filters.to, true);
@@ -192,11 +194,28 @@ export async function loadUnifiedAuditEvents(
     .filter((event) => matchesFilters(event, filters))
     .sort((a, b) => b.occurredAt.getTime() - a.occurredAt.getTime());
 
+  const totalPages = Math.max(1, Math.ceil(filtered.length / eventLimit));
+  const page = Math.min(requestedPage, totalPages);
+  const offset = (page - 1) * eventLimit;
+
   return {
-    events: filtered.slice(0, eventLimit),
+    events: filtered.slice(offset, offset + eventLimit),
+    hasNextPage: page < totalPages,
+    hasPreviousPage: page > 1,
+    page,
+    pageSize: eventLimit,
     totalMatched: filtered.length,
-    truncated: filtered.length > eventLimit,
+    totalPages,
+    truncated: filtered.length > offset + eventLimit,
   };
+}
+
+export function normalizeAuditPage(
+  value: string | string[] | undefined
+) {
+  const raw = Array.isArray(value) ? value[0] : value;
+  const parsed = Number.parseInt(raw || "1", 10);
+  return Number.isFinite(parsed) && parsed > 0 ? Math.min(parsed, 5_000) : 1;
 }
 
 export function normalizeAuditFilters(params: Record<string, string | string[] | undefined>) {
