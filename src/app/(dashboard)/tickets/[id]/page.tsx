@@ -366,7 +366,7 @@ export default function TicketDetailPage() {
               </CardTitle>
             </CardHeader>
             <CardContent className="min-h-[178px] px-5 py-5">
-              <p className="whitespace-pre-wrap text-sm leading-7 text-[#334155]">
+              <p className="whitespace-pre-wrap break-words [overflow-wrap:anywhere] text-sm leading-7 text-[#334155]">
                 {ticket.description}
               </p>
 
@@ -454,14 +454,14 @@ export default function TicketDetailPage() {
               {ticket.comments.map((comment) => (
                 <div
                   key={comment.id}
-                  className={`rounded-xl p-4 transition-all ${
+                  className={`min-w-0 overflow-hidden rounded-xl p-4 transition-all ${
                     comment.isInternal
                       ? "bg-amber-50 border border-amber-200"
                       : "bg-[#F8FAFC] border border-[#E2E8F0]"
                   }`}
                 >
-                  <div className="flex items-center justify-between mb-2">
-                    <div className="flex items-center gap-2">
+                  <div className="mb-2 flex min-w-0 items-start justify-between gap-3">
+                    <div className="flex min-w-0 items-start gap-2">
                       <div
                         className={`flex h-8 w-8 items-center justify-center rounded-lg ${
                           comment.user.role === "ADMIN"
@@ -475,8 +475,8 @@ export default function TicketDetailPage() {
                       >
                         <User className="h-4 w-4" />
                       </div>
-                      <div>
-                        <span className="font-semibold text-sm text-[#1E293B]">
+                      <div className="min-w-0 pt-1">
+                        <span className="break-words text-sm font-semibold text-[#1E293B]">
                           {comment.user.name}
                         </span>
                         <span className="ml-2 text-[10px] font-bold uppercase tracking-wider text-[#94A3B8]">
@@ -490,7 +490,7 @@ export default function TicketDetailPage() {
                         </Badge>
                       )}
                     </div>
-                    <span className="text-xs text-[#94A3B8]">
+                    <span className="shrink-0 pt-1 text-xs text-[#94A3B8]">
                       {new Date(comment.createdAt).toLocaleString("id-ID", {
                         day: "numeric",
                         month: "short",
@@ -499,7 +499,7 @@ export default function TicketDetailPage() {
                       })}
                     </span>
                   </div>
-                  <p className="text-sm text-[#1E293B] leading-relaxed pl-10">
+                  <p className="whitespace-pre-wrap break-words [overflow-wrap:anywhere] text-sm leading-relaxed text-[#1E293B] sm:pl-10">
                     {comment.message}
                   </p>
                 </div>
