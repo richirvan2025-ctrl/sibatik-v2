@@ -25,6 +25,8 @@ import {
   Building2,
   ChevronDown,
   Layers3,
+  CircleDot,
+  CheckCircle2,
 } from "lucide-react";
 
 interface TicketItem {
@@ -73,6 +75,8 @@ const activeTicketStatuses = new Set([
   "REOPENED",
 ]);
 
+const completedTicketStatuses = new Set(["RESOLVED", "CLOSED", "CANCELLED"]);
+
 interface DepartmentTicketGroup {
   department: string;
   tickets: TicketItem[];
@@ -81,7 +85,13 @@ interface DepartmentTicketGroup {
   highPriorityCount: number;
 }
 
-function TicketListItem({ ticket }: { ticket: TicketItem }) {
+function TicketListItem({
+  ticket,
+  muted = false,
+}: {
+  ticket: TicketItem;
+  muted?: boolean;
+}) {
   const status = statusConfig[ticket.status] || statusConfig.OPEN;
   const priority = priorityConfig[ticket.priority] || priorityConfig.MEDIUM;
   const created = new Date(ticket.createdAt).toLocaleDateString("id-ID", {
@@ -92,8 +102,16 @@ function TicketListItem({ ticket }: { ticket: TicketItem }) {
 
   return (
     <Link href={`/tickets/${ticket.id}`} className="block">
-      <Card className="group cursor-pointer overflow-hidden py-0 transition-all duration-200 hover:-translate-y-0.5 hover:border-[#CFC4F6] hover:shadow-[0_10px_26px_rgba(29,43,76,0.09)]">
-        <div className="absolute left-0 top-0 h-full w-1 bg-[#7047EB] opacity-0 transition-opacity group-hover:opacity-100" />
+      <Card
+        className={`group cursor-pointer overflow-hidden py-0 transition-all duration-200 ${
+          muted
+            ? "border-[#DCE2EA] bg-[#F4F6F8] opacity-70 grayscale hover:border-[#C8D0DC] hover:opacity-85 hover:shadow-[0_5px_16px_rgba(29,43,76,0.05)]"
+            : "hover:-translate-y-0.5 hover:border-[#CFC4F6] hover:shadow-[0_10px_26px_rgba(29,43,76,0.09)]"
+        }`}
+      >
+        {!muted && (
+          <div className="absolute left-0 top-0 h-full w-1 bg-[#7047EB] opacity-0 transition-opacity group-hover:opacity-100" />
+        )}
         <CardContent className="p-4 md:p-5">
           <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
             <div className="min-w-0 flex-1 space-y-2">
@@ -157,6 +175,75 @@ function TicketListItem({ ticket }: { ticket: TicketItem }) {
         </CardContent>
       </Card>
     </Link>
+  );
+}
+
+function PersonalTicketSection({
+  id,
+  title,
+  description,
+  tickets,
+  completed = false,
+}: {
+  id: string;
+  title: string;
+  description: string;
+  tickets: TicketItem[];
+  completed?: boolean;
+}) {
+  return (
+    <section aria-labelledby={id} className="space-y-2.5">
+      <div className="flex items-center justify-between gap-3 px-1">
+        <div className="flex min-w-0 items-center gap-2.5">
+          <div
+            className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-lg ${
+              completed
+                ? "bg-[#EEF1F5] text-[#7A8799]"
+                : "bg-blue-50 text-blue-600"
+            }`}
+          >
+            {completed ? (
+              <CheckCircle2 className="h-4 w-4" />
+            ) : (
+              <CircleDot className="h-4 w-4" />
+            )}
+          </div>
+          <div className="min-w-0">
+            <div className="flex items-center gap-2">
+              <h2 id={id} className="text-sm font-bold text-[#26334D]">
+                {title}
+              </h2>
+              <span
+                className={`rounded-full px-2 py-0.5 text-[11px] font-bold ${
+                  completed
+                    ? "bg-[#E8ECF1] text-[#69778B]"
+                    : "bg-blue-50 text-blue-700"
+                }`}
+              >
+                {tickets.length}
+              </span>
+            </div>
+            <p className="mt-0.5 truncate text-xs text-[#7A8799]">
+              {description}
+            </p>
+          </div>
+        </div>
+      </div>
+
+      {tickets.length > 0 ? (
+        <div className="space-y-3">
+          {tickets.map((ticket) => (
+            <TicketListItem key={ticket.id} ticket={ticket} muted={completed} />
+          ))}
+        </div>
+      ) : (
+        <div className="rounded-xl border border-dashed border-[#D8E0EA] bg-[#F8FAFC]/70 px-4 py-5 text-center text-xs font-medium text-[#8995A7]">
+          {completed
+            ? "Belum ada tiket yang selesai atau ditutup."
+            : "Tidak ada tiket aktif saat ini."}
+        </div>
+      )}
+    </section>
   );
 }
 
@@ -260,6 +347,11 @@ export default function TicketsPage() {
 
   const role = session?.user?.role;
   const isExecutive = role === "EXECUTIVE";
+  const isMyTicketsView =
+    scope === "mine" ||
+    (["USER", "MAHASISWA", "AGENT", "SUPERVISOR"].includes(role || "") &&
+      scope !== "department");
+  const isExecutiveMonitor = isExecutive && !isMyTicketsView;
   const canCreateTicket = true;
   const pageTitle =
     isExecutive
@@ -275,7 +367,7 @@ export default function TicketsPage() {
       : "Tiket Saya";
 
   const executiveTicketGroups = useMemo<DepartmentTicketGroup[]>(() => {
-    if (!isExecutive) return [];
+    if (!isExecutiveMonitor) return [];
 
     const groups = new Map<string, TicketItem[]>();
     tickets.forEach((ticket) => {
@@ -296,7 +388,19 @@ export default function TicketsPage() {
         ["HIGH", "URGENT"].includes(ticket.priority)
       ).length,
     })).sort((a, b) => a.department.localeCompare(b.department, "id-ID"));
-  }, [isExecutive, tickets]);
+  }, [isExecutiveMonitor, tickets]);
+
+  const personalTicketGroups = useMemo(
+    () => ({
+      active: tickets.filter(
+        (ticket) => !completedTicketStatuses.has(ticket.status)
+      ),
+      completed: tickets.filter((ticket) =>
+        completedTicketStatuses.has(ticket.status)
+      ),
+    }),
+    [tickets]
+  );
 
   const toggleDepartment = (department: string) => {
     setExpandedDepartments((current) => {
@@ -476,7 +580,23 @@ export default function TicketsPage() {
 
       {/* Tickets List */}
       <div className="space-y-3">
-        {isExecutive && tickets.length > 0 ? (
+        {isMyTicketsView && tickets.length > 0 ? (
+          <div className="space-y-7">
+            <PersonalTicketSection
+              id="active-tickets-heading"
+              title="Tiket Aktif"
+              description="Tiket yang masih perlu dipantau dan ditindaklanjuti"
+              tickets={personalTicketGroups.active}
+            />
+            <PersonalTicketSection
+              id="completed-tickets-heading"
+              title="Tiket Selesai"
+              description="Tiket yang sudah selesai, ditutup, atau dibatalkan"
+              tickets={personalTicketGroups.completed}
+              completed
+            />
+          </div>
+        ) : isExecutiveMonitor && tickets.length > 0 ? (
           <>
             <div className="flex flex-col gap-3 rounded-2xl border border-[#DCE4EF] bg-white px-4 py-3 shadow-[var(--shadow-surface)] sm:flex-row sm:items-center sm:justify-between">
               <div className="flex min-w-0 items-center gap-3">
