@@ -87,6 +87,7 @@ model Ticket {
   updatedAt           DateTime            @updatedAt
   resolvedAt          DateTime?
   closedAt            DateTime?
+  cancelledAt         DateTime?
   rating              Int?
   feedback            String?
   firstResponseAt     DateTime?
@@ -320,6 +321,7 @@ enum TicketStatus {
   CLOSED
   ESCALATED
   REOPENED
+  CANCELLED
 }
 
 enum Priority {
