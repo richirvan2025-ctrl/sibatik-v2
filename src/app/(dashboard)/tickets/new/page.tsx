@@ -458,22 +458,24 @@ export default function NewTicketPage() {
 
   return (
     <div className="mx-auto max-w-[1056px] space-y-4">
-      <header className="relative px-1 pt-1 sm:px-6">
-        <button
-          type="button"
-          className="mb-3 inline-flex items-center gap-1.5 text-[13px] font-semibold text-[#64748B] transition-colors hover:text-[#44516A] focus-visible:outline-none focus-visible:ring-3 focus-visible:ring-[#7047EB]/15 sm:absolute sm:right-full sm:top-1 sm:mr-3 sm:mb-0"
-          onClick={() => router.push("/tickets")}
-        >
-          <ArrowLeft className="h-4 w-4" />
-          Kembali
-        </button>
-        <div>
-          <h1 className="text-[28px] font-bold tracking-[-0.03em] text-[#17223D] md:text-[30px]">
-            Buat Tiket Baru
-          </h1>
-          <p className="mt-1 text-sm leading-6 text-[#64748B]">
-            Berikan detail yang jelas agar divisi terkait dapat membantu Anda lebih cepat.
-          </p>
+      <header className="px-1 pt-1 sm:px-6">
+        <div className="flex items-start justify-between gap-4">
+          <div className="min-w-0">
+            <h1 className="text-[28px] font-bold tracking-[-0.03em] text-[#17223D] md:text-[30px]">
+              Buat Tiket Baru
+            </h1>
+            <p className="mt-1 text-sm leading-6 text-[#64748B]">
+              Berikan detail yang jelas agar divisi terkait dapat membantu Anda lebih cepat.
+            </p>
+          </div>
+          <button
+            type="button"
+            className="mt-1 inline-flex shrink-0 items-center gap-1.5 whitespace-nowrap rounded-lg border border-[#DCE3EC] bg-white px-3 py-2 text-[13px] font-semibold text-[#64748B] shadow-sm transition-all hover:border-[#C7D1DE] hover:bg-[#F8FAFC] hover:text-[#334155] focus-visible:outline-none focus-visible:ring-3 focus-visible:ring-[#7047EB]/15"
+            onClick={() => router.push("/tickets")}
+          >
+            <ArrowLeft className="h-4 w-4" />
+            Kembali
+          </button>
         </div>
       </header>
 
