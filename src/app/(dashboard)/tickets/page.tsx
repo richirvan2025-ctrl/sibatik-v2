@@ -68,13 +68,6 @@ const attentionLabels: Record<string, string> = {
   high: "Prioritas tinggi dan mendesak",
 };
 
-const activeTicketStatuses = new Set([
-  "OPEN",
-  "IN_PROGRESS",
-  "ESCALATED",
-  "REOPENED",
-]);
-
 const completedTicketStatuses = new Set(["RESOLVED", "CLOSED", "CANCELLED"]);
 
 interface DepartmentTicketGroup {
@@ -376,19 +369,24 @@ export default function TicketsPage() {
       groups.set(department, [...(groups.get(department) || []), ticket]);
     });
 
-    return Array.from(groups, ([department, departmentTickets]) => ({
-      department,
-      tickets: departmentTickets,
-      activeCount: departmentTickets.filter((ticket) =>
-        activeTicketStatuses.has(ticket.status)
-      ).length,
-      completedCount: departmentTickets.filter((ticket) =>
-        ["RESOLVED", "CLOSED"].includes(ticket.status)
-      ).length,
-      highPriorityCount: departmentTickets.filter((ticket) =>
-        ["HIGH", "URGENT"].includes(ticket.priority)
-      ).length,
-    })).sort((a, b) => a.department.localeCompare(b.department, "id-ID"));
+    return Array.from(groups, ([department, departmentTickets]) => {
+      const activeTickets = departmentTickets.filter(
+        (ticket) => !completedTicketStatuses.has(ticket.status)
+      );
+      const completedTickets = departmentTickets.filter((ticket) =>
+        completedTicketStatuses.has(ticket.status)
+      );
+
+      return {
+        department,
+        tickets: [...activeTickets, ...completedTickets],
+        activeCount: activeTickets.length,
+        completedCount: completedTickets.length,
+        highPriorityCount: departmentTickets.filter((ticket) =>
+          ["HIGH", "URGENT"].includes(ticket.priority)
+        ).length,
+      };
+    }).sort((a, b) => a.department.localeCompare(b.department, "id-ID"));
   }, [isExecutiveMonitor, tickets]);
 
   const personalTicketGroups = useMemo(
