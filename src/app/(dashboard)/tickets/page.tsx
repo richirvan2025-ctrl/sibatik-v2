@@ -87,13 +87,14 @@ interface DepartmentTicketGroup {
 
 function TicketListItem({
   ticket,
-  muted = false,
+  muted,
 }: {
   ticket: TicketItem;
   muted?: boolean;
 }) {
   const status = statusConfig[ticket.status] || statusConfig.OPEN;
   const priority = priorityConfig[ticket.priority] || priorityConfig.MEDIUM;
+  const isMuted = muted ?? completedTicketStatuses.has(ticket.status);
   const created = new Date(ticket.createdAt).toLocaleDateString("id-ID", {
     day: "numeric",
     month: "short",
@@ -104,12 +105,12 @@ function TicketListItem({
     <Link href={`/tickets/${ticket.id}`} className="block">
       <Card
         className={`group cursor-pointer overflow-hidden py-0 transition-all duration-200 ${
-          muted
+          isMuted
             ? "border-[#DCE2EA] bg-[#F4F6F8] opacity-70 grayscale hover:border-[#C8D0DC] hover:opacity-85 hover:shadow-[0_5px_16px_rgba(29,43,76,0.05)]"
             : "hover:-translate-y-0.5 hover:border-[#CFC4F6] hover:shadow-[0_10px_26px_rgba(29,43,76,0.09)]"
         }`}
       >
-        {!muted && (
+        {!isMuted && (
           <div className="absolute left-0 top-0 h-full w-1 bg-[#7047EB] opacity-0 transition-opacity group-hover:opacity-100" />
         )}
         <CardContent className="p-4 md:p-5">
