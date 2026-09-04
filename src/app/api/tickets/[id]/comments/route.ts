@@ -9,9 +9,17 @@ import {
 } from "@/lib/audit-log";
 import { z } from "zod";
 
+const attachmentSchema = z.object({
+  fileName: z.string().min(1),
+  fileUrl: z.string().min(1),
+  fileSize: z.number().int().positive().max(10 * 1024 * 1024),
+  mimeType: z.string().min(1),
+});
+
 const commentSchema = z.object({
   message: z.string().min(1),
   isInternal: z.boolean().optional(),
+  attachments: z.array(attachmentSchema).max(5).optional(),
 });
 
 export async function POST(
@@ -44,6 +52,7 @@ export async function POST(
       role === "ADMIN" ||
       role === "AGENT" ||
       role === "SUPERVISOR" ||
+      role === "EXECUTIVE" ||
       ticket.assignedToId === userId ||
       ticket.createdById === userId ||
       ticket.onBehalfOfId === userId;
@@ -52,16 +61,16 @@ export async function POST(
       return NextResponse.json({ error: "Forbidden" }, { status: 403 });
     }
 
-    // Only admin/technician/department_head can create internal comments
+    // Only admin/technician/department_head/executive can create internal comments
     const isInternal =
       validated.isInternal &&
-      (role === "ADMIN" || role === "AGENT" || role === "SUPERVISOR")
+      (role === "ADMIN" || role === "AGENT" || role === "SUPERVISOR" || role === "EXECUTIVE")
         ? true
         : false;
 
-    // Track first response if agent/admin/supervisor comments
+    // Track first response if agent/admin/supervisor/executive comments
     if (
-      (role === "ADMIN" || role === "AGENT" || role === "SUPERVISOR") &&
+      (role === "ADMIN" || role === "AGENT" || role === "SUPERVISOR" || role === "EXECUTIVE") &&
       !ticket.firstResponseAt &&
       !isInternal
     ) {
@@ -83,6 +92,27 @@ export async function POST(
       },
     });
 
+    if (validated.attachments?.length) {
+      await prisma.commentAttachment.createMany({
+        data: validated.attachments.map((a) => ({
+          commentId: comment.id,
+          fileName: a.fileName,
+          fileUrl: a.fileUrl,
+          fileSize: a.fileSize,
+          mimeType: a.mimeType,
+          uploadedById: userId,
+        })),
+      });
+    }
+
+    const commentWithAttachments = await prisma.ticketComment.findUnique({
+      where: { id: comment.id },
+      include: {
+        user: { select: { id: true, name: true, role: true } },
+        CommentAttachment: true,
+      },
+    });
+
     // Kirim notifikasi ke pembuat tiket (dan onBehalfOf) jika komentator bukan mereka
     // dan komentar bukan internal
     if (!isInternal) {
@@ -92,11 +122,15 @@ export async function POST(
 
       if (recipients.size > 0) {
         const commenterName = comment.user.name;
+        const attachmentSuffix =
+          validated.attachments?.length
+            ? ` [${validated.attachments.length} lampiran]`
+            : "";
         const ticketData = await prisma.ticket.findUnique({
           where: { id },
           select: { ticketNumber: true, title: true },
         });
-        const notifMessage = `${commenterName} membalas tiket ${ticketData?.ticketNumber}: "${validated.message.slice(0, 80)}${validated.message.length > 80 ? "..." : ""}"`;
+        const notifMessage = `${commenterName} membalas tiket ${ticketData?.ticketNumber}: "${validated.message.slice(0, 80)}${validated.message.length > 80 ? "..." : ""}"${attachmentSuffix}`;
         await prisma.notification.createMany({
           data: Array.from(recipients).map((recipientId) => ({
             userId: recipientId,
@@ -135,13 +169,14 @@ export async function POST(
         commentId: comment.id,
         isInternal,
         preview: validated.message.slice(0, 160),
+        attachmentCount: validated.attachments?.length || 0,
       },
       resourceId: ticket.id,
       resourceType: "TICKET",
-      summary: `${session.user.name} menambahkan ${isInternal ? "catatan internal" : "komentar"} pada ${ticket.ticketNumber}`,
+      summary: `${session.user.name} menambahkan ${isInternal ? "catatan internal" : "komentar"}${validated.attachments?.length ? ` dengan ${validated.attachments.length} lampiran` : ""} pada ${ticket.ticketNumber}`,
     });
 
-    return NextResponse.json(comment, { status: 201 });
+    return NextResponse.json(commentWithAttachments ?? comment, { status: 201 });
   } catch (error) {
     if (error instanceof z.ZodError) {
       return NextResponse.json({ error: error.issues }, { status: 400 });

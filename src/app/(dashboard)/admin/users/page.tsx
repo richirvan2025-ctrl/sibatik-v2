@@ -64,7 +64,7 @@ const DEPARTMENTS = [
   "Operasional",
   "Perpustakaan",
   "DCC",
-  "Penjamin Mutu",
+  "BPM (Badan Penjamin Mutu)",
   "Sistem Informasi & IT Support",
   "Prodi DKV",
   "Prodi Desain Interior",
@@ -76,7 +76,7 @@ const DEPARTMENTS = [
   "Prodi MBD",
   "Prodi MDS",
   "LKTI (Litbang Kerjasama & Terapan Inovasi)",
-  "Kesekretariatan, Tata Usaha, dan Administrasi Umum ( KTA )",
+  "Kesekretariatan Tata Usaha dan Administrasi Umum (KTA)",
   "Branding Humas dan Kerjasama",
   "Rektorat",
 ] as const;

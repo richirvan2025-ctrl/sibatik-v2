@@ -20,6 +20,9 @@
         },
         "tr/moonshotai/kimi-k3-free": {
           "name": "tr/moonshotai/kimi-k3-free"
+	},
+        "ds/deepseek-v4-pro": {
+          "name": "ds/deepseek-v4-pro"
         },
         "inf/cp/cline-pass/qwen3.7-plus": {
           "name": "inf/cp/cline-pass/qwen3.7-plus"

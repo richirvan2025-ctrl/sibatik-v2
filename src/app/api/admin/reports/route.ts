@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
+import { TicketStatus } from "@prisma/client";
 
 const ACTIVE_STATUSES = ["OPEN", "IN_PROGRESS", "ESCALATED", "REOPENED"] as const;
 const COMPLETED_STATUSES = ["RESOLVED", "CLOSED"] as const;
@@ -87,8 +88,8 @@ export async function GET(req: NextRequest) {
     const now = new Date();
     const dueSoonLimit = new Date(now.getTime() + DAY_MS);
     const { from, to, previousFrom, previousTo, days, label } = getPeriod(req);
-    const periodWhere = { createdAt: { gte: from, lte: to } };
-    const previousWhere = { createdAt: { gte: previousFrom, lte: previousTo } };
+    const periodWhere = { createdAt: { gte: from, lte: to }, status: { not: TicketStatus.CANCELLED } };
+    const previousWhere = { createdAt: { gte: previousFrom, lte: previousTo }, status: { not: TicketStatus.CANCELLED } };
 
     const [
       statusCounts,
@@ -135,7 +136,7 @@ export async function GET(req: NextRequest) {
         select: { status: true },
       }),
       prisma.ticket.findMany({
-        where: { createdAt: { gte: from, lte: to } },
+        where: { createdAt: { gte: from, lte: to }, status: { not: TicketStatus.CANCELLED } },
         select: { createdAt: true },
       }),
       prisma.ticket.findMany({

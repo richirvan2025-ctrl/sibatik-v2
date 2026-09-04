@@ -25,7 +25,7 @@ export async function GET() {
       urgentTickets,
       recentTickets,
     ] = await Promise.all([
-      prisma.ticket.count(),
+      prisma.ticket.count({ where: { status: { not: "CANCELLED" } } }),
       prisma.ticket.count({ where: { status: "OPEN" } }),
       prisma.ticket.count({ where: { status: "IN_PROGRESS" } }),
       prisma.ticket.count({ where: { status: "RESOLVED" } }),
@@ -53,7 +53,7 @@ export async function GET() {
         take: 10,
       }),
       prisma.ticket.findMany({
-        where: { createdAt: { gte: sevenDaysAgo } },
+        where: { createdAt: { gte: sevenDaysAgo }, status: { not: "CANCELLED" } },
         select: { createdAt: true, resolvedAt: true, status: true },
       }),
     ]);
@@ -70,7 +70,7 @@ export async function GET() {
         const ids = catIds.map((c) => c.id);
 
         const [total, open, inProgress, resolved] = await Promise.all([
-          prisma.ticket.count({ where: { categoryId: { in: ids } } }),
+          prisma.ticket.count({ where: { categoryId: { in: ids }, status: { not: "CANCELLED" } } }),
           prisma.ticket.count({ where: { categoryId: { in: ids }, status: "OPEN" } }),
           prisma.ticket.count({ where: { categoryId: { in: ids }, status: "IN_PROGRESS" } }),
           prisma.ticket.count({ where: { categoryId: { in: ids }, status: { in: ["RESOLVED", "CLOSED"] } } }),

@@ -6,6 +6,7 @@ import { useParams, useRouter } from "next/navigation";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import {
@@ -40,6 +41,8 @@ import {
   CircleDot,
   Flag,
   Info,
+  Pencil,
+  Trash2,
   Hash,
 } from "lucide-react";
 
@@ -53,6 +56,8 @@ interface Comment {
     name: string;
     role: string;
   };
+  attachments?: Attachment[];
+  CommentAttachment?: Attachment[];
 }
 
 interface Attachment {
@@ -92,6 +97,7 @@ const statusConfig: Record<string, { bg: string; text: string; dot: string; labe
   RESOLVED: { bg: "bg-emerald-50", text: "text-emerald-700", dot: "bg-emerald-500", label: "Resolved" },
   CLOSED: { bg: "bg-slate-100", text: "text-slate-600", dot: "bg-slate-400", label: "Closed" },
   ESCALATED: { bg: "bg-amber-50", text: "text-amber-700", dot: "bg-amber-500", label: "Dalam Proses" },
+  CANCELLED: { bg: "bg-rose-50", text: "text-rose-700", dot: "bg-rose-400", label: "Dibatalkan" },
 };
 
 const priorityConfig: Record<string, { bg: string; text: string; border: string }> = {
@@ -146,6 +152,11 @@ export default function TicketDetailPage() {
   const [comment, setComment] = useState("");
   const [isInternal, setIsInternal] = useState(false);
   const [submitting, setSubmitting] = useState(false);
+  const [commentFiles, setCommentFiles] = useState<File[]>([]);
+  const [commentError, setCommentError] = useState("");
+  const [isEditing, setIsEditing] = useState(false);
+  const [editTitle, setEditTitle] = useState("");
+  const [editDescription, setEditDescription] = useState("");
 
   const role = session?.user?.role;
   const userId = session?.user?.id;
@@ -159,6 +170,8 @@ export default function TicketDetailPage() {
     ticket?.onBehalfOf?.id === userId ||
     ticket?.assignedTo?.id === userId;
   const canComment = !isExecutive || isTicketParticipant;
+  const isCreator =
+    ticket?.createdBy.id === userId || ticket?.onBehalfOf?.id === userId;
 
   const fetchTicket = useCallback(
     async (silent = false) => {
@@ -231,20 +244,43 @@ export default function TicketDetailPage() {
   const handleSubmitComment = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!comment.trim()) return;
+    if (commentFiles.length > 5) {
+      setCommentError("Maksimal 5 file lampiran per komentar");
+      return;
+    }
     setSubmitting(true);
+    setCommentError("");
     try {
+      let uploaded: Array<{ fileName: string; fileUrl: string; fileSize: number; mimeType: string }> = [];
+      if (commentFiles.length > 0) {
+        const formData = new FormData();
+        commentFiles.forEach((f) => formData.append("files", f));
+        const uploadRes = await fetch("/api/upload", { method: "POST", body: formData });
+        if (!uploadRes.ok) {
+          const data = await uploadRes.json().catch(() => ({}));
+          setCommentError(data.error || "Gagal upload lampiran");
+          setSubmitting(false);
+          return;
+        }
+        uploaded = await uploadRes.json();
+      }
       const res = await fetch(`/api/tickets/${params.id}/comments`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ message: comment, isInternal }),
+        body: JSON.stringify({ message: comment, isInternal, attachments: uploaded }),
       });
       if (res.ok) {
         setComment("");
         setIsInternal(false);
+        setCommentFiles([]);
         fetchTicket();
+      } else {
+        const data = await res.json().catch(() => ({}));
+        setCommentError(data.error || "Gagal mengirim komentar");
       }
     } catch (error) {
       console.error("Failed to submit comment:", error);
+      setCommentError("Terjadi kesalahan");
     } finally {
       setSubmitting(false);
     }
@@ -260,6 +296,61 @@ export default function TicketDetailPage() {
       if (res.ok) fetchTicket();
     } catch (error) {
       console.error("Failed to submit rating:", error);
+    }
+  };
+
+  const handleStartEdit = () => {
+    setEditTitle(ticket?.title ?? "");
+    setEditDescription(ticket?.description ?? "");
+    setIsEditing(true);
+  };
+
+  const handleSaveEdit = async () => {
+    if (!editTitle.trim() || !editDescription.trim()) return;
+    setSubmitting(true);
+    try {
+      const res = await fetch(`/api/tickets/${params.id}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          title: editTitle.trim(),
+          description: editDescription.trim(),
+        }),
+      });
+      if (res.ok) {
+        setIsEditing(false);
+        fetchTicket();
+      } else {
+        const err = await res.json().catch(() => ({}));
+        alert(err.error || "Gagal menyimpan perubahan");
+      }
+    } catch {
+      alert("Terjadi kesalahan");
+    } finally {
+      setSubmitting(false);
+    }
+  };
+
+  const handleCancel = async () => {
+    if (
+      !confirm(
+        "Apakah Anda yakin ingin membatalkan tiket ini? Tindakan ini tidak dapat dibatalkan.",
+      )
+    )
+      return;
+    try {
+      const res = await fetch(`/api/tickets/${params.id}`, {
+        method: "DELETE",
+      });
+      if (res.ok) {
+        router.push("/tickets");
+        router.refresh();
+      } else {
+        const err = await res.json().catch(() => ({}));
+        alert(err.error || "Gagal membatalkan tiket");
+      }
+    } catch {
+      alert("Terjadi kesalahan");
     }
   };
 
@@ -308,9 +399,18 @@ export default function TicketDetailPage() {
           </span>
         </div>
 
-        <h1 className="mt-4 max-w-5xl text-2xl font-bold leading-tight tracking-[-0.025em] text-[#17233A] sm:text-[30px]">
-          {ticket.title}
-        </h1>
+        {isEditing ? (
+          <Input
+            value={editTitle}
+            onChange={(e) => setEditTitle(e.target.value)}
+            aria-label="Judul tiket"
+            className="mt-4 h-12 max-w-5xl text-2xl font-bold leading-tight tracking-[-0.025em] text-[#17233A] sm:text-[30px]"
+          />
+        ) : (
+          <h1 className="mt-4 max-w-5xl text-2xl font-bold leading-tight tracking-[-0.025em] text-[#17233A] sm:text-[30px]">
+            {ticket.title}
+          </h1>
+        )}
 
         <section
           aria-label="Ringkasan operasional tiket"
@@ -366,9 +466,42 @@ export default function TicketDetailPage() {
               </CardTitle>
             </CardHeader>
             <CardContent className="min-h-[178px] px-5 py-5">
-              <p className="whitespace-pre-wrap break-words [overflow-wrap:anywhere] text-sm leading-7 text-[#334155]">
-                {ticket.description}
-              </p>
+              {isEditing ? (
+                <div className="space-y-3">
+                  <Textarea
+                    value={editDescription}
+                    onChange={(e) => setEditDescription(e.target.value)}
+                    aria-label="Deskripsi tiket"
+                    rows={6}
+                    className="min-h-24 resize-none border-[#E2E8F0] bg-white text-sm focus-visible:border-[#7C3AED]"
+                  />
+                  <div className="flex justify-end gap-2">
+                    <Button
+                      type="button"
+                      variant="outline"
+                      onClick={() => setIsEditing(false)}
+                      className="h-9 rounded-xl text-sm"
+                    >
+                      Batal
+                    </Button>
+                    <Button
+                      type="button"
+                      onClick={handleSaveEdit}
+                      disabled={submitting}
+                      className="h-9 rounded-xl bg-[#7C3AED] text-white hover:bg-[#6D28D9] text-sm"
+                    >
+                      {submitting && (
+                        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                      )}
+                      Simpan
+                    </Button>
+                  </div>
+                </div>
+              ) : (
+                <p className="whitespace-pre-wrap break-words [overflow-wrap:anywhere] text-sm leading-7 text-[#334155]">
+                  {ticket.description}
+                </p>
+              )}
 
               {ticket.attachments && ticket.attachments.length > 0 && (
                 <div className="mt-5 border-t border-[#E2E8F0] pt-4">
@@ -502,6 +635,45 @@ export default function TicketDetailPage() {
                   <p className="whitespace-pre-wrap break-words [overflow-wrap:anywhere] text-sm leading-relaxed text-[#1E293B] sm:pl-10">
                     {comment.message}
                   </p>
+                  {(comment.attachments ?? comment.CommentAttachment ?? []).length > 0 && (
+                    <div className="mt-3 space-y-2 sm:pl-10">
+                      {(comment.attachments ?? comment.CommentAttachment ?? []).map((att) => {
+                        const ext = att.fileName.split(".").pop()?.toLowerCase() || "";
+                        const isImage = att.mimeType?.startsWith("image/") || ["jpg", "jpeg", "png", "gif", "webp", "heic", "heif"].includes(ext);
+                        return (
+                          <div key={att.id}>
+                            {isImage && (
+                              <a href={att.fileUrl} target="_blank" rel="noopener noreferrer" className="mb-2 block">
+                                <img
+                                  src={att.fileUrl}
+                                  alt={att.fileName}
+                                  className="max-h-48 rounded-xl border border-[#E2E8F0] bg-white object-contain"
+                                />
+                              </a>
+                            )}
+                            <a
+                              href={att.fileUrl}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              download={att.fileName}
+                              className="flex items-center gap-2.5 rounded-xl border border-[#E2E8F0] bg-white px-3 py-2 text-sm text-[#1E293B] transition-colors hover:bg-[#F1F5F9] group"
+                            >
+                              {isImage ? (
+                                <ImageIcon className="h-4 w-4 shrink-0 text-blue-500" />
+                              ) : (
+                                <FileText className="h-4 w-4 shrink-0 text-orange-500" />
+                              )}
+                              <span className="flex-1 truncate text-xs font-medium">{att.fileName}</span>
+                              <span className="shrink-0 text-[10px] text-[#94A3B8]">
+                                {(att.fileSize / 1024).toFixed(0)} KB
+                              </span>
+                              <Download className="h-3.5 w-3.5 shrink-0 text-[#94A3B8] group-hover:text-[#7C3AED]" />
+                            </a>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  )}
                 </div>
               ))}
 
@@ -536,6 +708,50 @@ export default function TicketDetailPage() {
                         className="border-[#E2E8F0] bg-[#F8FAFC] rounded-xl text-sm focus:bg-white focus:border-[#7C3AED] resize-none"
                       />
                     </div>
+                    <div className="space-y-2">
+                      <Label className="flex items-center gap-2 text-sm font-medium text-[#1E293B]">
+                        <Paperclip className="h-4 w-4 text-[#7C3AED]" />
+                        Lampiran Bukti Pekerjaan (maks. 5 file, 10MB/file)
+                      </Label>
+                      <Input
+                        type="file"
+                        multiple
+                        accept="image/*,.pdf,.doc,.docx,.xls,.xlsx"
+                        onChange={(e) => {
+                          const selected = Array.from(e.target.files ?? []);
+                          const combined = [...commentFiles, ...selected].slice(0, 5);
+                          setCommentFiles(combined);
+                          e.target.value = "";
+                        }}
+                        className="border-[#E2E8F0] bg-[#F8FAFC] rounded-xl text-sm"
+                      />
+                      {commentFiles.length > 0 && (
+                        <div className="space-y-1.5">
+                          {commentFiles.map((f, idx) => (
+                            <div key={`${f.name}-${idx}`} className="flex items-center gap-2 rounded-xl border border-[#E2E8F0] bg-white px-3 py-2 text-xs">
+                              <Paperclip className="h-3.5 w-3.5 shrink-0 text-[#7C3AED]" />
+                              <span className="flex-1 truncate font-medium text-[#1E293B]">{f.name}</span>
+                              <span className="shrink-0 text-[#94A3B8]">{(f.size / 1024).toFixed(0)} KB</span>
+                              <Button
+                                type="button"
+                                variant="ghost"
+                                size="sm"
+                                onClick={() => setCommentFiles((prev) => prev.filter((_, i) => i !== idx))}
+                                className="h-6 px-2 text-xs text-red-600 hover:bg-red-50"
+                              >
+                                Hapus
+                              </Button>
+                            </div>
+                          ))}
+                        </div>
+                      )}
+                    </div>
+                    {commentError && (
+                      <p className="flex items-center gap-1.5 text-xs text-red-600">
+                        <AlertCircle className="h-3.5 w-3.5" />
+                        {commentError}
+                      </p>
+                    )}
                     {canManage && (
                       <div className="flex items-center gap-2">
                         <input
@@ -768,6 +984,37 @@ export default function TicketDetailPage() {
                   </div>
                 )}
 
+              </CardContent>
+            </Card>
+          )}
+
+          {/* Aksi pembuat: edit & batalkan tiket saat masih OPEN */}
+          {isCreator && ticket.status === "OPEN" && (
+            <Card variant="surface" className="order-1 gap-0 overflow-hidden rounded-xl border border-[#DCE3EC] bg-white py-0">
+              <CardHeader className="border-b border-[#E2E8F0] px-5 py-4">
+                <CardTitle className="text-sm font-semibold text-[#1E293B]">
+                  Aksi Pembuat
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-3 px-5 pb-5 pt-4">
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={handleStartEdit}
+                  className="h-10 w-full rounded-xl border-blue-200 text-blue-700 hover:bg-blue-50"
+                >
+                  <Pencil className="mr-2 h-4 w-4" />
+                  Edit Judul & Deskripsi
+                </Button>
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={handleCancel}
+                  className="h-10 w-full rounded-xl border-red-200 text-red-600 hover:bg-red-50"
+                >
+                  <Trash2 className="mr-2 h-4 w-4" />
+                  Batalkan Tiket
+                </Button>
               </CardContent>
             </Card>
           )}

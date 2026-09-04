@@ -278,6 +278,20 @@ async function main() {
         { name: "Sistem Baru & Pengembangan", description: "Permintaan fitur, bug report, pengembangan sistem internal" },
       ],
     },
+    {
+      name: "BPM (Badan Penjamin Mutu)",
+      department: "BPM (Badan Penjamin Mutu)",
+      responseTimeHours: 8,
+      resolveTimeHours: 48,
+      children: [
+        { name: "Akreditasi Program Studi", description: "Akreditasi BAN-PT/LAM, pendampingan borang, visitasi, re-akreditasi" },
+        { name: "Audit Mutu Internal (AMI)", description: "Pelaksanaan AMI, laporan temuan, rencana tindak lanjut, monitoring RTM" },
+        { name: "Kebijakan Mutu & Standar SPMI", description: "Penyusunan kebijakan mutu, standar mutu, manual SPMI, pedoman mutu" },
+        { name: "Survei Kepuasan", description: "Survei kepuasan mahasiswa, dosen, tenaga kependidikan, pengguna lulusan" },
+        { name: "Monitoring & Evaluasi", description: "Money pembelajaran semester, money kinerja akademik, laporan evaluasi" },
+        { name: "Dokumentasi & Pengendalian", description: "Dokumen mutu, SOP, form standar, instruksi kerja, pengendalian rekaman" },
+      ],
+    },
   ];
 
   for (const parent of categoryTree) {

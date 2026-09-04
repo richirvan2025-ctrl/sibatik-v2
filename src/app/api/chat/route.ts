@@ -4,7 +4,7 @@ import { prisma } from "@/lib/prisma";
 import { searchRelevantChunks } from "@/lib/rag";
 
 const NVIDIA_API_KEY = process.env.NVIDIA_API_KEY || "";
-const NVIDIA_MODEL = process.env.NVIDIA_MODEL || "meta/llama-3.1-70b-instruct";
+const NVIDIA_MODEL = process.env.NVIDIA_MODEL || "meta/llama-3.2-11b-vision-instruct";
 const NVIDIA_URL = "https://integrate.api.nvidia.com/v1/chat/completions";
 
 interface ChatMessage {

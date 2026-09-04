@@ -39,7 +39,7 @@ const DEPARTMENTS = [
   "HRD/Kepegawaian",
   "Operasional",
   "DCC",
-  "Penjamin Mutu",
+  "BPM (Badan Penjamin Mutu)",
   "Sistem Informasi & IT Support",
   "Prodi DKV",
   "Prodi Desain Interior",
@@ -51,7 +51,7 @@ const DEPARTMENTS = [
   "Prodi MBD",
   "Prodi MDS",
   "LKTI (Litbang Kerjasama & Terapan Inovasi)",
-  "Kesekretariatan, Tata Usaha, dan Administrasi Umum ( KTA )",
+  "Kesekretariatan Tata Usaha dan Administrasi Umum (KTA)",
   "Branding Humas dan Kerjasama",
   "Rektorat",
 ];
@@ -63,6 +63,8 @@ interface SubCategory {
   department: string | null;
   isActive: boolean;
   parentId: string;
+  responseTimeHours: number;
+  resolveTimeHours: number;
 }
 
 interface Category {
@@ -73,6 +75,8 @@ interface Category {
   isActive: boolean;
   parentId: string | null;
   children: SubCategory[];
+  responseTimeHours: number;
+  resolveTimeHours: number;
 }
 
 export default function CategoriesPage() {
@@ -85,6 +89,8 @@ export default function CategoriesPage() {
   const [description, setDescription] = useState("");
   const [department, setDepartment] = useState("");
   const [parentId, setParentId] = useState("");
+  const [responseTimeHours, setResponseTimeHours] = useState(24);
+  const [resolveTimeHours, setResolveTimeHours] = useState(72);
 
   const [deleteTarget, setDeleteTarget] = useState<Category | SubCategory | null>(null);
   const [deleteLoading, setDeleteLoading] = useState(false);
@@ -115,6 +121,8 @@ export default function CategoriesPage() {
         description,
         department: department || null,
         parentId: parentId || null,
+        responseTimeHours,
+        resolveTimeHours,
       };
 
       const url = editingCategory
@@ -148,6 +156,8 @@ export default function CategoriesPage() {
     setDescription("");
     setDepartment("");
     setParentId("");
+    setResponseTimeHours(24);
+    setResolveTimeHours(72);
     setEditingCategory(null);
   };
 
@@ -157,6 +167,8 @@ export default function CategoriesPage() {
     setDescription(category.description || "");
     setDepartment(category.department || "");
     setParentId(category.parentId || "");
+    setResponseTimeHours(category.responseTimeHours ?? 24);
+    setResolveTimeHours(category.resolveTimeHours ?? 72);
     setDialogOpen(true);
   };
 
@@ -322,6 +334,32 @@ export default function CategoriesPage() {
                     ))}
                   </SelectContent>
                 </Select>
+              </div>
+              <div className="grid grid-cols-2 gap-3">
+                <div className="space-y-2">
+                  <Label className="text-sm font-medium text-[#1E293B]">
+                    Respons (jam)
+                  </Label>
+                  <Input
+                    type="number"
+                    min={1}
+                    value={responseTimeHours}
+                    onChange={(e) => setResponseTimeHours(Number(e.target.value))}
+                    className="h-10 border-[#E2E8F0] bg-[#F8FAFC] rounded-xl text-sm focus:bg-white focus:border-[#7C3AED]"
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label className="text-sm font-medium text-[#1E293B]">
+                    Resolusi (jam)
+                  </Label>
+                  <Input
+                    type="number"
+                    min={1}
+                    value={resolveTimeHours}
+                    onChange={(e) => setResolveTimeHours(Number(e.target.value))}
+                    className="h-10 border-[#E2E8F0] bg-[#F8FAFC] rounded-xl text-sm focus:bg-white focus:border-[#7C3AED]"
+                  />
+                </div>
               </div>
               <Button
                 type="submit"
