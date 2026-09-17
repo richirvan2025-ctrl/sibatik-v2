@@ -40,7 +40,7 @@ const DEPARTMENTS = [
   "Operasional",
   "DCC",
   "BPM (Badan Penjamin Mutu)",
-  "Sistem Informasi & IT Support",
+  "Pengembangan Sistem Informasi",
   "IT Support",
   "Prodi DKV",
   "Prodi Desain Interior",

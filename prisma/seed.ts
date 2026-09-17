@@ -23,7 +23,7 @@ async function main() {
       name: "Budi Santoso",
       email: "tech1@idbbali.ac.id",
       role: "KOORDINATOR",
-      department: "Sistem Informasi & IT Support",
+      department: "Pengembangan Sistem Informasi",
     },
   });
 
@@ -34,7 +34,7 @@ async function main() {
       name: "Ani Wijaya",
       email: "tech2@idbbali.ac.id",
       role: "KOORDINATOR",
-      department: "Sistem Informasi & IT Support",
+      department: "Pengembangan Sistem Informasi",
     },
   });
 
@@ -260,22 +260,6 @@ async function main() {
         { name: "Prestasi & Kompetisi", description: "Pendaftaran lomba, pendampingan delegasi, rekap prestasi mahasiswa" },
         { name: "Konseling & Kesejahteraan", description: "Layanan konseling mahasiswa, masalah kesejahteraan, aduan sosial" },
         { name: "Surat Keterangan Kemahasiswaan", description: "Surat aktif organisasi, rekomendasi kegiatan, keterangan non-beasiswa" },
-      ],
-    },
-    {
-      name: "Sistem Informasi & IT Support",
-      department: "Sistem Informasi & IT Support",
-      responseTimeHours: 4,
-      resolveTimeHours: 24,
-      children: [
-        { name: "Akun & Autentikasi", description: "Reset password, akun terkunci, SSO kampus, email institusi" },
-        { name: "Sistem Informasi Akademik (SIAKAD)", description: "Error akses, data tidak sesuai, fitur tidak berfungsi" },
-        { name: "E-Learning / LMS", description: "Akses kelas daring, tugas tidak terunggah, video tidak terbuka" },
-        { name: "Jaringan & Wi-Fi Kampus", description: "Internet lambat, tidak bisa konek Wi-Fi, gangguan jaringan area" },
-        { name: "Perangkat & Lab Komputer", description: "Kerusakan komputer lab, printer, permintaan instalasi software" },
-        { name: "Email & Aplikasi Resmi", description: "Microsoft 365, Google Workspace, konfigurasi akun email" },
-        { name: "Keamanan Siber & Data", description: "Laporan phishing, akun diretas, kebocoran data" },
-        { name: "Sistem Baru & Pengembangan", description: "Permintaan fitur, bug report, pengembangan sistem internal" },
       ],
     },
     {

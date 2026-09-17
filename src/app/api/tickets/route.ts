@@ -342,7 +342,7 @@ export async function POST(req: NextRequest) {
     });
 
     const itSupportDepartment = normalizedDepartment(
-      "Sistem Informasi & IT Support"
+      "Pengembangan Sistem Informasi"
     );
     const targets = targetCategories.map((category) => {
       const departmentKey = normalizedDepartment(category.department);
