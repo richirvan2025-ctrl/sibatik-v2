@@ -279,6 +279,15 @@ async function main() {
       ],
     },
     {
+      name: "IT Support",
+      department: "IT Support",
+      responseTimeHours: 4,
+      resolveTimeHours: 24,
+      children: [
+        { name: "IT Support", description: "Dukungan teknis TI, perangkat, jaringan, dan aplikasi" },
+      ],
+    },
+    {
       name: "BPM (Badan Penjamin Mutu)",
       department: "BPM (Badan Penjamin Mutu)",
       responseTimeHours: 8,

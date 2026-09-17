@@ -41,6 +41,7 @@ const DEPARTMENTS = [
   "DCC",
   "BPM (Badan Penjamin Mutu)",
   "Sistem Informasi & IT Support",
+  "IT Support",
   "Prodi DKV",
   "Prodi Desain Interior",
   "Prodi Desain Mode",
