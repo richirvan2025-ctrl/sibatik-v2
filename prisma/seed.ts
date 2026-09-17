@@ -15,14 +15,14 @@ async function main() {
     },
   });
 
-  // Create technician users
+  // Create koordinator users
   const tech1 = await prisma.user.upsert({
     where: { email: "tech1@idbbali.ac.id" },
     update: {},
     create: {
       name: "Budi Santoso",
       email: "tech1@idbbali.ac.id",
-      role: "AGENT",
+      role: "KOORDINATOR",
       department: "Sistem Informasi & IT Support",
     },
   });
@@ -33,85 +33,85 @@ async function main() {
     create: {
       name: "Ani Wijaya",
       email: "tech2@idbbali.ac.id",
-      role: "AGENT",
+      role: "KOORDINATOR",
       department: "Sistem Informasi & IT Support",
     },
   });
 
-  // Create department head users
-  const deptHeadKeuangan = await prisma.user.upsert({
+  // Create kabag users
+  const kabagKeuangan = await prisma.user.upsert({
     where: { email: "kabag.keuangan@idbbali.ac.id" },
     update: {},
     create: {
       name: "Ni Made Keuangan",
       email: "kabag.keuangan@idbbali.ac.id",
-      role: "SUPERVISOR",
+      role: "KABAG",
       department: "Keuangan",
     },
   });
 
-  const deptHeadHRD = await prisma.user.upsert({
+  const kabagHRD = await prisma.user.upsert({
     where: { email: "kabag.hrd@idbbali.ac.id" },
     update: {},
     create: {
       name: "I Wayan Kepegawaian",
       email: "kabag.hrd@idbbali.ac.id",
-      role: "SUPERVISOR",
+      role: "KABAG",
       department: "HRD/Kepegawaian",
     },
   });
 
-  const deptHeadBAA = await prisma.user.upsert({
+  const kabagBAA = await prisma.user.upsert({
     where: { email: "kabag.baa@idbbali.ac.id" },
     update: {},
     create: {
       name: "Ni Nyoman Akademik",
       email: "kabag.baa@idbbali.ac.id",
-      role: "SUPERVISOR",
+      role: "KABAG",
       department: "BAA/Akademik",
     },
   });
 
-  const deptHeadKemahasiswaan = await prisma.user.upsert({
+  const kabagKemahasiswaan = await prisma.user.upsert({
     where: { email: "kabag.kemahasiswaan@idbbali.ac.id" },
     update: {},
     create: {
       name: "Kepala Kemahasiswaan",
       email: "kabag.kemahasiswaan@idbbali.ac.id",
-      role: "SUPERVISOR",
+      role: "KABAG",
       department: "Kemahasiswaan",
     },
   });
 
-  const agentKemahasiswaan = await prisma.user.upsert({
+  const koordinatorKemahasiswaan = await prisma.user.upsert({
     where: { email: "kemahasiswaan1@idbbali.ac.id" },
     update: {},
     create: {
       name: "Staff Kemahasiswaan",
       email: "kemahasiswaan1@idbbali.ac.id",
-      role: "AGENT",
+      role: "KOORDINATOR",
       department: "Kemahasiswaan",
     },
   });
 
-  const deptHeadPerpustakaan = await prisma.user.upsert({
+  const kabagPerpustakaan = await prisma.user.upsert({
     where: { email: "kabag.perpustakaan@idbbali.ac.id" },
     update: {},
     create: {
       name: "Kepala Perpustakaan",
       email: "kabag.perpustakaan@idbbali.ac.id",
-      role: "SUPERVISOR",
+      role: "KABAG",
       department: "Perpustakaan",
     },
   });
 
-  const agentPerpustakaan = await prisma.user.upsert({
+  const koordinatorPerpustakaan = await prisma.user.upsert({
     where: { email: "perpustakaan1@idbbali.ac.id" },
     update: {},
     create: {
       name: "Staff Perpustakaan",
       email: "perpustakaan1@idbbali.ac.id",
-      role: "AGENT",
+      role: "KOORDINATOR",
       department: "Perpustakaan",
     },
   });
@@ -123,7 +123,7 @@ async function main() {
     create: {
       name: "Dr. Siti Rahayu",
       email: "dosen1@idbbali.ac.id",
-      role: "USER",
+      role: "STAFF",
       department: "BAA/Akademik",
     },
   });
@@ -329,7 +329,7 @@ async function main() {
   }
 
   console.log("Seed data created:");
-  console.log({ admin, tech1, tech2, user, deptHeadKeuangan, deptHeadHRD, deptHeadBAA, deptHeadKemahasiswaan, agentKemahasiswaan, deptHeadPerpustakaan, agentPerpustakaan });
+  console.log({ admin, tech1, tech2, user, kabagKeuangan, kabagHRD, kabagBAA, kabagKemahasiswaan, koordinatorKemahasiswaan, kabagPerpustakaan, koordinatorPerpustakaan });
 }
 
 main()

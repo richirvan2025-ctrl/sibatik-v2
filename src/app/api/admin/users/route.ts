@@ -7,7 +7,7 @@ import { actorFromSession, getClientIp, recordAuditEvent } from "@/lib/audit-log
 const userSchema = z.object({
   name: z.string().min(1),
   email: z.string().email(),
-  role: z.enum(["ADMIN", "USER", "AGENT", "SUPERVISOR", "EXECUTIVE", "MAHASISWA"]),
+  role: z.enum(["ADMIN", "STAFF", "KOORDINATOR", "KABAG", "EXECUTIVE", "MAHASISWA"]),
   department: z.string().optional(),
 });
 

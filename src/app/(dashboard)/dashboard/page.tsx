@@ -112,9 +112,9 @@ const quickActions = [
 const roleLabels: Record<string, string> = {
   ADMIN: "Administrator",
   EXECUTIVE: "Eksekutif",
-  SUPERVISOR: "Supervisor",
-  AGENT: "Staff",
-  USER: "Pengguna",
+  KABAG: "Kabag",
+  KOORDINATOR: "Koordinator",
+  STAFF: "Staff",
 };
 
 export default function DashboardPage() {
@@ -139,7 +139,7 @@ export default function DashboardPage() {
   }, []);
 
   useEffect(() => {
-    if (session?.user?.role !== "SUPERVISOR") return;
+    if (session?.user?.role !== "KABAG") return;
 
     fetch("/api/dashboard/agent-performance")
       .then((response) => response.json())
@@ -206,7 +206,7 @@ export default function DashboardPage() {
             <div className="mb-3 flex flex-wrap items-center gap-2">
               <Badge className="border border-white/15 bg-white/10 text-white shadow-none">
                 <ShieldCheck className="mr-1 h-3.5 w-3.5" />
-                {roleLabels[role || "USER"] || "Pengguna"}
+                {roleLabels[role || "STAFF"] || "Staff"}
               </Badge>
               <span className="inline-flex items-center gap-1.5 text-xs font-medium text-[var(--brand-header-muted)]">
                 <span className="h-2 w-2 rounded-full bg-[#38C793]" />
@@ -413,18 +413,18 @@ export default function DashboardPage() {
         </Card>
       </section>
 
-      {role === "SUPERVISOR" && (
+      {role === "KABAG" && (
         <Card>
           <CardHeader className="flex-row items-center justify-between pb-2">
             <CardTitle className="flex items-center gap-2 text-[17px] text-[#14203B]">
               <Users className="h-5 w-5 text-[#7047EB]" />
-              Performa Staff
+              Performa Koordinator
             </CardTitle>
             <span className="text-xs text-[#71809A]">Bulan {new Date().toLocaleString("id-ID", { month: "long", year: "numeric" })}</span>
           </CardHeader>
           <CardContent className="pb-5">
             {agentPerformance.length === 0 ? (
-              <div className="flex h-36 items-center justify-center rounded-xl border border-dashed border-[#D8E0EC] bg-[#F8FAFD] text-sm text-[#7A879D]">Belum ada data Staff bulan ini</div>
+              <div className="flex h-36 items-center justify-center rounded-xl border border-dashed border-[#D8E0EC] bg-[#F8FAFD] text-sm text-[#7A879D]">Belum ada data Koordinator bulan ini</div>
             ) : (
               <AgentPerformanceChart data={agentPerformance} />
             )}

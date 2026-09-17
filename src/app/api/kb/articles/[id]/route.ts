@@ -21,7 +21,7 @@ export async function GET(
     const admin = searchParams.get("admin");
 
     const session = await auth();
-    const isAdmin = session?.user?.role === "ADMIN" || session?.user?.role === "AGENT";
+    const isAdmin = session?.user?.role === "ADMIN" || session?.user?.role === "KOORDINATOR";
 
     const where: any = { OR: [{ id }, { slug: id }] };
     if (!admin || !isAdmin) {
@@ -59,7 +59,7 @@ export async function PATCH(
     }
 
     const role = session.user.role;
-    if (role !== "ADMIN" && role !== "AGENT") {
+    if (role !== "ADMIN" && role !== "KOORDINATOR") {
       return NextResponse.json({ error: "Forbidden" }, { status: 403 });
     }
 
@@ -137,7 +137,7 @@ export async function DELETE(
     }
 
     const role = session.user.role;
-    if (role !== "ADMIN" && role !== "AGENT") {
+    if (role !== "ADMIN" && role !== "KOORDINATOR") {
       return NextResponse.json({ error: "Forbidden" }, { status: 403 });
     }
 

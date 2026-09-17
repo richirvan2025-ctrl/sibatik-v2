@@ -86,9 +86,9 @@ const roleConfig: Record<
   { bg: string; text: string; icon: React.ElementType; label: string }
 > = {
   ADMIN: { bg: "bg-blue-50", text: "text-blue-700", icon: Shield, label: "Admin" },
-  AGENT: { bg: "bg-orange-50", text: "text-orange-700", icon: Wrench, label: "Agent" },
-  USER: { bg: "bg-slate-100", text: "text-slate-600", icon: Users, label: "User" },
-  SUPERVISOR: { bg: "bg-purple-50", text: "text-purple-700", icon: Building, label: "Supervisor" },
+  KOORDINATOR: { bg: "bg-orange-50", text: "text-orange-700", icon: Wrench, label: "Koordinator" },
+  STAFF: { bg: "bg-slate-100", text: "text-slate-600", icon: Users, label: "Staff" },
+  KABAG: { bg: "bg-purple-50", text: "text-purple-700", icon: Building, label: "Kabag" },
   EXECUTIVE: { bg: "bg-indigo-50", text: "text-indigo-700", icon: Building2, label: "Eksekutif" },
   MAHASISWA: { bg: "bg-cyan-50", text: "text-cyan-700", icon: Users, label: "Mahasiswa" },
 };
@@ -119,7 +119,7 @@ export default function UsersPage() {
 
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
-  const [role, setRole] = useState("USER");
+  const [role, setRole] = useState("STAFF");
   const [department, setDepartment] = useState("");
   const [formError, setFormError] = useState<string | null>(null);
   const [formLoading, setFormLoading] = useState(false);
@@ -251,7 +251,7 @@ export default function UsersPage() {
   const resetForm = () => {
     setName("");
     setEmail("");
-    setRole("USER");
+    setRole("STAFF");
     setDepartment("");
     setEditingUser(null);
     setFormError(null);
@@ -336,7 +336,7 @@ export default function UsersPage() {
               </div>
               <div className="space-y-2">
                 <Label className="text-sm font-medium text-[#1E293B]">Role</Label>
-                <Select value={role} onValueChange={(value) => setRole(value || "USER")}>
+                <Select value={role} onValueChange={(value) => setRole(value || "STAFF")}>
                   <SelectTrigger className="h-10 border-[#E2E8F0] bg-[#F8FAFC] rounded-xl text-sm focus:bg-white focus:border-[#2563EB]">
                     <SelectValue>
                       {roleConfig[role as keyof typeof roleConfig]?.label || role}
@@ -345,9 +345,9 @@ export default function UsersPage() {
                   <SelectContent>
                     <SelectItem value="ADMIN">Admin</SelectItem>
                     <SelectItem value="EXECUTIVE">Eksekutif</SelectItem>
-                    <SelectItem value="SUPERVISOR">Supervisor</SelectItem>
-                    <SelectItem value="AGENT">Agent</SelectItem>
-                    <SelectItem value="USER">User</SelectItem>
+                    <SelectItem value="KABAG">Kabag</SelectItem>
+                    <SelectItem value="KOORDINATOR">Koordinator</SelectItem>
+                    <SelectItem value="STAFF">Staff</SelectItem>
                     <SelectItem value="MAHASISWA">Mahasiswa</SelectItem>
                   </SelectContent>
                 </Select>

@@ -6,7 +6,7 @@ SIBATIK adalah sistem support ticket untuk civitas akademika Institut Desain dan
 
 ### Tiket Support
 - Buat, lacak, dan kelola tiket dengan kategori hierarki 2 level
-- Auto-assign tiket ke supervisor berdasarkan departemen kategori
+- Auto-assign tiket ke kabag berdasarkan departemen kategori
 - Status tiket: Open → In Progress → Resolved → Closed
 - Prioritas: Low, Medium, High, Urgent
 - Lampiran file (gambar, PDF, dokumen)
@@ -18,9 +18,9 @@ SIBATIK adalah sistem support ticket untuk civitas akademika Institut Desain dan
 | Role | Akses |
 |------|-------|
 | ADMIN | Semua fitur, manajemen user, laporan, KB Admin |
-| AGENT | Tiket divisi & tiket sendiri, dashboard performance |
-| SUPERVISOR | Tiket divisi, tiket sendiri, dashboard agent performance |
-| USER | Tiket sendiri, knowledge base, AI asisten |
+| KOORDINATOR | Tiket divisi & tiket sendiri, dashboard performance |
+| KABAG | Tiket divisi, tiket sendiri, dashboard performa koordinator |
+| STAFF | Tiket sendiri, knowledge base, AI asisten |
 | EXECUTIVE | Monitor semua tiket, laporan |
 
 ### Knowledge Base
@@ -37,7 +37,7 @@ SIBATIK adalah sistem support ticket untuk civitas akademika Institut Desain dan
 
 ### Dashboard
 - Statistik tiket per role (total, open, in progress, resolved)
-- Agent Performance chart untuk SUPERVISOR (tiket masuk vs selesai, rating distribusi)
+- Agent Performance chart untuk KABAG (tiket masuk vs selesai, rating distribusi)
 - Card statistik bisa diklik untuk filter tiket
 
 ## Stack Teknologi

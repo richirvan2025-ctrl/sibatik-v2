@@ -9,7 +9,7 @@ export async function GET() {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    if (session.user.role !== "SUPERVISOR") {
+    if (session.user.role !== "KABAG") {
       return NextResponse.json({ error: "Forbidden" }, { status: 403 });
     }
 
@@ -28,7 +28,7 @@ export async function GET() {
 
     const agents = await prisma.user.findMany({
       where: {
-        role: "AGENT",
+        role: "KOORDINATOR",
         department: supervisor.department,
         isActive: true,
       },

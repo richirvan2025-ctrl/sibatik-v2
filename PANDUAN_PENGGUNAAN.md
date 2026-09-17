@@ -11,9 +11,9 @@ Panduan ini menjelaskan cara menggunakan SIBATIK untuk seluruh civitas akademika
 1. [Pendahuluan](#1-pendahuluan)
 2. [Akses melalui Sinergy](#2-akses-melalui-sinergy)
 3. [Tipe Pengguna & Hak Akses](#3-tipe-pengguna--hak-akses)
-4. [Penggunaan untuk USER (Mahasiswa/Dosen)](#4-penggunaan-untuk-user-mahasiswadosen)
-5. [Penggunaan untuk AGENT](#5-penggunaan-untuk-agent)
-6. [Penggunaan untuk SUPERVISOR](#6-penggunaan-untuk-supervisor)
+4. [Penggunaan untuk STAFF (Mahasiswa/Dosen)](#4-penggunaan-untuk-staff-mahasiswadosen)
+5. [Penggunaan untuk KOORDINATOR](#5-penggunaan-untuk-koordinator)
+6. [Penggunaan untuk KABAG](#6-penggunaan-untuk-kabag)
 7. [Penggunaan untuk ADMIN](#7-penggunaan-untuk-admin)
 8. [Penggunaan untuk EXECUTIVE](#8-penggunaan-untuk-executive)
 9. [AI Asisten Vira](#9-ai-asisten-vira)
@@ -53,9 +53,9 @@ Sistem memiliki 5 tipe pengguna dengan hak akses berbeda:
 
 | Role | Lihat Tiket | Aksi pada Tiket | Menu Tambahan |
 |------|-------------|-----------------|---------------|
-| **USER** | Tiket sendiri | Buat tiket sendiri | Knowledge Base, AI Asisten |
-| **AGENT** | Tiket divisinya + sendiri | Tangani, update status, komentar | Dashboard performance |
-| **SUPERVISOR** | Semua tiket divisinya + sendiri | Tangani, assign, monitor | Dashboard agent performance |
+| **STAFF** | Tiket sendiri | Buat tiket sendiri | Knowledge Base, AI Asisten |
+| **KOORDINATOR** | Tiket divisinya + sendiri | Tangani, update status, komentar | Dashboard performance |
+| **KABAG** | Semua tiket divisinya + sendiri | Tangani, assign, monitor | Dashboard performa koordinator |
 | **ADMIN** | Semua tiket | Semua aksi + manajemen | User, Kategori, KB Admin, Laporan |
 | **EXECUTIVE** | Semua tiket (read-only) | Monitor, lihat laporan | Laporan eksekutif |
 
@@ -63,9 +63,9 @@ Sistem memiliki 5 tipe pengguna dengan hak akses berbeda:
 
 ---
 
-## 4. Penggunaan untuk USER (Mahasiswa/Dosen)
+## 4. Penggunaan untuk STAFF (Mahasiswa/Dosen)
 
-USER adalah pengguna standar — dapat membuat tiket dukungan, melacak statusnya, dan menggunakan AI Asisten.
+STAFF adalah pengguna standar — dapat membuat tiket dukungan, melacak statusnya, dan menggunakan AI Asisten.
 
 ### 4.1 Melihat Dashboard
 1. Klik **Dashboard** di sidebar
@@ -94,7 +94,7 @@ SLA (waktu respons & penyelesaian) otomatis dihitung berdasarkan kategori.
 Halaman detail tiket menampilkan:
 - **Nomor tiket** (contoh: `TKT-0001`)
 - **Status** saat ini
-- **Riwayat komentar** (percakapan dengan agent)
+- **Riwayat komentar** (percakapan dengan koordinator)
 - **Lampiran** yang sudah dikirim
 - **Timeline** perubahan status
 
@@ -114,9 +114,9 @@ Setelah tiket berstatus **Resolved** (selesai):
 
 ---
 
-## 5. Penggunaan untuk AGENT
+## 5. Penggunaan untuk KOORDINATOR
 
-AGENT adalah petugas/operator yang menangani tiket yang masuk ke divisinya. Bisa juga membuat tiket sendiri.
+KOORDINATOR adalah petugas/operator yang menangani tiket yang masuk ke divisinya. Bisa juga membuat tiket sendiri.
 
 ### 5.1 Dashboard
 1. Klik **Dashboard** di sidebar
@@ -125,7 +125,7 @@ AGENT adalah petugas/operator yang menangani tiket yang masuk ke divisinya. Bisa
 4. Klik card untuk filter tiket
 
 ### 5.2 Tiket Divisi
-Menu ini menampilkan tiket yang masuk ke divisi Anda (berdasarkan kategori), termasuk yang di-assign ke agent lain di divisi yang sama.
+Menu ini menampilkan tiket yang masuk ke divisi Anda (berdasarkan kategori), termasuk yang di-assign ke koordinator lain di divisi yang sama.
 
 1. Klik **Tiket Divisi** di sidebar
 2. Lihat semua tiket masuk
@@ -133,12 +133,12 @@ Menu ini menampilkan tiket yang masuk ke divisi Anda (berdasarkan kategori), ter
 4. Klik tiket untuk mulai menangani
 
 ### 5.3 Tiket Saya
-Sama dengan USER — tiket yang Anda buat sendiri atau di-assign ke Anda.
+Sama dengan STAFF — tiket yang Anda buat sendiri atau di-assign ke Anda.
 
 ### 5.4 Menangani Tiket
 1. Buka detail tiket
 2. Baca deskripsi masalah
-3. **Tambahkan komentar** untuk komunikasi dengan user
+3. **Tambahkan komentar** untuk komunikasi dengan staff
    - Centang **Komentar Internal** jika catatan hanya untuk tim (tidak terlihat user)
 4. **Ubah status** sesuai progres:
    - `OPEN` → In Progress (sedang ditangani)
@@ -151,36 +151,36 @@ Anda bisa menambahkan lampiran di komentar (misal: file panduan, screenshot solu
 
 ---
 
-## 6. Penggunaan untuk SUPERVISOR
+## 6. Penggunaan untuk KABAG
 
-SUPERVISOR adalah kepala divisi — punya akses lebih luas untuk memonitor dan mengatur kinerja divisinya.
+KABAG adalah kepala divisi — punya akses lebih luas untuk memonitor dan mengatur kinerja divisinya.
 
 ### 6.1 Dashboard
-Dashboard SUPERVISOR menampilkan:
+Dashboard KABAG menampilkan:
 - **Statistik tiket divisi** (bukan hanya tiket sendiri)
-- **Agent Performance Chart** — bar chart tiket masuk vs selesai per agent
-- **Rating Distribution** — distribusi rating bintang per agent (⭐⭐⭐⭐⭐, ⭐⭐⭐⭐, dll)
+- **Grafik Performa Koordinator** — bar chart tiket masuk vs selesai per koordinator
+- **Rating Distribution** — distribusi rating bintang per koordinator (⭐⭐⭐⭐⭐, ⭐⭐⭐⭐, dll)
 - Klik card untuk filter tiket divisi
 
 ### 6.2 Tiket Divisi
 Lihat semua tiket yang masuk ke divisi Anda. Anda bisa:
 - Menangani tiket langsung
-- Memantau progres agent di tim Anda
+- Memantau progres koordinator di tim Anda
 - Mengirim komentar internal untuk koordinasi tim
 
 ### 6.3 Tiket Saya
-Sama seperti AGENT — tiket yang Anda buat atau di-assign ke Anda.
+Sama seperti KOORDINATOR — tiket yang Anda buat atau di-assign ke Anda.
 
-### 6.4 Memantau Kinerja Agent
+### 6.4 Memantau Kinerja Koordinator
 1. Buka **Dashboard**
-2. Lihat **Agent Performance Chart**
-3. Setiap agent ditampilkan dengan:
+2. Lihat **Grafik Performa Koordinator**
+3. Setiap koordinator ditampilkan dengan:
    - Bar **Tiket Masuk** (biru) — total tiket yang ditangani bulan ini
    - Bar **Tiket Selesai** (hijau) — tiket yang sudah resolved
-   - Distribusi rating bintang dari user
+   - Distribusi rating bintang dari staff
 
-### 6.5 Assign Tiket ke Agent
-Saat ini sistem auto-assign ke supervisor. Anda bisa me-reassign ke agent tertentu melalui halaman detail tiket (jika fitur tersedia).
+### 6.5 Assign Tiket ke Koordinator
+Saat ini sistem auto-assign ke kabag. Anda bisa me-reassign ke koordinator tertentu melalui halaman detail tiket (jika fitur tersedia).
 
 ---
 
@@ -352,7 +352,7 @@ Knowledge Base adalah pusat informasi yang berisi:
 3. (Jika ada) Klik lampiran/file terkait
 
 ### 10.3 Kontribusi ke KB
-- **USER/AGENT/SUPERVISOR** — hanya bisa membaca
+- **STAFF/KOORDINATOR/KABAG** — hanya bisa membaca
 - **ADMIN** — bisa menambah/edit artikel, FAQ, dan dokumen internal di menu **KB Admin**
 
 ---
@@ -376,7 +376,7 @@ modul SIBATIK. Jika tetap gagal, hubungi administrator Sinergy.
 Lihat detail tiket untuk SLA spesifik.
 
 ### T: Bagaimana cara update tiket yang sudah saya buat?
-**J:** Anda bisa menambahkan komentar baru di halaman detail tiket. Status hanya bisa diubah oleh agent/supervisor/admin.
+**J:** Anda bisa menambahkan komentar baru di halaman detail tiket. Status hanya bisa diubah oleh koordinator/kabag/admin.
 
 ### T: Apakah data saya aman?
 **J:** Ya. Sistem menggunakan:

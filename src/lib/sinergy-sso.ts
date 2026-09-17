@@ -110,7 +110,7 @@ export async function resolveSinergyUser(token: string) {
         isActive: true,
         name: identity.displayName,
         provider: "sinergy",
-        role: "USER",
+        role: "STAFF",
         ssoId: identity.ssoId,
         username: identity.displayName,
       },

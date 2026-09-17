@@ -18,9 +18,9 @@ export async function GET() {
     let baseWhere: Prisma.TicketWhereInput = {};
     if (role === "ADMIN" || role === "EXECUTIVE") {
       // Management sees all tickets.
-    } else if (role === "AGENT") {
+    } else if (role === "KOORDINATOR") {
       baseWhere = { assignedToId: userId };
-    } else if (role === "SUPERVISOR") {
+    } else if (role === "KABAG") {
       const deptUser = await prisma.user.findUnique({
         where: { id: userId },
         select: { department: true },

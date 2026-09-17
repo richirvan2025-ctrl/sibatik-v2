@@ -161,8 +161,8 @@ export default function TicketDetailPage() {
   const role = session?.user?.role;
   const userId = session?.user?.id;
   const isAdmin = role === "ADMIN";
-  const isAgent = role === "AGENT";
-  const isSupervisor = role === "SUPERVISOR";
+  const isAgent = role === "KOORDINATOR";
+  const isSupervisor = role === "KABAG";
   const isExecutive = role === "EXECUTIVE";
   const canManage = isAdmin || isAgent || isSupervisor;
   const isTicketParticipant =
@@ -599,9 +599,9 @@ export default function TicketDetailPage() {
                         className={`flex h-8 w-8 items-center justify-center rounded-lg ${
                           comment.user.role === "ADMIN"
                             ? "bg-blue-100 text-blue-600"
-                            : comment.user.role === "AGENT"
+                            : comment.user.role === "KOORDINATOR"
                             ? "bg-orange-100 text-orange-600"
-                            : comment.user.role === "SUPERVISOR"
+                            : comment.user.role === "KABAG"
                             ? "bg-purple-100 text-purple-600"
                             : "bg-slate-100 text-slate-600"
                         }`}
@@ -1082,9 +1082,9 @@ function AssigneeSelect({
   }, [categoryDept]);
 
   const staff = assignees.filter(
-    (a) => a.role === "AGENT" || a.role === "ADMIN",
+    (a) => a.role === "KOORDINATOR" || a.role === "ADMIN",
   );
-  const supervisors = assignees.filter((a) => a.role === "SUPERVISOR");
+  const supervisors = assignees.filter((a) => a.role === "KABAG");
   const selectedName = assignees.find((a) => a.id === currentId)?.name || currentName;
 
   return (
@@ -1112,7 +1112,7 @@ function AssigneeSelect({
         {staff.length > 0 && (
           <>
             <div className="px-2.5 pb-1 pt-2 text-[10px] font-bold uppercase tracking-wider text-[#94A3B8]">
-              Staff
+              Koordinator
             </div>
             {staff.map((t) => (
               <SelectItem
@@ -1135,7 +1135,7 @@ function AssigneeSelect({
         {supervisors.length > 0 && (
           <>
             <div className="px-2.5 pb-1 pt-2 text-[10px] font-bold uppercase tracking-wider text-[#94A3B8]">
-              Supervisor
+              Kabag
             </div>
             {supervisors.map((d) => (
               <SelectItem

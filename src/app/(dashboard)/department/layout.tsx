@@ -8,7 +8,7 @@ export default async function DepartmentLayout({
 }) {
   const session = await auth();
 
-  if (session?.user.role !== "ADMIN" && session?.user.role !== "SUPERVISOR") {
+  if (session?.user.role !== "ADMIN" && session?.user.role !== "KABAG") {
     redirect("/dashboard");
   }
 

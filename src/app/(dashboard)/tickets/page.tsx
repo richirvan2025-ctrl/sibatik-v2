@@ -343,7 +343,7 @@ export default function TicketsPage() {
   const isExecutive = role === "EXECUTIVE";
   const isMyTicketsView =
     scope === "mine" ||
-    (["USER", "MAHASISWA", "AGENT", "SUPERVISOR"].includes(role || "") &&
+    (["STAFF", "MAHASISWA", "KOORDINATOR", "KABAG"].includes(role || "") &&
       scope !== "department");
   const isExecutiveMonitor = isExecutive && !isMyTicketsView;
   const canCreateTicket = true;
@@ -356,7 +356,7 @@ export default function TicketsPage() {
       ? "Tiket Divisi"
       : role === "ADMIN"
       ? "Semua Tiket"
-      : role === "AGENT" || role === "SUPERVISOR"
+      : role === "KOORDINATOR" || role === "KABAG"
       ? "Tiket"
       : "Tiket Saya";
 

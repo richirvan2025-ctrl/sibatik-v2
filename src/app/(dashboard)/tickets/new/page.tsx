@@ -196,7 +196,7 @@ export default function NewTicketPage() {
   const [attachmentLinks, setAttachmentLinks] = useState<string[]>([]);
 
   const role = session?.user?.role;
-  const canCreateOnBehalf = role === "ADMIN" || role === "AGENT" || role === "SUPERVISOR";
+  const canCreateOnBehalf = role === "ADMIN" || role === "KOORDINATOR" || role === "KABAG";
 
   useEffect(() => {
     let cancelled = false;
@@ -212,7 +212,7 @@ export default function NewTicketPage() {
       fetch("/api/users")
         .then((res) => (res.ok ? res.json() : []))
         .then((data: UserItem[]) => {
-          if (!cancelled) setUsers(data.filter((user) => user.role === "USER"));
+          if (!cancelled) setUsers(data.filter((user) => user.role === "STAFF"));
         })
         .catch((error) => console.error("Failed to fetch users:", error));
     }

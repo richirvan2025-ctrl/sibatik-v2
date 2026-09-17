@@ -9,7 +9,7 @@ export async function GET(req: Request) {
     const admin = searchParams.get("admin");
 
     const session = await auth();
-    const isAdmin = session?.user?.role === "ADMIN" || session?.user?.role === "AGENT";
+    const isAdmin = session?.user?.role === "ADMIN" || session?.user?.role === "KOORDINATOR";
 
     const where: any = {};
     if (!admin || !isAdmin) {

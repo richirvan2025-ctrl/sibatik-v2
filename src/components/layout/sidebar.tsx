@@ -33,7 +33,7 @@ const navigation = {
     { name: "Kategori", href: "/admin/categories", icon: Settings },
     { name: "Laporan", href: "/admin/reports", icon: BarChart3 },
   ],
-  USER: [
+  STAFF: [
     { name: "Dashboard", href: "/dashboard", icon: LayoutDashboard },
     { name: "Tiket Saya", href: "/tickets", icon: Ticket },
     { name: "Buat Tiket", href: "/tickets/new", icon: PlusCircle },
@@ -45,14 +45,14 @@ const navigation = {
     { name: "Buat Tiket", href: "/tickets/new", icon: PlusCircle },
     { name: "Knowledge Base", href: "/kb", icon: BookOpen },
   ],
-  AGENT: [
+  KOORDINATOR: [
     { name: "Dashboard", href: "/dashboard", icon: LayoutDashboard },
     { name: "Tiket Divisi", href: "/tickets?scope=department", icon: Shield },
     { name: "Tiket Saya", href: "/tickets", icon: Ticket },
     { name: "Buat Tiket", href: "/tickets/new", icon: PlusCircle },
     { name: "Knowledge Base", href: "/kb", icon: BookOpen },
   ],
-  SUPERVISOR: [
+  KABAG: [
     { name: "Dashboard", href: "/dashboard", icon: LayoutDashboard },
     { name: "Tiket Divisi", href: "/tickets?scope=department", icon: Building2 },
     { name: "Tiket Saya", href: "/tickets", icon: Ticket },
@@ -77,9 +77,9 @@ type NavItem = {
 const rolePresentation = {
   ADMIN: { label: "Administrator", icon: Shield, tone: "bg-[#7047EB] text-white" },
   EXECUTIVE: { label: "Eksekutif", icon: Crown, tone: "bg-[#7047EB] text-white" },
-  SUPERVISOR: { label: "Supervisor", icon: Building2, tone: "bg-[#7047EB] text-white" },
-  AGENT: { label: "Staff", icon: Shield, tone: "bg-[#F47D24] text-white" },
-  USER: { label: "Pengguna", icon: Users, tone: "bg-white/12 text-[#D6E9ED]" },
+  KABAG: { label: "Kabag", icon: Building2, tone: "bg-[#7047EB] text-white" },
+  KOORDINATOR: { label: "Koordinator", icon: Shield, tone: "bg-[#F47D24] text-white" },
+  STAFF: { label: "Staff", icon: Users, tone: "bg-white/12 text-[#D6E9ED]" },
   MAHASISWA: { label: "Mahasiswa", icon: Users, tone: "bg-white/12 text-[#D6E9ED]" },
 };
 
@@ -110,15 +110,15 @@ export function Sidebar({ onClose }: { onClose?: () => void }) {
   const pathname = usePathname();
   const searchParams = useSearchParams();
   const { data: session } = useSession();
-  const role = (session?.user?.role as keyof typeof navigation) || "USER";
-  const items = (navigation[role] || navigation.USER) as NavItem[];
+  const role = (session?.user?.role as keyof typeof navigation) || "STAFF";
+  const items = (navigation[role] || navigation.STAFF) as NavItem[];
   const displayName = toDisplayName(session?.user?.name);
   const initials = displayName
     .split(" ")
     .map((word) => word.charAt(0))
     .join("")
     .slice(0, 2);
-  const currentRole = rolePresentation[role] || rolePresentation.USER;
+  const currentRole = rolePresentation[role] || rolePresentation.STAFF;
   const RoleIcon = currentRole.icon;
 
   return (

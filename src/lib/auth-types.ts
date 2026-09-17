@@ -1,8 +1,8 @@
 export type AppRole =
   | "ADMIN"
-  | "USER"
-  | "AGENT"
-  | "SUPERVISOR"
+  | "STAFF"
+  | "KOORDINATOR"
+  | "KABAG"
   | "EXECUTIVE"
   | "MAHASISWA";
 

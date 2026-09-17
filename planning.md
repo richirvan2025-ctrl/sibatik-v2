@@ -18,7 +18,7 @@ Sinergy bertanggung jawab atas:
 SIBATIK bertanggung jawab atas:
 
 - memetakan identitas Sinergy ke record `User` lokal;
-- role SIBATIK (`ADMIN`, `USER`, `AGENT`, `SUPERVISOR`, `EXECUTIVE`);
+- role SIBATIK (`ADMIN`, `STAFF`, `KOORDINATOR`, `KABAG`, `EXECUTIVE`);
 - divisi pengguna;
 - otorisasi data dan operasi pada setiap Route Handler.
 
@@ -74,5 +74,5 @@ mengganti resolver tersebut dengan identitas SSO terverifikasi dari Sinergy.
 2. Tidak ada form password, provider OAuth, endpoint NextAuth, atau logout lokal.
 3. Development dapat memilih seeded user melalui `SIBATIK_DEV_USER_EMAIL`.
 4. Production tanpa identitas Sinergy menolak akses dengan aman.
-5. Route admin, agent, supervisor, dan executive mengikuti role pengguna.
+5. Route admin, koordinator, kabag, dan executive mengikuti role pengguna.
 6. Semua operasi ticket dan admin tetap memeriksa session di server.

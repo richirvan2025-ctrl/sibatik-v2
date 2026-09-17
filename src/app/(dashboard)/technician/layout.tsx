@@ -8,7 +8,7 @@ export default async function TechnicianLayout({
 }) {
   const session = await auth();
 
-  if (session?.user.role !== "ADMIN" && session?.user.role !== "AGENT") {
+  if (session?.user.role !== "ADMIN" && session?.user.role !== "KOORDINATOR") {
     redirect("/dashboard");
   }
 

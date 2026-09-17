@@ -54,3 +54,7 @@ coverage/
 *.backup-*
 *.backup-manual-edit
 tsconfig.tsbuildinfo
+
+# Runtime uploads & agent backups
+public/uploads/
+.codex-backups/

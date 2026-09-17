@@ -14,7 +14,7 @@ model User {
   username          String?             @unique
   ssoId             String?             @unique
   password          String? // legacy; autentikasi dikelola oleh Sinergy
-  role              Role                @default(USER)
+  role              Role                @default(STAFF)
   department        String?
   phone             String?
   isActive          Boolean             @default(true)
@@ -307,9 +307,9 @@ model AuditLog {
 
 enum Role {
   ADMIN
-  USER
-  AGENT
-  SUPERVISOR
+  STAFF
+  KOORDINATOR
+  KABAG
   EXECUTIVE
   MAHASISWA
 }

@@ -63,7 +63,7 @@ export async function GET(
     const role = session.user.role;
 
     let isSupervisorOrAgentInDept = false;
-    if (role === "SUPERVISOR" || role === "AGENT") {
+    if (role === "KABAG" || role === "KOORDINATOR") {
       const deptUser = await prisma.user.findUnique({
         where: { id: userId },
         select: { department: true },
@@ -76,7 +76,7 @@ export async function GET(
     const hasAccess =
       role === "ADMIN" ||
       role === "EXECUTIVE" ||
-      role === "AGENT" ||
+      role === "KOORDINATOR" ||
       isSupervisorOrAgentInDept ||
       ticket.assignedToId === userId ||
       ticket.createdById === userId ||
@@ -88,7 +88,7 @@ export async function GET(
 
     // Filter internal comments for regular users
     let filteredComments = ticket.comments;
-    if (role !== "ADMIN" && role !== "AGENT" && role !== "SUPERVISOR" && role !== "EXECUTIVE") {
+    if (role !== "ADMIN" && role !== "KOORDINATOR" && role !== "KABAG" && role !== "EXECUTIVE") {
       filteredComments = ticket.comments.filter((c) => !c.isInternal);
     }
 
@@ -133,11 +133,11 @@ export async function PATCH(
     }
 
     // Check permissions for update
-    // SUPERVISOR: bisa assign ke siapapun di divisinya + update status
-    // AGENT: hanya bisa self-assign + update status (tidak bisa assign ke orang lain)
+    // KABAG: bisa assign ke siapapun di divisinya + update status
+    // KOORDINATOR: hanya bisa self-assign + update status (tidak bisa assign ke orang lain)
     let supervisorCanUpdate = false;
     let agentCanUpdate = false;
-    if (role === "SUPERVISOR") {
+    if (role === "KABAG") {
       const deptUser = await prisma.user.findUnique({
         where: { id: userId },
         select: { department: true },
@@ -145,7 +145,7 @@ export async function PATCH(
       supervisorCanUpdate =
         !!deptUser?.department &&
         deptUser.department === ticket.category.department;
-    } else if (role === "AGENT") {
+    } else if (role === "KOORDINATOR") {
       const deptUser = await prisma.user.findUnique({
         where: { id: userId },
         select: { department: true },
@@ -155,15 +155,15 @@ export async function PATCH(
         deptUser.department === ticket.category.department;
     }
 
-    // Agent/Supervisor tidak boleh memberi rating pada tiket yang di-assign ke dirinya
+    // Koordinator/Kabag tidak boleh memberi rating pada tiket yang di-assign ke dirinya
     const isAssignedToCurrentUser = ticket.assignedToId === userId;
     if (
       validated.rating !== undefined &&
       isAssignedToCurrentUser &&
-      (role === "AGENT" || role === "SUPERVISOR")
+      (role === "KOORDINATOR" || role === "KABAG")
     ) {
       return NextResponse.json(
-        { error: "Agent tidak dapat memberi rating pada tiket yang ditangani" },
+        { error: "Koordinator/Kabag tidak dapat memberi rating pada tiket yang ditangani" },
         { status: 403 }
       );
     }
@@ -223,20 +223,20 @@ export async function PATCH(
       return NextResponse.json({ error: "Forbidden" }, { status: 403 });
     }
 
-    // Agent hanya boleh self-assign (assign ke diri sendiri), tidak ke orang lain
+    // Koordinator hanya boleh self-assign (assign ke diri sendiri), tidak ke orang lain
     if (
-      role === "AGENT" &&
+      role === "KOORDINATOR" &&
       validated.assignedToId !== undefined &&
       validated.assignedToId !== null &&
       validated.assignedToId !== userId
     ) {
       return NextResponse.json(
-        { error: "Agent hanya bisa assign tiket ke diri sendiri" },
+        { error: "Koordinator hanya bisa assign tiket ke diri sendiri" },
         { status: 403 }
       );
     }
 
-    // Assignee harus merupakan Staff/Supervisor aktif dari divisi tujuan tiket.
+    // Assignee harus merupakan Koordinator/Kabag aktif dari divisi tujuan tiket.
     // Validasi backend mencegah assignment lintas divisi melalui request langsung.
     if (validated.assignedToId) {
       const assignee = await prisma.user.findUnique({
@@ -247,8 +247,8 @@ export async function PATCH(
       const assigneeDepartment = assignee?.department?.trim().toLocaleLowerCase("id-ID");
       const hasEligibleRole =
         assignee?.role === "ADMIN" ||
-        assignee?.role === "AGENT" ||
-        assignee?.role === "SUPERVISOR";
+        assignee?.role === "KOORDINATOR" ||
+        assignee?.role === "KABAG";
 
       if (
         !assignee ||
@@ -284,7 +284,7 @@ export async function PATCH(
     if (
       validated.status === "IN_PROGRESS" &&
       !ticket.firstResponseAt &&
-      (role === "AGENT" || role === "SUPERVISOR")
+      (role === "KOORDINATOR" || role === "KABAG")
     ) {
       updateData.firstResponseAt = new Date();
       

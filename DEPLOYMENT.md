@@ -298,12 +298,12 @@ FAQ bisa dikelola di **KB Admin → FAQ** tanpa perlu mengubah kode. FAQ aktif o
 | Email | Role |
 |---|---|
 | admin@idbbali.ac.id | ADMIN |
-| tech1@idbbali.ac.id | AGENT |
-| tech2@idbbali.ac.id | AGENT |
-| kabag.keuangan@idbbali.ac.id | SUPERVISOR |
-| kabag.hrd@idbbali.ac.id | SUPERVISOR |
-| kabag.baa@idbbali.ac.id | SUPERVISOR |
-| dosen1@idbbali.ac.id | USER |
+| tech1@idbbali.ac.id | KOORDINATOR |
+| tech2@idbbali.ac.id | KOORDINATOR |
+| kabag.keuangan@idbbali.ac.id | KABAG |
+| kabag.hrd@idbbali.ac.id | KABAG |
+| kabag.baa@idbbali.ac.id | KABAG |
+| dosen1@idbbali.ac.id | STAFF |
 
 Pilih salah satu identitas tersebut melalui `SIBATIK_DEV_USER_EMAIL` saat
 menjalankan modul secara lokal. Production harus mengambil identitas dari Sinergy.

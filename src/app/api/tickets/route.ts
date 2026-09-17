@@ -109,7 +109,7 @@ export async function GET(req: NextRequest) {
           OR: [{ createdById: userId }, { onBehalfOfId: userId }],
         };
       }
-    } else if (role === "AGENT" || role === "SUPERVISOR") {
+    } else if (role === "KOORDINATOR" || role === "KABAG") {
       if (scope === "department") {
         // Tiket Divisi: semua tiket yang masuk ke divisi user
         const user = await prisma.user.findUnique({
@@ -233,10 +233,10 @@ export async function POST(req: NextRequest) {
     const userId = session.user.id;
     const role = session.user.role;
 
-    // Only admin/agent/supervisor can create on behalf of another user
+    // Only admin/koordinator/kabag can create on behalf of another user
     const onBehalfOfId =
       validated.onBehalfOfId &&
-      (role === "ADMIN" || role === "AGENT" || role === "SUPERVISOR")
+      (role === "ADMIN" || role === "KOORDINATOR" || role === "KABAG")
         ? validated.onBehalfOfId
         : null;
 
@@ -288,7 +288,7 @@ export async function POST(req: NextRequest) {
             where: {
               id: validated.assignedToId,
               isActive: true,
-              role: { in: ["ADMIN", "AGENT", "SUPERVISOR"] },
+              role: { in: ["ADMIN", "KOORDINATOR", "KABAG"] },
             },
             select: { id: true, email: true, department: true },
           })
@@ -298,7 +298,7 @@ export async function POST(req: NextRequest) {
             where: {
               department: { in: targetDepartments },
               isActive: true,
-              role: "SUPERVISOR",
+              role: "KABAG",
             },
             orderBy: { name: "asc" },
             select: { id: true, email: true, department: true },
