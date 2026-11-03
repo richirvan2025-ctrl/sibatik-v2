@@ -388,10 +388,22 @@ export default function NewTicketPage() {
             )
           : [];
       } else if (attachmentType === 'link' && attachmentLinks.length > 0) {
-        // Filter link kosong dan buat objek attachment link
-        uploadedAttachments = attachmentLinks
-          .filter(link => link.trim() !== '')
-          .map(link => ({ type: 'link', url: link.trim(), name: link.trim() }));
+        const validLinks = attachmentLinks.map((link) => link.trim()).filter(Boolean);
+        const invalidLink = validLinks.find(
+          (link) => !/^https?:\/\/\S+$/i.test(link)
+        );
+        if (invalidLink) {
+          setError(`Link tidak valid (harus diawali http:// atau https://): ${invalidLink}`);
+          setLoading(false);
+          return;
+        }
+        // Samakan bentuk dengan schema backend (fileName/fileUrl/fileSize/mimeType)
+        uploadedAttachments = validLinks.map((url) => ({
+          fileName: url,
+          fileUrl: url,
+          fileSize: 0,
+          mimeType: "text/uri-list",
+        }));
       }
 
       // Semua divisi dikirim dalam satu request. Backend membuat satu tiket per
